@@ -1,0 +1,111 @@
+.header_container {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 20px 10px;
+
+    ion-button {
+        ion-icon {
+            font-size: 30px;
+        }
+    }
+}
+
+.content_container {
+    width: 100%;
+    padding: 0px 20px;
+    margin-top: 40px;
+    margin-bottom: 40px;
+    h1 {
+        font-size: 32px;
+        font-weight: 900;
+        color: #ffffff;
+        margin: 0;
+    }
+
+    p {
+        font-size: 17px;
+        font-weight: normal;
+        color: #B4B2E5;
+        margin: 10px 0px;
+        line-height: 1.6;
+    }
+
+    .input_container {
+        width: 100%;
+        display: flex;
+
+        .tel_container {
+            width: 100%;
+            display: flex;
+            padding-bottom: 20px;
+
+            .country_code {
+                width: 25%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-right: 10px;
+                color: #ffffff;
+                background-color: #28255E;
+                border-radius: 25px 5px 5px 25px;
+
+                .number {
+                    font-size: 16px;
+                    font-weight: 700;
+                    padding-right: 5px;
+                }
+            }
+
+            .tel_input {
+                width: calc((100% - 60px));
+                min-height: 56px; // Control Height
+                font-size: 16px;
+                font-weight: 600;
+                color: #ffffff;
+                --placeholder-color: #7673A8;
+                background-color: #28255E;
+                outline: none;
+                border: none;
+                --padding-start: 20px;
+                border-radius: 5px 25px 25px 5px;
+            }
+        }
+
+
+        .otp_container {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #28255E;
+            padding: 0 8px 0 20px;
+            border-radius: 25px;
+
+            ion-input {
+                width: 50%;
+                min-height: 56px; // Control Height
+                font-size: 16px;
+                font-weight: 600;
+                color: #ffffff;
+                --placeholder-color: #7673A8;
+                background-color: transparent;
+                outline: none;
+                border: none;
+            }
+
+            ion-button {
+                width: 110px;
+                min-height: 35px;
+                font-size: 13px;
+                font-weight: 600;
+                color: #fff;
+                --border-radius: 20px;
+                --background: #6860FF;
+                --background-activated: #6860FF;
+                --background-focused: #6860FF;
+            }
+        }
+    }
+}

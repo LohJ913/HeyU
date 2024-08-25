@@ -1,0 +1,136 @@
+.header_container {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 20px 10px;
+
+    ion-button {
+        ion-icon {
+            font-size: 30px;
+        }
+    }
+}
+
+.content_container {
+    width: 100%;
+    padding: 0px 20px;
+    margin-top: 40px;
+    margin-bottom: 40px;
+    h1 {
+        font-size: 32px;
+        font-weight: 900;
+        color: #ffffff;
+        margin: 0;
+    }
+
+    p {
+        font-size: 17px;
+        font-weight: normal;
+        color: #B4B2E5;
+        margin: 10px 0px;
+        line-height: 1.6;
+    }
+
+    .input_container {
+        width: 100%;
+        display: flex;
+        border-bottom: 1px solid #28255E;
+
+        .tel_container {
+            width: 100%;
+            display: flex;
+            padding-bottom: 10px;
+
+            .country_code {
+                width: 25%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-right: 1px solid #28255E;
+                margin-right: 10px;
+                color: #ffffff;
+
+                .number {
+                    font-size: 16px;
+                    font-weight: 700;
+                    padding-right: 5px;
+                }
+            }
+
+            .tel_input {
+                width: calc((100% - 60px));
+                min-height: 32px; // Control Height
+                font-size: 16px;
+                font-weight: 600;
+                color: #ffffff;
+                --placeholder-color: #7673A8;
+                background-color: transparent;
+                outline: none;
+                border: none;
+                --padding-top: 0px;
+                --padding-bottom: 0px;
+            }
+        }
+
+
+        ion-input {
+            width: 100%;
+            min-height: 32px; // Control Height
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+            --placeholder-color: #7673A8;
+            background-color: transparent;
+            outline: none;
+            border: none;
+            --padding-top: 0px;
+            --padding-bottom: 0px;
+        }
+    }
+
+    .forgot_pass_container {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        margin-top: 10px;
+
+        ion-button{
+            font-size: 14px;
+            font-weight: normal;
+            color: #9D9AF9;
+            min-height: 30px;
+            margin: 0;
+        }
+    }
+}
+
+.tnc_container {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+
+    ion-checkbox {
+        --checkbox-background: #ffffff;
+        --checkbox-background-checked: #ffffff;
+        --border-color-checked: #ffffff;
+        --checkmark-color: #080812;
+        --checkmark-width: 3px;
+        --border-radius: 5px;
+    }
+
+    p {
+        width: calc(80% - 20px);
+        font-size: 12px;
+        font-weight: normal;
+        color: #7673A8;
+        margin: 0 10px;
+
+        span {
+            color: #B4B2E5;
+        }
+    }
+}

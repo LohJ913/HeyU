@@ -1,0 +1,56 @@
+<ion-content [fullscreen]="true" [scrollY]="false"
+  style="--background: url(/assets/background/login_bg.jpg) center center / cover no-repeat fixed;">
+
+  <ion-header class="ion-no-border">
+    <ion-toolbar class="ion-no-padding" style="--background: transparent;">
+      <div class="header_container">
+        <ion-button (click)="back()" fill="clear">
+          <ion-icon slot="icon-only" color="white" name="chevron-back"></ion-icon>
+        </ion-button>
+      </div>
+    </ion-toolbar>
+  </ion-header>
+
+  <div class="content_container">
+    <h1>Set Password</h1>
+    <p>Strengthen your account's security by setting up a password</p>
+
+    <form [formGroup]="passForm"
+      style="width: 100%; display: grid; grid-template-columns: auto; gap: 20px; margin: 50px 0;">
+      <div style="width: 100%;">
+        <ion-input type="password" placeholder="Enter Password" formControlName="pass">
+          <ion-input-password-toggle slot="end" color="newPurple"></ion-input-password-toggle>
+        </ion-input>
+        <div class="error-container">
+          <ng-container *ngFor="let validation of validations.pass">
+            <div class="error-message"
+              *ngIf="passForm.get('pass').hasError(validation.type) && (passForm.get('pass').dirty || passForm.get('pass').touched)">
+              <span>*{{ validation.message }}</span>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+
+      <div style="width: 100%;">
+        <ion-input type="password" placeholder="Confirm Password" formControlName="conPass">
+          <ion-input-password-toggle slot="end" color="newPurple"></ion-input-password-toggle>
+        </ion-input>
+
+        <div class="error-container">
+          <ng-container *ngFor="let validation of validations.conPass">
+            <div class="error-message"
+              *ngIf="passForm.get('conPass').hasError(validation.type) && (passForm.get('conPass').dirty || passForm.get('conPass').touched)">
+              <span>*{{ validation.message }}</span>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div style="display: grid; grid-template-columns: auto; gap: 20px; padding: 0 20px;">
+    <ion-button (click)="tool.navTo('set-pass')" class="ion-no-padding primary_btn">
+      Continue
+    </ion-button>
+  </div>
+</ion-content>

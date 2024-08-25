@@ -1,0 +1,81 @@
+.header_container {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 20px 10px;
+
+    ion-button {
+        ion-icon {
+            font-size: 30px;
+        }
+    }
+}
+
+.content_container {
+    width: 100%;
+    padding: 0px 20px;
+    margin-top: 40px;
+    h1 {
+        font-size: 32px;
+        font-weight: 900;
+        color: #ffffff;
+        margin: 0;
+    }
+
+    p {
+        font-size: 17px;
+        font-weight: normal;
+        color: #B4B2E5;
+        margin: 10px 0px;
+        line-height: 1.6;
+    }
+}
+
+.passcode_container {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+    gap: 20px;
+    margin: 15px 0;
+    position: relative;
+
+    .passcode_box {
+        width: 65px;
+        height: 72px;
+        background-color: #06060E;
+        border: 1px solid #6860FF;
+        border-radius: 10px;
+        outline: none;
+        font-size: 24px;
+        font-weight: bold;
+        text-align: center;
+        caret-color: #482AFF;
+        color: #ffffff;
+    }
+
+    .passcode_box:disabled {
+        border: 1px solid #7673A8;
+    }
+}
+
+.timer_container {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .timer {
+        width: 100%;
+        text-align: center;
+        color: #9D9AF9;
+        font-size: 14px;
+        padding: 14px 0;
+
+        span{
+            color: #ffffff;
+        }
+    }
+}

@@ -1,0 +1,90 @@
+/*
+ * App Global CSS
+ * ----------------------------------------------------------------------------
+ * Put style rules here that you want to apply globally. These styles are for
+ * the entire app and not just one component. Additionally, this file can be
+ * used as an entry point to import other CSS/Sass files to be included in the
+ * output CSS.
+ * For more information on global stylesheets, visit the documentation:
+ * https://ionicframework.com/docs/layout/global-stylesheets
+ */
+
+/* Core CSS required for Ionic components to work properly */
+@import "@ionic/angular/css/core.css";
+
+/* Basic CSS for apps built with Ionic */
+@import "@ionic/angular/css/normalize.css";
+@import "@ionic/angular/css/structure.css";
+@import "@ionic/angular/css/typography.css";
+@import "@ionic/angular/css/display.css";
+
+/* Optional CSS utils that can be commented out */
+@import "@ionic/angular/css/padding.css";
+@import "@ionic/angular/css/float-elements.css";
+@import "@ionic/angular/css/text-alignment.css";
+@import "@ionic/angular/css/text-transformation.css";
+@import "@ionic/angular/css/flex-utils.css";
+
+/**
+ * Ionic Dark Mode
+ * -----------------------------------------------------
+ * For more info, please see:
+ * https://ionicframework.com/docs/theming/dark-mode
+ */
+
+/* @import "@ionic/angular/css/palettes/dark.always.css"; */
+/* @import "@ionic/angular/css/palettes/dark.class.css"; */
+@import "@ionic/angular/css/palettes/dark.system.css";
+
+.ion-color-white {
+    --ion-color-base: var(--ion-color-white);
+    --ion-color-base-rgb: var(--ion-color-white-rgb);
+    --ion-color-contrast: var(--ion-color-white-contrast);
+    --ion-color-contrast-rgb: var(--ion-color-white-contrast-rgb);
+    --ion-color-shade: var(--ion-color-white-shade);
+    --ion-color-tint: var(--ion-color-white-tint);
+}
+
+.ion-color-newPurple {
+    --ion-color-base: var(--ion-color-newPurple);
+    --ion-color-base-rgb: var(--ion-color-newPurple-rgb);
+    --ion-color-contrast: var(--ion-color-newPurple-contrast);
+    --ion-color-contrast-rgb: var(--ion-color-newPurple-contrast-rgb);
+    --ion-color-shade: var(--ion-color-newPurple-shade);
+    --ion-color-tint: var(--ion-color-newPurple-tint);
+}
+
+
+.global_row {
+    display: flex;
+    align-items: center;
+}
+
+.primary_btn {
+    width: calc(100%);
+    height: 45px;
+    --background: linear-gradient(100deg, #B821F8 0%, #FF2D95 48%, #FF971D 100%);
+    --background-activated: linear-gradient(100deg, #B821F8 0%, #FF2D95 48%, #FF971D 100%);
+    --background-focused: linear-gradient(100deg, #B821F8 0%, #FF2D95 48%, #FF971D 100%);
+    --border-radius: 30px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #ffffff;
+    margin: 0;
+}
+
+.secondary_btn {
+    width: calc(100%);
+    height: 45px;
+    --background: #000000;
+    --background-activated: #000000;
+    --background-focused: #000000;
+    --border-color: #6860FF;
+    --border-width: 1px;
+    --border-style: solid;
+    --border-radius: 30px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #ffffff;
+    margin: 0;
+}

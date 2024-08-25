@@ -1,0 +1,39 @@
+<ion-content [fullscreen]="true" [scrollY]="false"
+  style="--background: url(/assets/background/login_bg.jpg) center center / cover no-repeat fixed;">
+
+  <ion-header class="ion-no-border">
+    <ion-toolbar class="ion-no-padding" style="--background: transparent;">
+      <div class="header_container">
+        <ion-button (click)="back()" fill="clear">
+          <ion-icon slot="icon-only" color="white" name="chevron-back"></ion-icon>
+        </ion-button>
+      </div>
+    </ion-toolbar>
+  </ion-header>
+
+  <div class="content_container">
+    <h1>OTP Verification</h1>
+    <p>We've send an OTP on given number <br>+6012-345-6789</p>
+
+    <div style="width: 100%; margin: 50px 0;">
+      <div class="passcode_container">
+        <input *ngFor="let item of [0,1,2,3]; let i = index;" [id]="'input_' + i" type="tel" maxlength="1" required
+          class="passcode_box" (input)="handleInput(i + 1)" (keydown)="handleBackspace(i + 1, $event)"
+          [disabled]="i !== 0" autocomplete="one-time-code">
+      </div>
+
+      <div class="timer_container">
+        <div id="timer">
+          <div class="timer">
+            Resend in:&nbsp;&nbsp;<span>0m 00s</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: auto; gap: 20px; padding: 0 20px;">
+    <ion-button (click)="tool.navTo('set-pass')" class="ion-no-padding primary_btn">
+      Continue
+    </ion-button>
+  </div>
+</ion-content>

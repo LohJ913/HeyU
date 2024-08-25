@@ -1,0 +1,58 @@
+<ion-content [fullscreen]="true" [scrollY]="false"
+  style="--background: url(/assets/background/login_bg.jpg) center center / cover no-repeat fixed;">
+
+  <ion-header class="ion-no-border">
+    <ion-toolbar class="ion-no-padding" style="--background: transparent;">
+      <div class="header_container">
+        <ion-button (click)="back()" fill="clear">
+          <ion-icon slot="icon-only" color="white" name="chevron-back"></ion-icon>
+        </ion-button>
+      </div>
+    </ion-toolbar>
+  </ion-header>
+
+  <div class="content_container">
+    <h1>Hello, Somebody</h1>
+    <p>Welcome back! You've been missed</p>
+
+    <div style="width: 100%; margin-top: 80px;">
+      <div class="input_container">
+        <div class="tel_container">
+          <div class="country_code">
+            <div class="number">+60</div>
+            <ion-icon name="caret-down-outline"></ion-icon>
+          </div>
+  
+          <ion-input class="tel_input" type="tel" placeholder="Enter phone number"></ion-input>
+        </div>
+      </div>
+  
+      <div class="input_container">
+        <ion-input type="password" placeholder="Enter Password">
+          <ion-input-password-toggle slot="end" color="newPurple"></ion-input-password-toggle>
+        </ion-input>
+      </div>
+    </div>
+
+    <div class="forgot_pass_container">
+      <ion-button fill="clear" class="ion-no-padding">
+        Forgot Password
+      </ion-button>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: auto; gap: 20px; padding: 0 20px;">
+    <ion-button (click)="tool.navTo('set-pass')" class="ion-no-padding primary_btn">
+      Login
+    </ion-button>
+  </div>
+</ion-content>
+
+<ion-footer class="ion-no-padding">
+  <ion-toolbar class="ion-no-border" style="--background: #080812;">
+    <div class="tnc_container">
+      <ion-checkbox mode="md"></ion-checkbox>
+      <p>I have read and agree to the <span>Terms of Use</span> and <span>Privacy Policy</span></p>
+    </div>
+  </ion-toolbar>
+</ion-footer>

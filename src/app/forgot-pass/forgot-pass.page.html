@@ -1,0 +1,48 @@
+<ion-content [fullscreen]="true" [scrollY]="false"
+  style="--background: url(/assets/background/login_bg.jpg) center center / cover no-repeat fixed;">
+
+  <ion-header class="ion-no-border">
+    <ion-toolbar class="ion-no-padding" style="--background: transparent;">
+      <div class="header_container">
+        <ion-button (click)="back()" fill="clear">
+          <ion-icon slot="icon-only" color="white" name="chevron-back"></ion-icon>
+        </ion-button>
+      </div>
+    </ion-toolbar>
+  </ion-header>
+
+  <div class="content_container">
+    <h1>Forgot Password</h1>
+    <p>Please enter your phone number and verification code to retrieve your password</p>
+
+    <div style="width: 100%; margin-top: 40px;">
+      <div class="input_container">
+        <div class="tel_container">
+          <div class="country_code">
+            <div class="number">+60</div>
+            <ion-icon name="caret-down-outline"></ion-icon>
+          </div>
+
+          <ion-input class="tel_input" type="tel" placeholder="Enter phone number"></ion-input>
+        </div>
+      </div>
+
+      <div class="input_container">
+        <div class="otp_container">
+          <ion-input type="tel" placeholder="Enter OTP">
+          </ion-input>
+
+          <ion-button class="ion-no-padding">
+            Send code
+          </ion-button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: auto; gap: 20px; padding: 0 20px;">
+    <ion-button class="ion-no-padding primary_btn">
+      Continue
+    </ion-button>
+  </div>
+</ion-content>

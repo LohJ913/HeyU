@@ -1,0 +1,44 @@
+<ion-content [fullscreen]="true" [scrollY]="false"
+  style="--background: url(/assets/background/login_bg.jpg) center center / cover no-repeat fixed;">
+
+  <ion-header class="ion-no-padding">
+    <ion-toolbar class="ion-no-border" style="--background: transparent;">
+      <div class="logo_container">
+        <img class="logo" src="assets/icon/logo.png" alt="">
+      </div>
+    </ion-toolbar>
+  </ion-header>
+
+  <div class="content_container">
+    <h1>WELCOME</h1>
+    <p>Login / Register</p>
+
+    <div class="input_container">
+      <div class="country_code">
+        <div class="number">+60</div>
+        <ion-icon name="caret-down-outline"></ion-icon>
+      </div>
+
+      <ion-input type="tel" placeholder="Enter phone number"></ion-input>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: auto; gap: 20px; padding: 20px;">
+    <ion-button (click)="tool.navTo('otp-verify')" class="ion-no-padding primary_btn">
+      Login
+    </ion-button>
+
+    <ion-button class="ion-no-padding secondary_btn">
+      Continue as guest
+    </ion-button>
+  </div>
+</ion-content>
+
+<ion-footer class="ion-no-padding">
+  <ion-toolbar class="ion-no-border" style="--background: #080812;">
+    <div class="tnc_container">
+      <ion-checkbox mode="md"></ion-checkbox>
+      <p>I have read and agree to the <span>Terms of Use</span> and <span>Privacy Policy</span></p>
+    </div>
+  </ion-toolbar>
+</ion-footer>
