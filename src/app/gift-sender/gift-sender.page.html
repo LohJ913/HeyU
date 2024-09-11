@@ -1,0 +1,62 @@
+<ion-content [scrollY]="false"
+  style="--background: transparent; backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px);">
+  <div style="width: 100vw; height: calc(100vh - 410px); display: flex; flex-direction: column-reverse; padding: 15px;">
+    <div style="width: 100%; display: flex;">
+      <div style="width: 65px; height: 65px; border-radius: 100%; border: 1px solid #6961FF;">
+        <img style="width: 100%; height: 100%; border-radius: 100%; object-fit: cover;" alt="User Profile Pic"
+          src="https://img.freepik.com/premium-photo/asian-girls-education-happy-beautiful-asian-girl-is-smilling_911620-8519.jpg" />
+      </div>
+
+      <div style="width: calc(100% - 75px); margin-left: 10px;">
+        <div style="display: flex; align-items: center; margin-bottom: 10px;">
+          <img style="width: 18px; margin-right: 10px;" src="assets/material/country/JP.png" alt="">
+          <h3 style="font-size: 18px; font-weight: bold; color: #ffffff; margin: 0;">Elizabeth.O, 27</h3>
+        </div>
+        <div style="background-color: #393580; border-radius: 0 15px 15px 15px; padding: 10px;">
+          <p style="font-size: 12px; font-weight: normal; color: #ffffff; font-style: italic; margin: 0;">“ Cannot
+            survive
+            without
+            coffee, mostly busy but will make time for the right person</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div
+    style="width: 100%; height: 410px; background-color: #14152C; border-radius: 20px 20px 0 0; border-top: 1px solid #6860FF;">
+    <div style="width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 15px;">
+      <h3 style="font-size: 18px; font-weight: bold; color: #ffffff; margin: 0;">Send Gifts</h3>
+
+      <div
+        style="width: max-content; height: 30px; padding: 0 15px 0 5px; border-radius: 30px; background-color: #212238; display: flex; align-items: center; justify-content: center;">
+        <ion-icon style="font-size: 26px;" src="assets/svg/hey_coin.svg"></ion-icon>
+        <div style="font-size: 14px; font-weight: 00; color: #ffffff; margin-left: 5px;">13,988</div>
+      </div>
+    </div>
+
+    <swiper-container class="swiper" pagination (slidechange)="logActiveIndex()">
+      <swiper-slide *ngFor="let giftList of arrayGift">
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); padding: 0 15px;">
+          <div *ngFor="let item of giftList" (click)="selectGift(item)"
+            [ngClass]="selectedGift['id'] == item['id'] ? 'each_gift_selected': 'each_gift'">
+            <img style="width: 54px; height: 51px; object-fit: cover;" src="{{item['thumbnail']}}" alt="">
+
+            <h6>{{item['name']}}</h6>
+
+            <div style="display: flex; align-items: center; justify-content: center;">
+              <ion-icon style="font-size: 12px;" src="assets/svg/hey_coin.svg"></ion-icon>
+              <div style="font-size: 12px; font-weight: 500; color: #FFD24F; margin-left: 3px;">{{item['gem']}}
+              </div>
+            </div>
+          </div>
+        </div>
+      </swiper-slide>
+    </swiper-container>
+
+    <div style="width: 100%; display: flex; align-items: center; justify-content: center; padding: 15px;">
+      <ion-button class="ion-no-padding primary_btn">
+        Send
+      </ion-button>
+    </div>
+  </div>
+</ion-content>

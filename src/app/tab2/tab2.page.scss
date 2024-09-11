@@ -1,0 +1,48 @@
+ion-input {
+    min-height: 50px;
+    font-weight: 700;
+    --placeholder-color: #7673A8;
+    --background: #382D62;
+    --border-radius: 15px;
+    --padding-start: 15px;
+}
+
+.general_btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .noti_btn_1 {
+        width: 56px;
+        height: 56px;
+        --border-radius: 100%;
+        --background: linear-gradient(90deg, #D3D7F7 0%, #D2E5FC 100%);
+    }
+
+    .noti_btn_2 {
+        width: 56px;
+        height: 56px;
+        --border-radius: 100%;
+        --background: linear-gradient(90deg, #F8DCE5 0%, #F7D9F6 100%);
+    }
+
+    .noti_btn_3 {
+        width: 56px;
+        height: 56px;
+        --border-radius: 100%;
+        --background: linear-gradient(90deg, #A9E7FC 0%, #BFF2F6 100%);
+    }
+
+    .noti_btn_4 {
+        width: 56px;
+        height: 56px;
+        --border-radius: 100%;
+        --background: linear-gradient(0deg, #E6D9FB 0%, #F5DEF3 100%);
+    }
+
+    h6 {
+        font-size: 12px;
+        color: #ffffff;
+        margin: 3px 0 0 0;
+    }
+}

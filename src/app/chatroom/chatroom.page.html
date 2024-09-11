@@ -1,0 +1,186 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="ion-no-padding" style="--background: #080812; border-bottom: 1px solid #1D1E34;">
+    <div class="header_container">
+      <div style="display: flex; align-items: center;">
+        <ion-button (click)="back()" fill="clear">
+          <ion-icon slot="icon-only" color="white" name="chevron-back"></ion-icon>
+        </ion-button>
+
+        <ion-avatar>
+          <img alt="User Profile Pic"
+            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQzZ4T4FK1ZvTzyHHIhxX19nNaB77qRoxmBJQ&s" />
+        </ion-avatar>
+
+        <div>
+          <h1 style="font-size: 18px; font-weight: bold; color: #ffffff; margin: 0 0 5px 0;">Elizabeth.O</h1>
+          <div style="width: 100%; display: flex; flex-wrap: wrap; gap: 5px;">
+            <div
+              style="height: 23px; padding: 3px 8px; display: flex; align-items: center; justify-content: center; background-color: #212238; border-radius: 30px;">
+              <ion-icon style="font-size: 14px; color: #B2AEFF; margin-right: 5px;" name="female-outline"></ion-icon>
+              <div style="font-size: 12px; font-weight: normal; color: #ffffff;">24</div>
+            </div>
+
+            <div
+              style="height: 23px; padding: 3px 8px; display: flex; align-items: center; justify-content: center; background-color: #212238; border-radius: 30px;">
+              <img style="width: 16px; object-fit: contain; margin-right: 5px;" src="assets/material/country/JP.png"
+                alt="">
+              <div style="font-size: 12px; font-weight: normal; color: #ffffff;">Japan</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <ion-button fill="clear" size="small" style="--color: #fffffff;">
+        <ion-icon style="font-size: 18px;" slot="icon-only" name="ellipsis-vertical"></ion-icon>
+      </ion-button>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" style="--background: #080812;">
+
+  <div
+    style="width: 100%; padding: 20px 15px 15px 15px; display: flex; justify-content: center; align-items: center; flex-direction: column;">
+    <div
+      style="width: 270px; height: 225px; background-image: url('assets/material/inv_bg.png'); background-size: contain; background-repeat: no-repeat; background-position: center; position: relative; display: flex; flex-direction: column; align-items: center;;">
+      <div
+        style="font-size: 20px; font-weight: 900; color: #ffffff; text-align: center; padding: 20px; padding-bottom: 10px;">
+        INVITATION
+      </div>
+
+      <img style="width: 120px; height: 120px; object-fit: contain;" src="assets/material/inv_lock.png" alt="">
+
+      <div style="width: 100%; display: flex; justify-content: center; position: absolute; bottom: -20px;">
+        <div
+          style="width: 170px; height: 60px; position: relative; background-image: url('assets/material/inv_btn.png'); background-size: cover; background-repeat: no-repeat; background-position: center; position: relative;">
+          <div style="display: flex; align-items: center; justify-content: center; padding-top: 13px;">
+            <ion-icon style="font-size: 20px;" src="assets/svg/hey_coin.svg"></ion-icon>
+            <div style="font-size: 20px; font-weight: bold; color: #ffffff; margin-left: 5px;">300</div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+    <div style="width: 100%; margin-top: 30px;">
+      <div
+        style="width: 100%; height: 45px; border-radius: 10px; background: linear-gradient( to right, #14152C, #6860FF); padding: 1px; display: flex; align-items: center; justify-content: center;">
+        <div style="width: 100%; height: 100%; background-color: #212238; border-radius: 9px; padding: 10px;">
+          <div style="width: 100%; height: 100%; display: flex; align-items: center;">
+            <ion-icon style="color: #6563b9" name="time-outline"></ion-icon>
+            <div style="font-size: 14px; font-weight: 400; color: #6563B9; margin-left: 5px;;">Invitation will be
+              expiring in <span style="color: #ff971c">10:00 </span> minutes.</div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ion-list style="background: transparent; padding: 15px;">
+    <div
+      style="width: fit-content; max-width: calc(100% - 40px); background-color: #212238; padding: 8px 10px; border-radius: 0 15px 15px 15px;">
+      <span style="color: #ECDDDD; margin: 0;">Hello.</span>
+      <div
+        style="width: 60px; height: 12px; position: relative; display: flex; align-items: center; justify-content: flex-end; float: right;">
+
+        <div
+          style="width: 100%; font-size: 10px; font-weight: normal; color: #ECDDDD; text-align: end; position: absolute; top: 5px;">
+          12:03 PM</div>
+
+      </div>
+    </div>
+
+
+    <div style="width: 100%; display: flex; justify-content: flex-end;">
+      <div
+        style="width: fit-content; max-width: calc(70%); background-color: #ECDDDD; padding: 8px 10px; border-radius: 15px 0 15px 15px;">
+        <span style="color: #14152C; margin: 0;">Hello.</span>
+
+        <div
+          style="width: 60px; height: 12px; position: relative; display: flex; align-items: center; justify-content: flex-end; float: right;">
+          <div
+            style="width: 100%; font-size: 11px; font-weight: normal; color: #14152C; text-align: end; position: absolute; top: 5px;">
+            12:03 PM
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </ion-list>
+</ion-content>
+
+<ion-footer class="ion-no-border">
+  <ion-toolbar class="ion-no-padding" style="--background: #080812; border-top: 1px solid #1D1E34;">
+    <div style="width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 15px 10px;">
+      <ion-input style="width: calc(100% - 61px);" placeholder="Enter message...">
+        <ion-icon style="font-size: 20px; color: #E0DFE4; margin-right: 10px;" slot="start"
+          src="assets/svg/chat_noti_btn/smile_face.svg" aria-hidden="true"></ion-icon>
+      </ion-input>
+
+      <ion-button (click)="sendGift = true" class="ion-no-padding" fill="clear">
+        <ion-icon style="font-size: 51px;" slot="icon-only" src="assets/svg/chat_noti_btn/gift_btn.svg"></ion-icon>
+      </ion-button>
+    </div>
+  </ion-toolbar>
+</ion-footer>
+
+<ion-modal style="--background: inherit; --backdrop-opacity: 0.7" #modal3 [isOpen]="sendGift"
+  (willDismiss)="sendGift = false">
+  <ng-template>
+    <ion-content [scrollY]="false" style="--background: inherit">
+      <div style="width: 100vw; height: 100vh; display: flex; flex-direction: column; justify-content: flex-end;">
+        <div (click)="sendGift = false" style="width: 100%; height: calc(100vh - 411px);">
+        </div>
+
+        <div style="width: 100%; height: 280px; background-color: #14152C; border-radius: 15px 15px 0 0;">
+
+          <div
+            style="width: 100%; display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; padding: 15px;">
+            <div style="font-size: 18px; font-weight: bold; color: #ffffff">Send Gifts</div>
+            <div
+              style="width: max-content; height: 30px; padding: 0 15px 0 5px; border-radius: 30px; background-color: #212238; display: flex; align-items: center; justify-content: center;">
+              <ion-icon style="font-size: 26px;" src="assets/svg/hey_coin.svg"></ion-icon>
+              <div style="font-size: 14px; font-weight: 00; color: #ffffff; margin-left: 5px;">13,988</div>
+            </div>
+          </div>
+
+          <div style="width: 100%; display: flex; align-items: center; overflow-x: scroll; padding-left: 5px;">
+            <div *ngFor="let item of gifts" (click)="selectGift(item)"
+              [ngClass]="selectedGift['id'] == item['id'] ? 'each_gift_selected': 'each_gift'">
+
+              <img style="width: 54px; height: 51px; object-fit: cover;" src="{{item['thumbnail']}}" alt="">
+
+              <h6>{{item['name']}}</h6>
+
+              <div style="display: flex; align-items: center; justify-content: center;">
+                <ion-icon style="font-size: 12px;" src="assets/svg/hey_coin.svg"></ion-icon>
+                <div style="font-size: 12px; font-weight: 500; color: #FFD24F; margin-left: 3px;">{{item['gem']}}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </ion-content>
+
+
+    <ion-footer class="ion-no-border">
+      <ion-toolbar class="ion-no-padding" style="--background: #14152C; border-top: 1px solid #1D1E34;">
+        <div
+          style="width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 15px 10px;">
+          <ion-input style="width: calc(100% - 61px);" placeholder="Enter message...">
+            <ion-icon style="font-size: 20px; color: #E0DFE4; margin-right: 10px;" slot="start"
+              src="assets/svg/chat_noti_btn/smile_face.svg" aria-hidden="true"></ion-icon>
+          </ion-input>
+
+          <ion-button (click)="sendGift = true" class="ion-no-padding" fill="clear">
+            <ion-icon style="font-size: 51px;" slot="icon-only" src="assets/svg/chat_noti_btn/gift_btn.svg"></ion-icon>
+          </ion-button>
+        </div>
+      </ion-toolbar>
+    </ion-footer>
+  </ng-template>
+</ion-modal>

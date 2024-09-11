@@ -35,6 +35,11 @@
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 @import "@ionic/angular/css/palettes/dark.system.css";
+@import "./theme/fonts.scss";
+
+* {
+    font-family: Montserrat;
+}
 
 .ion-color-white {
     --ion-color-base: var(--ion-color-white);
@@ -54,7 +59,6 @@
     --ion-color-tint: var(--ion-color-newPurple-tint);
 }
 
-
 .global_row {
     display: flex;
     align-items: center;
@@ -69,7 +73,7 @@
     --border-radius: 30px;
     font-size: 18px;
     font-weight: bold;
-    color: #ffffff;
+    --color: #ffffff;
     margin: 0;
 }
 

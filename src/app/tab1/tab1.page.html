@@ -1,17 +1,134 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
-      Tab 1
-    </ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content [fullscreen]="true"
+  style="--background: url(/assets/background/home_bg.jpg) center center / cover no-repeat fixed;">
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Tab 1</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <div style="width: 100%;">
+    <ion-header class="ion-no-border">
+      <ion-toolbar class="ion-no-padding" style="--background: transparent;">
 
-  <app-explore-container name="Tab 1 page"></app-explore-container>
+        <!-- USER INFO -->
+        <div class="header_container">
+          <div class="user_info">
+            <ion-avatar>
+              <img alt="User Profile Pic" src="https://ionicframework.com/docs/img/demos/avatar.svg" />
+            </ion-avatar>
+
+            <div>
+              <img src="assets/material/sample_title.png" alt="">
+              <div class="username">John Doe</div>
+            </div>
+          </div>
+
+          <ion-button class="ion-no-padding"
+            style="width: 97px; min-height: 31px; font-size: 14px; font-weight: 600; --color: #ffffff; --background: #6860FF;">
+            Lobby
+            <ion-icon slot="end" src="assets/svg/lobby.svg"></ion-icon>
+          </ion-button>
+
+        </div>
+      </ion-toolbar>
+    </ion-header>
+
+    <!-- WALLET BALANCE -->
+    <div (click)="goTopUp()"
+      style="width: 100%; display: flex; align-items: center; justify-content: center; padding: 0 20px; margin-bottom: 30px;">
+      <div class="wallet">
+        <div>
+          <h6>Balance</h6>
+
+          <div class="balance_container">
+            <ion-icon src="assets/svg/hey_coin.svg"></ion-icon>
+            <h3>{{13889 | number: '1.0-0'}}</h3>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOP HOST -->
+    <div class="cat">
+      <div class="cat_header">
+        <ion-icon style="font-size: 25px;" src="assets/svg/fire.svg"></ion-icon>
+
+        <h1>Top Host</h1>
+
+        <ion-icon name="chevron-forward"></ion-icon>
+      </div>
+
+      <div class="cat_container">
+
+        <div (click)="goUser()" *ngFor="let item of [0,1,2,3,4]" class="each_box">
+          <ion-thumbnail>
+            <ion-img
+              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQzZ4T4FK1ZvTzyHHIhxX19nNaB77qRoxmBJQ&s"></ion-img>
+          </ion-thumbnail>
+
+          <div class="info_container">
+            <div class="inner_layer">
+              <div style="width: 100%; display: flex; align-items: center; justify-content: flex-end;">
+                <img src="assets/material/country/JP.png" alt="">
+              </div>
+
+              <div class="bottomer">
+                <div class="title">Elizabeth.O, 28</div>
+                <div class="sub_title"><span style="color: #6860FF;">$&nbsp;</span>{{200}}<span
+                    style="font-size: 10px;">&nbsp;/&nbsp;hr</span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- OTHERS -->
+    <div class="cat">
+      <div class="cat_header">
+        <h1>Available</h1>
+        <ion-icon name="chevron-forward"></ion-icon>
+      </div>
+
+      <div
+        style="width: 100%; display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 10px; padding: 0 20px;">
+        <div (click)="goUser()" *ngFor="let item of [0,1,2,3,4,5,6,7,8,9]; let i = index;"
+          style="height: 177px; background-color: #6860FF; border-radius: 10px; position: relative;">
+          <ion-thumbnail style="width: 100%; height: 100%;--border-radius: 10px;">
+            <ion-img style="width: 100%; height: 100%; object-fit: cover;"
+              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQzZ4T4FK1ZvTzyHHIhxX19nNaB77qRoxmBJQ&s"></ion-img>
+          </ion-thumbnail>
+
+          <div class="info_container">
+            <div class="inner_layer">
+
+              <div *ngIf="i == 0"
+                style="min-width: 76px; padding: 4px 5px; font-size: 12px; font-weight: 700; color: #ffffff; text-align: center; border-radius: 10px 0px 10px 0px; position: absolute; top: 0; left: 0; background: linear-gradient(90deg, #C524E8 0%, #FF9521 100%);">
+                Trending
+              </div>
+
+              <div *ngIf="i == 1"
+                style="min-width: 76px; padding: 4px 5px; font-size: 12px; font-weight: 700; color: #ffffff; text-align: center; border-radius: 10px 0px 10px 0px; position: absolute; top: 0; left: 0; background: linear-gradient(90deg, #7C24E8 0%, #EE6BF7 100%);">
+                Popular
+              </div>
+
+              <div *ngIf="i == 2"
+                style="min-width: 76px; padding: 4px 5px; font-size: 12px; font-weight: 700; color: #ffffff; text-align: center; border-radius: 10px 0px 10px 0px; position: absolute; top: 0; left: 0; background: linear-gradient(90deg, #3C51F8 0%, #6E5FF3 100%);">
+                New
+              </div>
+
+              <div style="width: 100%; display: flex; align-items: center; justify-content: flex-end;">
+                <img src="assets/material/country/JP.png" alt="">
+              </div>
+
+              <div class="bottomer">
+                <div class="title">Elizabeth.O, 28</div>
+                <div class="sub_title"><span style="color: #6860FF;">$&nbsp;</span>{{200}}<span
+                    style="font-size: 10px;">&nbsp;/&nbsp;hr</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </ion-content>

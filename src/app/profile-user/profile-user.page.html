@@ -1,0 +1,157 @@
+<ion-content [fullscreen]="true" style="--background: #14152C;">
+  <ion-header class="ion-no-border" style="position: fixed; top: 0;">
+    <ion-toolbar class="ion-no-padding" style="--background: transparent;">
+      <div style="width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 15px;">
+        <ion-button (click)="back()"
+          style="--color: #252525; --background: #ffffff10; --border-radius: 100%; border-radius: 100%; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);">
+          <ion-icon slot="icon-only" style="color: #252525;" name="chevron-back"></ion-icon>
+        </ion-button>
+
+        <ion-button
+          style=" --background: #ffffff10; --border-radius: 100%; border-radius: 100%; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);">
+          <ion-icon slot="icon-only" style="color: #252525;" name="ellipsis-vertical"></ion-icon>
+        </ion-button>
+
+      </div>
+    </ion-toolbar>
+  </ion-header>
+
+  <div style="width: 100%; position: relative;">
+    <img style="width: 100vw; height: 100vw;" alt="User Profile Pic"
+      src="https://img.freepik.com/premium-photo/asian-girls-education-happy-beautiful-asian-girl-is-smilling_911620-8519.jpg" />
+
+    <div
+      style="width: 100%; padding: 60px 15px 0 15px; background: linear-gradient(0deg, #14152C 0%, #14152C80 30%, #00000000 100%); position: absolute; bottom: 0;">
+      <h1 style="font-size: 22px; font-weight: bold; color: #ffffff; margin: 0;">Elizabeth.O, 27</h1>
+    </div>
+  </div>
+  <div style="padding: 0px 15px; margin-bottom: 100px;">
+    <div style="width: 100%; border-bottom: 1px solid #28255E; padding-bottom: 10px; margin-bottom: 10px;">
+      <h1 style="font-size: 24px; font-weight: bold; color: #ffffff; margin: 0;"><span
+          style="color: #6860FF;">$</span>&nbsp;200<span style="font-size: 12px; font-weight: normal;">/hr</span></h1>
+    </div>
+
+    <p style="font-size: 14px; font-weight: normal; color: #ffffff; font-style: italic;">“ Cannot survive without
+      coffee, mostly busy but will make time for the right person</p>
+
+    <div>
+      <h3 style="font-size: 16px; font-weight: 700; color: #6860FF;">My Basic</h3>
+      <div style="width: 100%; display: flex; flex-wrap: wrap; gap: 10px;">
+        <div
+          style="width: fit-content; height: 34px; display: flex; align-items: center; justify-content: center; background-color: #201D56; padding: 4px 10px; border-radius: 41px;">
+          <div style="font-size: 14px; font-weight: normal; color: #B2AEFF;">170 cm</div>
+        </div>
+
+        <div
+          style="width: fit-content; height: 34px; display: flex; align-items: center; justify-content: center; background-color: #201D56; padding: 4px 10px; border-radius: 41px;">
+          <div style="font-size: 14px; font-weight: normal; color: #B2AEFF;">Female</div>
+        </div>
+
+        <div
+          style="width: fit-content; height: 34px; display: flex; align-items: center; justify-content: center; background-color: #201D56; padding: 4px 10px; border-radius: 41px;">
+          <div style="font-size: 14px; font-weight: normal; color: #B2AEFF;">Singapore</div>
+        </div>
+
+        <div
+          style="width: fit-content; height: 34px; display: flex; align-items: center; justify-content: center; background-color: #201D56; padding: 4px 10px; border-radius: 41px;">
+          <div style="font-size: 14px; font-weight: normal; color: #B2AEFF;">Go karting</div>
+        </div>
+
+        <div
+          style="width: fit-content; height: 34px; display: flex; align-items: center; justify-content: center; background-color: #201D56; padding: 4px 10px; border-radius: 41px;">
+          <div style="font-size: 14px; font-weight: normal; color: #B2AEFF;">Beer</div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <h3 style="font-size: 16px; font-weight: 700; color: #6860FF;">My Photos</h3>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 5px;">
+        <img *ngFor="let item of [0,1,2,3,4,5,6,7,8]"
+          style="width: 100%; height: 115px; object-fit: cover; border-radius: 5px;"
+          src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTnyFtAO26JwnBc_2r7CgPX5d4pHA-mi2XNKCObWCNzgtttGN7-8oAdCdA7NBp48t6mZeU&usqp=CAU"
+          alt="">
+      </div>
+    </div>
+  </div>
+
+  <ion-footer class="ion-no-border" style="width: 100%; position: fixed; bottom: 0;">
+    <ion-toolbar class="ion-no-padding"
+      style="--background: linear-gradient(0deg, #14152C 0%, #14152cd0 50%, #14152c00 100%);">
+      <div style="width: 100%; display: flex; align-items: center; justify-content: center; padding: 15px;">
+        <ion-button (click)="openGift = true" class="ion-no-padding primary_btn">
+          Make friend
+        </ion-button>
+      </div>
+    </ion-toolbar>
+  </ion-footer>
+</ion-content>
+
+<ion-modal [isOpen]="openGift" (willDismiss)="openGift = false" style="--background: #14152C80;">
+  <ng-template>
+    <ion-content [scrollY]="false"
+      style="--background: transparent; backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px);">
+      <div
+        style="width: 100vw; height: calc(100vh - 410px); display: flex; flex-direction: column-reverse; padding: 15px;">
+        <div style="width: 100%; display: flex;">
+          <div style="width: 65px; height: 65px; border-radius: 100%; border: 1px solid #6961FF;">
+            <img style="width: 100%; height: 100%; border-radius: 100%; object-fit: cover;" alt="User Profile Pic"
+              src="https://img.freepik.com/premium-photo/asian-girls-education-happy-beautiful-asian-girl-is-smilling_911620-8519.jpg" />
+          </div>
+
+          <div style="width: calc(100% - 75px); margin-left: 10px;">
+            <div style="display: flex; align-items: center; margin-bottom: 10px;">
+              <img style="width: 18px; margin-right: 10px;" src="assets/material/country/JP.png" alt="">
+              <h3 style="font-size: 18px; font-weight: bold; color: #ffffff; margin: 0;">Elizabeth.O, 27</h3>
+            </div>
+            <div style="background-color: #393580; border-radius: 0 15px 15px 15px; padding: 10px;">
+              <p style="font-size: 12px; font-weight: normal; color: #ffffff; font-style: italic; margin: 0;">“ Cannot
+                survive
+                without
+                coffee, mostly busy but will make time for the right person</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div
+        style="width: 100%; height: 410px; background-color: #14152C; border-radius: 20px 20px 0 0; border-top: 1px solid #6860FF;">
+        <div style="width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 15px;">
+          <h3 style="font-size: 18px; font-weight: bold; color: #ffffff; margin: 0;">Send Gifts</h3>
+
+          <div
+            style="width: max-content; height: 30px; padding: 0 15px 0 5px; border-radius: 30px; background-color: #212238; display: flex; align-items: center; justify-content: center;">
+            <ion-icon style="font-size: 26px;" src="assets/svg/hey_coin.svg"></ion-icon>
+            <div style="font-size: 14px; font-weight: 00; color: #ffffff; margin-left: 5px;">13,988</div>
+          </div>
+        </div>
+
+        <swiper-container class="swiper" pagination (slidechange)="logActiveIndex()">
+          <swiper-slide *ngFor="let giftList of arrayGift">
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); padding: 0 15px;">
+              <div *ngFor="let item of giftList" (click)="selectGift(item)"
+                [ngClass]="selectedGift['id'] == item['id'] ? 'each_gift_selected': 'each_gift'">
+                <img style="width: 54px; height: 51px; object-fit: cover;" src="{{item['thumbnail']}}" alt="">
+
+                <h6>{{item['name']}}</h6>
+
+                <div style="display: flex; align-items: center; justify-content: center;">
+                  <ion-icon style="font-size: 12px;" src="assets/svg/hey_coin.svg"></ion-icon>
+                  <div style="font-size: 12px; font-weight: 500; color: #FFD24F; margin-left: 3px;">{{item['gem']}}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </swiper-slide>
+        </swiper-container>
+
+        <div style="width: 100%; display: flex; align-items: center; justify-content: center; padding: 15px;">
+          <ion-button class="ion-no-padding primary_btn">
+            Send
+          </ion-button>
+        </div>
+      </div>
+    </ion-content>
+  </ng-template>
+</ion-modal>

@@ -1,0 +1,105 @@
+.header_container {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px;
+
+    .user_info {
+        display: flex;
+        align-items: center;
+
+        ion-avatar {
+            width: 85px;
+            height: 85px;
+            margin-right: 10px;
+        }
+
+        .username {
+            font-size: 18px;
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        .userid {
+            font-size: 14px;
+            font-weight: 500;
+            color: #7673A8;
+        }
+    }
+}
+
+.wallet {
+    width: 100%;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    border-radius: 20px;
+    background: rgb(255, 151, 29);
+    background: url(/assets/material/wallet_bg.jpg) center center / cover no-repeat fixed;
+    padding: 10px 20px;
+
+    h6 {
+        font-size: 14px;
+        font-weight: normal;
+        color: #ffffff;
+        margin: 0 0 5px 0;
+    }
+
+    .balance_container {
+        display: flex;
+        align-items: center;
+
+        ion-icon {
+            font-size: 28px;
+            margin-right: 5px;
+        }
+
+        h3 {
+            font-size: 28px;
+            font-weight: bold;
+            color: #ffffff;
+            margin: 0;
+        }
+    }
+}
+
+
+.setting_container {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 0;
+    border-bottom: 1px solid #28255E
+}
+
+.setting_left {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center
+}
+
+.setting_container {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 0;
+    border-bottom: 1px solid #28255E;
+    margin-bottom: 5px;
+}
+
+.setting_left {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center
+}
+
+.setting_text {
+    font-size: 14px;
+    font-weight: 500;
+    color: #ffffff;
+    margin-left: 10px;
+
+}

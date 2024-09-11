@@ -1,17 +1,98 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
-      Tab 2
-    </ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content [fullscreen]="true" [fullscreen]="true"
+  style="--background: url(/assets/background/home_bg.jpg) center center / cover no-repeat fixed;">
+  <ion-header class="ion-no-border">
+    <ion-toolbar class="ion-no-padding" style="--background: transparent;">
+      <div style="width: 100%; padding: 20px;">
+        <div style="width: fit-content; position: relative; margin-bottom: 20px;">
+          <h1 style="font-size: 22px; font-weight: bold; color: #ffffff; margin: 0; position: relative;">Chat
+            <ion-icon style="position: absolute; top: -8px; right: -10px;" src="assets/svg/heyu.svg"></ion-icon>
+          </h1>
+        </div>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Tab 2</ion-title>
+        <ion-input placeholder="Search" clearInput="true">
+          <ion-icon style="font-size: 20px; margin-right: 10px;" slot="start" src="assets/svg/search.svg"
+            aria-hidden="true"></ion-icon>
+        </ion-input>
+      </div>
     </ion-toolbar>
   </ion-header>
 
-  <app-explore-container name="Tab 2 page"></app-explore-container>
+  <div style="width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 0 20px;">
+
+    <div class="general_btn">
+      <ion-button class="noti_btn_1">
+        <ion-icon src="assets/svg/chat_noti_btn/official.svg"></ion-icon>
+      </ion-button>
+
+      <h6>General</h6>
+    </div>
+
+    <div class="general_btn">
+      <ion-button class="noti_btn_2">
+        <ion-icon src="assets/svg/chat_noti_btn/relation.svg"></ion-icon>
+      </ion-button>
+
+      <h6>Relation</h6>
+    </div>
+
+    <div class="general_btn">
+      <ion-button class="noti_btn_3">
+        <ion-icon src="assets/svg/chat_noti_btn/system.svg"></ion-icon>
+      </ion-button>
+
+      <h6>System</h6>
+    </div>
+
+    <div class="general_btn">
+      <ion-button class="noti_btn_4">
+        <ion-icon src="assets/svg/chat_noti_btn/suggestion.svg"></ion-icon>
+      </ion-button>
+
+      <h6>Report</h6>
+    </div>
+  </div>
+
+  <ion-list style="background: transparent; padding-top: 40px;">
+
+    <!-- CUSTOMER SUPPORT CHAT -->
+    <ion-item lines="none" style="--background: transparent !important; margin-bottom: 20px;">
+      <div style="width: 100%; display: flex; align-items: center; justify-content: space-between;">
+        <div
+          style="width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; border-radius: 100%; background: linear-gradient(90deg, #A9E7FC 0%, #BFF2F6 100%);">
+          <ion-icon style="font-size: 36px;" src="assets/svg/chat_noti_btn/cs_chat.svg"></ion-icon>
+        </div>
+
+        <div style="width: calc(100% - 66px);">
+          <h3 style="font-size: 16px; font-weight: 700; color: #ffffff; margin: 0 0 10px 0;">Customer Support</h3>
+          <h6 style="font-size: 12px; font-weight: normal; color: #B4B2E5; margin: 0;">Hi! I'm HeyBot! How can I help?
+          </h6>
+        </div>
+      </div>
+    </ion-item>
+
+    <!-- OTHERS CHAT -->
+    <ion-item (click)="chatDetail()" *ngFor="let item of chats; let i = index"  lines="none"
+      style="--background: transparent !important; margin-bottom: 20px;">
+      <div style="width: 100%; display: flex; align-items: center; justify-content: space-between;">
+        <div
+          style="width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; border-radius: 100%; background: #212238;">
+          <ion-avatar style="width: 56px; height: 56px;">
+            <img alt="Other User Chat Profile Pic"
+              src="{{item.picture}}" />
+          </ion-avatar>
+        </div>
+
+        <div style="width: calc(100% - 66px);">
+          <div
+            style="width: 100%; display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+            <h3 style="font-size: 16px; font-weight: 700; color: #ffffff; margin: 0;">{{item.name}}</h3>
+            <h6 style="font-size: 12px; font-weight: normal; color: #B4B2E5; margin: 0;">{{item.lastMessageDate | date: 'h:mm a'}}
+            </h6>
+          </div>
+          <h6 style="font-size: 12px; font-weight: normal; color: #B4B2E5; margin: 0;">Hey U Handsome! Wanna meet?
+          </h6>
+        </div>
+      </div>
+    </ion-item>
+  </ion-list>
 </ion-content>

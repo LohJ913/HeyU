@@ -29,6 +29,22 @@ const routes: Routes = [
   {
     path: 'register',
     loadChildren: () => import('./register/register.module').then( m => m.RegisterPageModule)
+  },
+  {
+    path: 'chatroom',
+    loadChildren: () => import('./chatroom/chatroom.module').then( m => m.ChatroomPageModule)
+  },
+  {
+    path: 'profile-user',
+    loadChildren: () => import('./profile-user/profile-user.module').then( m => m.ProfileUserPageModule)
+  },
+  {
+    path: 'topup',
+    loadChildren: () => import('./topup/topup.module').then( m => m.TopupPageModule)
+  },
+  {
+    path: 'gift-sender',
+    loadChildren: () => import('./gift-sender/gift-sender.module').then( m => m.GiftSenderPageModule)
   }
 ];
 @NgModule({
