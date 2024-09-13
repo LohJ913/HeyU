@@ -13,14 +13,17 @@
     <h1>WELCOME</h1>
     <p>Login / Register</p>
 
-    <div class="input_container">
+    <!-- <div class="input_container">
       <div class="country_code">
         <div class="number">+60</div>
         <ion-icon name="caret-down-outline"></ion-icon>
       </div>
 
       <ion-input type="tel" placeholder="Enter phone number"></ion-input>
-    </div>
+    </div> -->
+
+    <ion-input type="password" placeholder="Confirm Password"></ion-input>
+
   </div>
 
   <div style="display: grid; grid-template-columns: auto; gap: 20px; padding: 20px;">
@@ -28,7 +31,7 @@
       Login
     </ion-button>
 
-    <ion-button class="ion-no-padding secondary_btn">
+    <ion-button (click)="guestLogin()" class="ion-no-padding secondary_btn">
       Continue as guest
     </ion-button>
   </div>

@@ -11,7 +11,6 @@ import { SetPassPage } from './set-pass.page';
 @NgModule({
   imports: [
     CommonModule,
-    FormsModule,
     IonicModule,
     SetPassPageRoutingModule,
     FormsModule,

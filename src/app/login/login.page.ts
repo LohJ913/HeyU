@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ToolService } from '../services/tool.service';
 import { IonRouterOutlet, NavController } from '@ionic/angular';
+import firebase from 'firebase';
+import 'firebase/auth'
 
 @Component({
   selector: 'app-login',
@@ -16,4 +18,9 @@ export class LoginPage implements OnInit {
   ngOnInit() {
   }
 
+  guestLogin() {
+    firebase.auth().signInAnonymously().then(() => {
+
+    })
+  }
 }

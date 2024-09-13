@@ -72,7 +72,8 @@ export class ChatroomPage implements OnInit {
 
   message: string = '';  // Use this to bind to the input field
   messages: any = []
-  uid = ''
+  uid = localStorage.getItem('heyu_uid') || 'user01'
+  myProfile = JSON.parse(localStorage.getItem('heyu_profile') || '{}')
   fid = ''
   messageText: any
 
@@ -81,25 +82,36 @@ export class ChatroomPage implements OnInit {
 
   userChatRef: any;
 
-  myProfile: any;
+
   friendProfile: any = {}
 
   back() {
     this.route.canGoBack() ? this.navCtrl.pop() : this.navCtrl.navigateRoot('tabs/tab2', { animated: true, animationDirection: 'back' })
   }
 
+  lengthof(x: any) {
+    return Object.keys(x || {}).length
+  }
+
   ngOnInit() {
     this.activatedRoute.queryParams.subscribe(a => {
       this.fid = a['id']
-      this.uid = a['uid']
       if (this.fid && this.uid) {
         this.conversationId = [this.uid, this.fid].sort().join('|')
         this.conversationRef = this.firestore.collection('chatCollections').doc(this.conversationId);
-        this.getChats()
-        this.getUserProfile(this.uid, 'myProfile');
+        // this.getChats()
+        this.getUserProfile(this.uid, 'myProfile'); // if already ahve local storage << skip this
         this.getUserProfile(this.fid, 'friendProfile');
+        this.getChats()
       }
     })
+    // test
+    // firebase.firestore().collection('test').get().then((d => {
+    //   firebase.firestore().collection('test').orderBy('n').startAfter('4').get().then((snapshot) => {
+    //     snapshot.forEach(document => { console.log(document.id + " " + document.get('n')); })
+    //   })
+    // }))
+
   }
 
   selectGift(gift) {
@@ -111,69 +123,75 @@ export class ChatroomPage implements OnInit {
       .collection('chatrooms')
       .doc(this.conversationId)
       .collection('messages');
-  
-    console.log(firebase.firestore.Timestamp.now().toMillis());
-  
-    // Step 1: Fetch old messages (limit or by a certain timestamp)
+
+    // Query to fetch existing messages, ordered by timestamp, and limited to 20 messages
     const oldMessagesQuery = messagesRef
-      .where('timestamp', '>=', firebase.firestore.Timestamp.fromMillis(Date.now() - (24 * 60 * 60 * 1000)))
       .orderBy('timestamp', 'desc')
       .limit(20);
-  
-    oldMessagesQuery.get().then((querySnapshot) => {
+
+    oldMessagesQuery.get().then(async (querySnapshot) => {
       if (querySnapshot.empty) {
-        // If there are no old messages, still listen for new ones
-        this.listenForNewMessages();
+        console.log('No messages found.');
+        // Listen for new messages if there are no old messages
+        this.listenForNewMessages(null);
         return;
       }
-  
-      const lastVisibleMessage = querySnapshot.docs[querySnapshot.docs.length - 1];
-  
-      // Reverse messages to display them in the correct order (oldest first)
-      this.messages = querySnapshot.docs.reverse().map(doc => doc.data());
-  
-      console.log('Fetched old messages:', this.messages);
-  
-      // Step 2: Listen for new messages (after the last fetched message)
-      this.listenForNewMessages(lastVisibleMessage);
+      else {
+
+        // Reverse the documents to show them in chronological order
+        const oldMessages = querySnapshot.docs.reverse().map(doc => ({ id: doc.id, date: doc.data()?.timestamp ? doc.data().timestamp.toMillis() : null, ...doc.data() }));
+        this.messages = oldMessages
+        this.listenForNewMessages(oldMessages[this.lengthof(oldMessages) - 1]['timestamp'])
+
+      }
     }).catch((error) => {
       console.error('Error fetching old messages:', error);
     });
   }
-  
-  listenForNewMessages(lastVisibleMessage: any = null) {
+
+  listenForNewMessages(lastTimestamp: any) {
     const messagesRef = firebase.firestore()
       .collection('chatrooms')
       .doc(this.conversationId)
       .collection('messages');
-  
-    // Step 2: Listen for new messages
+
     let newMessagesQuery;
-  
-    if (lastVisibleMessage) {
-      // Start listening after the last fetched message
+
+    if (lastTimestamp) {
+      // Start listening after the last fetched document
       newMessagesQuery = messagesRef
         .orderBy('timestamp')
-        .startAfter(lastVisibleMessage);
+        .startAfter(lastTimestamp); // Use startAfter to get documents after the last one
     } else {
-      // Start listening for new messages without any old messages
-      newMessagesQuery = messagesRef
-        .orderBy('timestamp');
+      // Start listening from the beginning
+      newMessagesQuery = messagesRef.orderBy('timestamp');
     }
-  
+
+    // Set up the new listener
     newMessagesQuery.onSnapshot((snapshot) => {
-      snapshot.docChanges().forEach((change) => {
+      snapshot.docChanges().forEach(async (change) => {
         if (change.type === 'added') {
-          const newMessage = change.doc.data();
+          const newMessage = { id: change.doc.id, ...change.doc.data() };
           console.log('New message:', newMessage);
-          // Handle new messages and update the UI
-          this.messages.push(newMessage);
+          newMessage['date'] = newMessage?.['timestamp'] ? newMessage?.['timestamp'].toMillis() : null
+          this.messages.push(newMessage)
+          // Handle new messages (e.g., update UI)
+        }
+        if (change.type === 'modified') {
+          const modMessage = { id: change.doc.id, ...change.doc.data() };
+          modMessage['date'] = modMessage?.['timestamp'].toMillis()
+          this.messages[this.messages.findIndex((a: any) => (a['id'] == modMessage.id))] = modMessage
+          console.log('Chat modified: ', modMessage);
+
         }
       });
+    }, (error) => {
+      console.error('Error listening for new messages:', error);
     });
   }
 
   sendMessage() {
+    console.log('here')
     if (this.messageText.trim()) {
       const firestore = firebase.firestore();
       const batch = firestore.batch();
@@ -190,8 +208,10 @@ export class ChatroomPage implements OnInit {
         text: this.messageText,
         type: "text",
         timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+        localTimestamp: new Date().getTime(),
         isRead: false,
-        isDeleted: false
+        isDeleted: false,
+        isDelivered: false,
       };
 
       // Add the new message to the messages subcollection
@@ -224,7 +244,8 @@ export class ChatroomPage implements OnInit {
         picture: this.myProfile['picture'],
         name: this.myProfile['name'],
         uid: this.uid,
-        unreadCount: firebase.firestore.FieldValue.increment(1) // Increment unread count
+        unreadCount: 0,
+        delivered: false,
       }, { merge: true });
 
       // Set the conversation document with merge to create if it doesn’t exist
@@ -234,7 +255,8 @@ export class ChatroomPage implements OnInit {
         lastMessageType: newMessage.type,
         lastMessageDate: firebase.firestore.FieldValue.serverTimestamp(),
         lastMessageBy: this.uid,
-        unreadCount: firebase.firestore.FieldValue.increment(0)
+        unreadCount: firebase.firestore.FieldValue.increment(1),
+        delivered: false,
       }, { merge: true });
 
       // Commit the batch
@@ -271,8 +293,48 @@ export class ChatroomPage implements OnInit {
   }
 
 
-  lengthof(x: any) {
-    return Object.keys(x || {}).length
+  markMessagesAsRead(conversationId, userId, friendId) {
+    const messagesRef = firebase.firestore()
+      .collection('chatrooms')
+      .doc(conversationId)
+      .collection('messages')
+      .where('senderId', '==', this.uid)
+      .where('isRead', '==', false);
+
+    messagesRef.get().then((querySnapshot) => {
+      const batch = firebase.firestore().batch();
+      let unreadCount = 0;
+
+      querySnapshot.forEach((doc) => {
+        unreadCount++;
+        batch.update(doc.ref, { isRead: true });
+      });
+
+      return batch.commit().then(() => {
+        console.log('Messages marked as read');
+
+        // Update chat summary (reset unreadCount)
+        this.updateChatSummary(userId, friendId, { unreadCount: 0, delivered: true, read: true });
+      });
+    }).catch((error) => {
+      console.error('Error updating message read status:', error);
+    });
+  }
+
+  updateChatSummary(userId, friendId, statusUpdate) {
+    const chatSummaryRef = firebase.firestore()
+      .collection('users')
+      .doc(friendId)
+      .collection('chats')
+      .doc(userId);
+
+    chatSummaryRef.update(statusUpdate)
+      .then(() => {
+        console.log('Chat summary updated');
+      })
+      .catch((error) => {
+        console.error('Error updating chat summary:', error);
+      });
   }
 
 }

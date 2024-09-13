@@ -1,0 +1,83 @@
+<ion-content [fullscreen]="true"
+  style="--background: url(/assets/background/main_bg.jpg) center center / cover no-repeat fixed; position: relative;">
+
+  <div style="width: 100%;">
+
+    <ion-header class="ion-no-border">
+      <ion-toolbar class="ion-no-padding"
+        style="--background: url(/assets/background/main_bg.jpg) 0 0 / cover no-repeat fixed; padding-left: 0 !important; padding-right: 0 !important;">
+
+        <div style="width: 100%;">
+
+          <ion-button style="font-size: 30px;" (click)="back() " fill="clear">
+            <ion-icon slot="icon-only" color="white" name="chevron-back"></ion-icon>
+          </ion-button>
+
+          <div style="width: 100%; padding: 0 20px 20px 20px">
+            <div style="font-size: 32px; font-weight: 800; color: #ffffff; margin-bottom: 3px;">Places</div>
+            <div style="font-size: 16px; font-weight: 500; color: #B4B2E5;">Search for nearby
+              places & explore the area</div>
+          </div>
+
+        </div>
+      </ion-toolbar>
+    </ion-header>
+
+    <div style="width: 100%; padding: 0 15px 15px 15px;">
+
+      <div style="width: 358px; height: 180px; border-radius: 15px; background-color: #382D62;"></div>
+
+      <div style="font-size: 16px; font-weight: bold; color: #ffffff; margin: 30px 0 15px 0;">By distance</div>
+      <div *ngFor="let item of places" style="margin-bottom: 20px;">
+        <div style="width: 100%; display: flex; align-items: flex-start; justify-content: space-between;">
+          <div style="width: 90px; height: 90px; background-color: #d9d9d9; border-radius: 5px;"></div>
+
+          <div
+            style="width: calc(100% - 100px); height: 90px; margin-left: 10px; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between;">
+
+            <div>
+              <div style="font-size: 16px; font-weight: bold; color: #ffffff; margin-bottom: 3px;">{{item['name']}}
+              </div>
+              <div
+                style="font-size: 12px; font-weight: 400; color: #9B96B0; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 1; overflow: hidden;">
+                {{item['address']}}</div>
+            </div>
+
+
+            <div
+              style="width: 100%; display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px;">
+
+              <div
+                style="width: calc(100% - 77px - 10px); margin-right: 10px; display: flex; align-items: center; justify-content: flex-start;">
+
+                <div style="display: flex; align-items: center; justify-content: flex-start;">
+                  <div *ngFor="let x of [1,2,3]; let i = index"
+                    style="min-width: 30px; min-height: 30px; width: 30px; height: 30px; border-radius: 100%; margin-right: -5px">
+                    <img
+                      style="width: 100%; height: 100%; border-radius: 100%; object-fit: cover; border: 1px solid #ffffff;"
+                      src="https://i.pravatar.cc/300" alt="">
+                  </div>
+
+                  <div
+                    style="min-width: 30px; min-height: 30px; width: 30px; height: 30px; border-radius: 100%; background-color: #ffffff;  margin-right: -5px; display: flex; align-items: center; justify-content: center;">
+                    <ion-icon slot="start" src="assets/icon/ellipsis_purple.svg"></ion-icon>
+                  </div>
+
+                  <div style="font-size: 12px; font-weight: 400; color: #9B96B0; margin-left: 10px;">+40</div>
+                </div>
+              </div>
+
+              <div
+                style="width: 77px; height: 28px; background-color: #6860ff; border-radius: 30px; display: flex; align-items: center; justify-content: center;">
+                <div style="font-size: 12px; font-weight: 700; color: #ffffff">Check in</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</ion-content>

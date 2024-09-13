@@ -1,5 +1,5 @@
 <ion-content [fullscreen]="true"
-  style="--background: url(/assets/background/home_bg.jpg) center center / cover no-repeat fixed;">
+  style="--background: url(/assets/background/home_bg.jpg) center center / cover no-repeat fixed; position: relative;">
 
   <div style="width: 100%;">
     <ion-header class="ion-no-border">
@@ -7,26 +7,69 @@
 
         <!-- USER INFO -->
         <div class="header_container">
-          <div class="user_info">
-            <ion-avatar>
-              <img alt="User Profile Pic" src="https://ionicframework.com/docs/img/demos/avatar.svg" />
-            </ion-avatar>
 
-            <div>
-              <img src="assets/material/sample_title.png" alt="">
-              <div class="username">John Doe</div>
+          <div>
+            <!-- LOGIN -->
+            <div *ngIf="tool.lengthof(currentUser)" class="user_info">
+              <ion-avatar>
+                <img alt="User Profile Pic" src="https://ionicframework.com/docs/img/demos/avatar.svg" />
+              </ion-avatar>
+
+              <div>
+                <img src="assets/material/sample_title.png" alt="">
+                <div class="username">John Doe</div>
+              </div>
+            </div>
+
+            <!-- NO LOGIN -->
+            <div *ngIf="!tool.lengthof(currentUser)" (click)="loginTrigger = true" class="user_info">
+              <ion-avatar style="border: 1px dashed #6860FF80; padding: 5px;">
+                <img alt="User Profile Pic" src="https://ionicframework.com/docs/img/demos/avatar.svg" />
+              </ion-avatar>
+
+              <div>
+                <div class="username">Login to continue</div>
+              </div>
             </div>
           </div>
 
-          <ion-button class="ion-no-padding"
+
+          <ion-button (click)="goLobby()" class="ion-no-padding"
             style="width: 97px; min-height: 31px; font-size: 14px; font-weight: 600; --color: #ffffff; --background: #6860FF;">
             Lobby
             <ion-icon slot="end" src="assets/svg/lobby.svg"></ion-icon>
           </ion-button>
 
+
         </div>
       </ion-toolbar>
     </ion-header>
+
+    <!-- CHECK IN -->
+
+    <div class="checkin_container">
+      <div class="checkin_box">
+        <div style="position: absolute; top: -10px; right: 20px;">
+          <div class="arrow_up"></div>
+        </div>
+
+        <div class="checkin_detail_container">
+          <div class="checkin_detail_left">
+            <div style="font-size: 13px; font-weight: 500; color: #6860FF; margin-bottom: 3px;">You're nearby</div>
+            <div style="width: 100%; display: flex; align-items: center;">
+              <ion-icon style="color: #ffffff; font-size: 14px;" src="assets/icon/location.svg"></ion-icon>
+              <div
+                style="width: calc(100% - 14px); font-size: 14px; font-weight: 600; color: #ffffff; margin-left: 5px; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden;">
+                Tang Ping 躺平 </div>
+            </div>
+          </div>
+
+          <div class="checkin_button">
+            <div style="font-size:12px; font-weight: 500; color: #ffffff">Check-in</div>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- WALLET BALANCE -->
     <div (click)="goTopUp()"
@@ -37,7 +80,7 @@
 
           <div class="balance_container">
             <ion-icon src="assets/svg/hey_coin.svg"></ion-icon>
-            <h3>{{13889 | number: '1.0-0'}}</h3>
+            <h3>{{0 | number: '1.0-0'}}</h3>
           </div>
         </div>
       </div>
@@ -55,10 +98,9 @@
 
       <div class="cat_container">
 
-        <div (click)="goUser()" *ngFor="let item of [0,1,2,3,4]" class="each_box">
+        <div (click)="goUser()" *ngFor="let item of popular | slice :0:4 ; let i = index  " class="each_box">
           <ion-thumbnail>
-            <ion-img
-              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQzZ4T4FK1ZvTzyHHIhxX19nNaB77qRoxmBJQ&s"></ion-img>
+            <ion-img src="{{item['picture']}}"></ion-img>
           </ion-thumbnail>
 
           <div class="info_container">
@@ -68,9 +110,9 @@
               </div>
 
               <div class="bottomer">
-                <div class="title">Elizabeth.O, 28</div>
+                <div class="title">{{item['name']}}</div>
                 <div class="sub_title"><span style="color: #6860FF;">$&nbsp;</span>{{200}}<span
-                    style="font-size: 10px;">&nbsp;/&nbsp;hr</span>
+                    style="font-size: 10px; font-weight: 500;">&nbsp;/&nbsp;hr</span>
                 </div>
               </div>
 
@@ -90,11 +132,10 @@
 
       <div
         style="width: 100%; display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 10px; padding: 0 20px;">
-        <div (click)="goUser()" *ngFor="let item of [0,1,2,3,4,5,6,7,8,9]; let i = index;"
+        <div (click)="goUser()" *ngFor="let item of people; let i = index;"
           style="height: 177px; background-color: #6860FF; border-radius: 10px; position: relative;">
           <ion-thumbnail style="width: 100%; height: 100%;--border-radius: 10px;">
-            <ion-img style="width: 100%; height: 100%; object-fit: cover;"
-              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQzZ4T4FK1ZvTzyHHIhxX19nNaB77qRoxmBJQ&s"></ion-img>
+            <ion-img style="width: 100%; height: 100%; object-fit: cover;" src="{{item.picture}}"></ion-img>
           </ion-thumbnail>
 
           <div class="info_container">
@@ -120,7 +161,7 @@
               </div>
 
               <div class="bottomer">
-                <div class="title">Elizabeth.O, 28</div>
+                <div class="title">{{item.name || ''}}</div>
                 <div class="sub_title"><span style="color: #6860FF;">$&nbsp;</span>{{200}}<span
                     style="font-size: 10px;">&nbsp;/&nbsp;hr</span>
                 </div>

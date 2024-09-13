@@ -4,19 +4,17 @@ import { FormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
-import { TopupPageRoutingModule } from './topup-routing.module';
+import { LobbyPageRoutingModule } from './lobby-routing.module';
 
-import { TopupPage } from './topup.page';
-import { MaskitoDirective } from '@maskito/angular';
+import { LobbyPage } from './lobby.page';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    TopupPageRoutingModule,
-    MaskitoDirective
+    LobbyPageRoutingModule
   ],
-  declarations: [TopupPage]
+  declarations: [LobbyPage]
 })
-export class TopupPageModule {}
+export class LobbyPageModule {}

@@ -4,19 +4,17 @@ import { FormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
-import { TopupPageRoutingModule } from './topup-routing.module';
+import { LoginModalPageRoutingModule } from './login-modal-routing.module';
 
-import { TopupPage } from './topup.page';
-import { MaskitoDirective } from '@maskito/angular';
+import { LoginModalPage } from './login-modal.page';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    TopupPageRoutingModule,
-    MaskitoDirective
+    LoginModalPageRoutingModule
   ],
-  declarations: [TopupPage]
+  declarations: [LoginModalPage]
 })
-export class TopupPageModule {}
+export class LoginModalPageModule {}

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { IonRouterOutlet, NavController } from '@ionic/angular';
+import { MaskitoOptions, MaskitoElementPredicate, maskitoTransform } from '@maskito/core';
 
 @Component({
   selector: 'app-topup',
@@ -8,6 +9,22 @@ import { IonRouterOutlet, NavController } from '@ionic/angular';
 })
 export class TopupPage implements OnInit {
 
+  readonly cardMask: MaskitoOptions = {
+    mask: [
+      ...Array(4).fill(/\d/),
+      ' ',
+      ...Array(4).fill(/\d/),
+      ' ',
+      ...Array(4).fill(/\d/),
+      ' ',
+      ...Array(4).fill(/\d/),
+      ' ',
+      ...Array(3).fill(/\d/),
+    ],
+  };
+
+  readonly maskPredicate: MaskitoElementPredicate = async (el) => (el as HTMLIonInputElement).getInputElement();
+  
   packageList = [
     {
       amount: 5000,
@@ -48,6 +65,24 @@ export class TopupPage implements OnInit {
   ]
 
   selectedPackage: any = {};
+  paymentTrigger: boolean = false;
+  tabs = ['Card', 'FPX', 'Cash']
+  tab = 'Card'
+  savedCards = [
+    {
+      id: 1,
+      type: 'Mastercard',
+      name: 'IOI Mastercard',
+      number: 1234,
+      default: true
+    },
+    {
+      id: 2,
+      type: 'Mastercard',
+      name: 'IOI Mastercard',
+      number: 5678
+    }
+  ]
 
   constructor(
     public router: IonRouterOutlet,
@@ -57,11 +92,37 @@ export class TopupPage implements OnInit {
   ngOnInit() {
   }
 
+
+  selectTab(ev) {
+    this.tab = ev.detail.value
+
+  }
+
+  makePayment() {
+
+  }
+
+  compareWith(o1, o2) {
+    return o1.id === o2.id;
+  }
+
+  handleChange(ev) {
+    console.log('Current value:', JSON.stringify(ev.target.value));
+  }
+
+  trackItems(index: number, item: any) {
+    return item.id;
+  }
+
+  setDefault(cardId: number) {
+    this.savedCards.forEach(card => {
+      card.default = card.id === cardId;
+    });
+
+  }
+
   back() {
     this.router.canGoBack() ? this.navCtrl.pop() : this.navCtrl.navigateRoot('tabs/tab1', { animated: true, animationDirection: 'back' })
   }
-
-  selectPackage(pack) {
-    this.selectedPackage = pack;
-  }
 }
+

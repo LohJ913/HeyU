@@ -8,6 +8,8 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { FormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
+import { HttpClientModule } from '@angular/common/http';
+
 
 @NgModule({
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -15,6 +17,7 @@ import { DatePipe } from '@angular/common';
   imports: [
     FormsModule,
     BrowserModule,
+    HttpClientModule,
     IonicModule.forRoot(
       {
         rippleEffect: false,

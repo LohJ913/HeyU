@@ -4,6 +4,7 @@
     margin-bottom: 5px;
     position: relative;
     border-radius: 10px;
+    border: 3px solid #00000000;
 
     .pack_info {
         width: 100%;
@@ -39,4 +40,87 @@
         position: absolute;
         bottom: 0;
     }
+}
+
+ion-checkbox {
+    --checkbox-background: #ffffff;
+    --checkbox-background-checked: #ffffff;
+    --border-color-checked: #ffffff;
+    --checkmark-color: #080812;
+    --checkmark-width: 3px;
+    --border-radius: 5px;
+}
+
+ion-radio::part(container) {
+    width: 18px;
+    height: 18px;
+    border-radius: 100%;
+    border: 1.5px solid #6860FF;
+    background: #090913;
+}
+
+ion-radio::part(mark) {
+    background: none;
+    transition: none;
+    transform: none;
+    border-radius: 0;
+}
+
+ion-radio.radio-checked::part(container) {
+    background: #090913;
+    border-color: #6860FF;
+}
+
+ion-radio.radio-checked::part(mark) {
+    width: 8px;
+    height: 8px;
+    border-radius: 100%;
+    background-color: #6860FF;
+}
+
+.segment_container {
+    width: 100%;
+    height: 43px;
+    background-color: #6860FF;
+    border: 2px solid #6860FF;
+    border-radius: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.segment_inner_container {
+    width: 100%;
+    height: 100%;
+}
+
+ion-segment-button::part(indicator-background) {
+    background: #0E0A20;
+    height: 100%;
+}
+
+/* Material Design styles */
+ion-segment-button.md::part(native) {
+    color: #ffffff;
+}
+
+.segment-button-checked.md::part(native) {
+    color:#0E0A20;
+}
+
+ion-segment-button.md::part(indicator-background) {
+    height: 4px;
+}
+
+/* iOS styles */
+ion-segment-button.ios::part(native) {
+    color: #ffffff80;
+}
+
+.segment-button-checked.ios::part(native) {
+    color: #fff;
+}
+
+ion-segment-button.ios::part(indicator-background) {
+    border-radius: 30px;
 }

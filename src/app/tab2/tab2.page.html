@@ -71,7 +71,7 @@
     </ion-item>
 
     <!-- OTHERS CHAT -->
-    <ion-item (click)="chatDetail()" *ngFor="let item of chats; let i = index"  lines="none"
+    <ion-item (click)="chatDetail(item)" *ngFor="let item of filteredChat; let i = index"  lines="none"
       style="--background: transparent !important; margin-bottom: 20px;">
       <div style="width: 100%; display: flex; align-items: center; justify-content: space-between;">
         <div
@@ -85,11 +85,16 @@
         <div style="width: calc(100% - 66px);">
           <div
             style="width: 100%; display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
-            <h3 style="font-size: 16px; font-weight: 700; color: #ffffff; margin: 0;">{{item.name}}</h3>
-            <h6 style="font-size: 12px; font-weight: normal; color: #B4B2E5; margin: 0;">{{item.lastMessageDate | date: 'h:mm a'}}
+            <h3 style="font-size: 16px; font-weight: 700; color: #ffffff; margin: 0;white-space: nowrap; text-overflow: ellipsis; overflow: hidden;">{{item.name}}</h3>
+            <h6 style="font-size: 12px; font-weight: normal; color: #B4B2E5; margin: 0;">{{item.lastTime}}
             </h6>
           </div>
-          <h6 style="font-size: 12px; font-weight: normal; color: #B4B2E5; margin: 0;">Hey U Handsome! Wanna meet?
+          <h6 style="font-size: 12px; font-weight: normal; color: #B4B2E5; margin: 0;  display: flex; align-items: center; justify-content: space-between;">
+            <div style="width: calc(100% - 22px); display: flex;align-items: center;">
+              <div *ngIf="item.lastMessageBy == uid" style="margin-top: 1px; width: 16px;"><ion-icon [ngStyle]="{'color': !item.delivered ? '#D3D7F7' : item.unreadCount ? '#D3D7F7' : '#E6D9FB'}" [name]="!item.delivered ? 'checkmark-outline' : item.unreadCount ? 'checkmark-done-outline' : 'checkmark-done-outline' " style="font-size: 13px;margin-top: 1px; margin-right: 3px;"></ion-icon></div>
+              <span style="width: calc(100% - 16px); white-space: nowrap; text-overflow: ellipsis; overflow: hidden;">{{item.lastMessage || ''}}</span>
+            </div>
+            <div *ngIf="item.lastMessageBy != uid && item.unreadCount" style="border-radius: 50%; min-width: 18px; height: 18px;margin-left: 4px;background: #6860FF;display: flex; align-items: center; justify-content: center;color:white; font-size: 10px;">{{item.unreadCount || 0}}</div>
           </h6>
         </div>
       </div>

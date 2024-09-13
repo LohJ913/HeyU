@@ -13,5 +13,9 @@ register();
 export class AppComponent {
   constructor() {
     firebase.initializeApp(FIREBASE_CONFIG);
+
+    firebase.auth().onAuthStateChanged(user => {
+      console.log(user);
+    })
   }
 }

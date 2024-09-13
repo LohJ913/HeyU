@@ -1,7 +1,13 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
+import { AuthGuard } from './guards/auth.guard'; // Import the guard
 
 const routes: Routes = [
+  // {
+  //   path: '',
+  //   redirectTo: 'login',
+  //   pathMatch: 'full'
+  // },
   {
     path: '',
     loadChildren: () => import('./tabs/tabs.module').then(m => m.TabsPageModule)
@@ -36,15 +42,25 @@ const routes: Routes = [
   },
   {
     path: 'profile-user',
-    loadChildren: () => import('./profile-user/profile-user.module').then( m => m.ProfileUserPageModule)
+    loadChildren: () => import('./profile-user/profile-user.module').then( m => m.ProfileUserPageModule),
+    canActivate: [AuthGuard]
   },
   {
     path: 'topup',
-    loadChildren: () => import('./topup/topup.module').then( m => m.TopupPageModule)
+    loadChildren: () => import('./topup/topup.module').then( m => m.TopupPageModule),
+    // canActivate: [AuthGuard]
   },
   {
     path: 'gift-sender',
     loadChildren: () => import('./gift-sender/gift-sender.module').then( m => m.GiftSenderPageModule)
+  },
+  {
+    path: 'login-modal',
+    loadChildren: () => import('./login-modal/login-modal.module').then( m => m.LoginModalPageModule)
+  },
+  {
+    path: 'lobby',
+    loadChildren: () => import('./lobby/lobby.module').then( m => m.LobbyPageModule)
   }
 ];
 @NgModule({

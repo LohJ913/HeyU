@@ -16,7 +16,7 @@
         }
 
         .username {
-            font-size: 16px;
+            font-size: 14px;
             font-weight: bold;
             color: #ffffff;
         }
@@ -155,3 +155,60 @@
         }
     }
 }
+
+.tnc_container {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    ion-checkbox {
+        --checkbox-background: #ffffff;
+        --checkbox-background-checked: #ffffff;
+        --border-color-checked: #ffffff;
+        --checkmark-color: #080812;
+        --checkmark-width: 3px;
+        --border-radius: 5px;
+    }
+
+    p {
+        width: calc(80% - 20px);
+        font-size: 12px;
+        font-weight: normal;
+        color: #7673A8;
+        margin: 0 10px;
+
+        span {
+            color: #B4B2E5;
+        }
+    }
+}
+
+.checkin_container{
+   position: absolute; top: 80px; right: 20px; z-index: 1000 !important
+}
+
+.checkin_box{
+    width: 260px; height: 64px; padding: 10px; background-color: #14152c; border: 2px solid #6860FF; border-radius: 10px; position: relative;
+}
+
+.checkin_detail_container{
+   width: 100%; display: flex; align-items: center; justify-content: space-between;
+}
+
+.checkin_detail_left{
+   width: calc(100% - 85px - 5px); margin-right: 5px; display: flex; flex-direction: column; align-items: flex-start;
+}
+
+.checkin_button{
+    width: 85px; height: 30px; border-radius: 30px; background: linear-gradient(90deg, #B822F9 3.26%, #FF971D 100%); display: flex; align-items: center; justify-content: center;
+}
+
+.arrow_up {
+    width: 0; 
+    height: 0; 
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 10px solid #6860FF;
+  }
+  

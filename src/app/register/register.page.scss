@@ -27,7 +27,57 @@
         font-size: 17px;
         font-weight: normal;
         color: #B4B2E5;
-        margin: 10px 0px;
+        margin: 0 0 10px 0px;
         line-height: 1.6;
     }
+}
+
+.input_container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 30px;
+}
+
+.input_title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #7673A8;
+    margin-bottom: 8px;
+}
+
+.input_field {
+    width: 100%;
+    height: 50px;
+    background-color: #28255E;
+    padding: 0 15px;
+    border-radius: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+ion-input {
+    width: 100%;
+    font-size: 14px;
+    font-weight: 600;
+    color: #ffffff;
+    --placeholder-color: #7673A8;
+}
+
+.gender_container {
+    width: calc((100% / 3) - 10px);
+    height: 45px;
+    border-radius: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.gender_text {
+    font-size: 14px;
+    color: #ffffff;
+    font-weight: 600;
+    margin-left: 8px;
 }

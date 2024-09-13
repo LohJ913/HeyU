@@ -22,12 +22,13 @@
 <ion-content [fullscreen]="true" style="--background: linear-gradient(180deg, #392E64 0%, #392E64 20%, #1E1738 100%);">
   <div style="width: 100%; position: relative;">
     <div style="width: 100%; padding: 0 15px;">
-      <h1 style="font-size: 16px; font-weight: normal; color: #ffffff; margin: 0;">Select top up package</h1>
+      <h1 style="font-size: 16px; font-weight: normal; color: #ffffff; margin: 0; margin-bottom: 10px;">Select top up
+        package</h1>
     </div>
 
     <div
       style="width: 100%; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; padding: 10px 15px;">
-      <div (click)="selectPackage(item)" *ngFor="let item of packageList; let i = index;"
+      <div (click)="selectedPackage = item" *ngFor="let item of packageList; let i = index;"
         [ngClass]="selectedPackage['id'] == item['id'] ? 'each_pack_selected': 'each_pack'">
 
         <div *ngIf="item['bonus'] > 0"
@@ -35,8 +36,7 @@
           Extra {{item['bonus']}}%
         </div>
 
-
-        <img style="width: 100%; object-fit: contain; border-radius: 10px;" src="assets/material/top_up_package.jpg"
+        <img style="width: 100%; object-fit: contain; border-radius: 7px;" src="assets/material/top_up_package.jpg"
           alt="">
 
         <div class="pack_info">
@@ -54,12 +54,193 @@
     <div style="width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 15px;">
       <div>
         <h6 style="font-size: 14px; font-weight: normal; color: #ffffff; margin: 0;">Total</h6>
-        <h1 style="font-size: 22px; font-weight: bold; color: #ffffff; margin: 0;">RM&nbsp;{{((selectedPackage['amount'] / 100) || 0) | number: '.2'}}</h1>
+        <h1 style="font-size: 22px; font-weight: bold; color: #ffffff; margin: 0;">RM&nbsp;{{((selectedPackage['amount']
+          / 100) || 0) | number: '.2'}}</h1>
       </div>
 
-      <ion-button style="width: 45%;" class="ion-no-padding primary_btn">
+      <ion-button (click)="paymentTrigger = true" style="width: 45%;" class="ion-no-padding primary_btn">
         Continue
       </ion-button>
     </div>
   </ion-toolbar>
 </ion-footer>
+
+
+<ion-modal style="--background: inherit; --backdrop-opacity: 0.7" #modal3 [isOpen]="paymentTrigger"
+  (willDismiss)="paymentTrigger = false">
+  <ng-template>
+
+    <ion-header class="ion-no-border">
+      <ion-toolbar class="ion-no-padding"
+        style="--background: url(/assets/background/main_bg.jpg) 0 0 / cover no-repeat fixed; padding-left: 0 !important; padding-right: 0 !important;">
+
+        <div style="width: 100%;">
+
+          <ion-button style="font-size: 30px;" (click)="paymentTrigger = false" fill="clear">
+            <ion-icon slot="icon-only" color="white" name="chevron-back"></ion-icon>
+          </ion-button>
+
+          <div style="width: 100%; padding: 0 20px 20px 20px">
+            <div style="font-size: 32px; font-weight: 800; color: #ffffff; margin-bottom: 3px;">Payment</div>
+            <div style="font-size: 16px; font-weight: 500; color: #B4B2E5; margin-bottom: 25px;">Select your preferred
+              payment method</div>
+
+            <!-- <div
+            style="width: 100%; height: 46px; background-color: #6860FF; border-radius: 30px; display: flex; align-items: center; justify-content: space-between;">
+            <div *ngFor="let item of tabs" (click)="selectTab(item)"
+              [ngStyle]="{'background-color': tab == item ? '#0E0A20' : ''}"
+              style="width: calc(100% / 3); height: 100%; border-radius: 30px; border: 3px solid #6860FF; display: flex; align-items: center; justify-content: center;">
+              <div style="font-size: 16px; font-weight: bold; color: #ffffff;">{{item}}</div>
+            </div>
+          </div> -->
+
+            <div class="segment_container">
+              <ion-segment (ionChange)="selectTab($event)" mode="ios" class="segment_inner_container" value="Card">
+                <ion-segment-button value="Card">
+                  <ion-label style="font-size: 14px; font-weight: 600; color: #ffffff;">Card</ion-label>
+                </ion-segment-button>
+                <ion-segment-button value="FPX">
+                  <ion-label style="font-size: 14px; font-weight: 600; color: #ffffff;">FPX</ion-label>
+                </ion-segment-button>
+                <ion-segment-button value="Cash">
+                  <ion-label style="font-size: 14px; font-weight: 600; color: #ffffff;">Cash</ion-label>
+                </ion-segment-button>
+              </ion-segment>
+            </div>
+
+          </div>
+
+          <div style="width: 100%; background-color: #392E64; border-radius: 20px 20px 0 0; padding: 10px;">
+          </div>
+        </div>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content [fullscreen]="true" style="--background: #382D62;">
+
+      <div style="width: 100vw;">
+
+        <div *ngIf="tab == 'Card'">
+          <div style="font-size: 16px; font-weight: bold; color: #ffffff; margin-bottom: 10px; padding: 0 20px;">Saved
+            Cards</div>
+
+          <ion-list style="--ion-item-background: none; padding: 0 20px;">
+            <ion-radio-group [compareWith]="compareWith" (ionChange)="handleChange($event)" mode="md" >
+              <ion-item class="ion-no-padding" *ngFor="let item of savedCards; trackBy: trackItems" lines="none"
+                style="--ion-item-background: transparent !important; --inner-padding-end: 0 !important;">
+
+                <ion-radio [value]="item" labelPlacement="end">
+                </ion-radio>
+
+                <div
+                  style="width: calc(100% - 28px); margin-left: 10px; display: flex; justify-content: space-between; align-items: center;">
+
+                  <div style="display: flex; flex-direction: column; align-items: flex-start;">
+                    <div style="font-size: 14px; font-weight: 500; color: #ffffff; margin-bottom: 2px;">{{
+                      item['name']}}
+                    </div>
+
+                    <div style="display: flex; align-items: center;">
+                      <div *ngFor="let x of [1,2,3,4]"
+                        style="width: calc(4.5px - 2px); height: 2.5px; margin-right: 2px; background-color: #ffffff80; border-radius: 100%; display: flex; align-items: center; justify-content: space-between;">
+                      </div>
+                      <div style="font-size: 11px; font-weight: 500; color: #ffffff80; margin-left: 5px;">{{
+                        item['number']}}</div>
+                    </div>
+                  </div>
+
+                  <div *ngIf="item['default'] == true"
+                    style="width: 66px; height: 23px; border-radius: 30px; background-color: #0e0a20; border: 1px solid #6860ff; display: flex; align-items: center; justify-content: center;">
+                    <div style="font-size: 10px; font-weight: 600; color: #ffffff">Default</div>
+                  </div>
+
+                  <div (click)="setDefault(item['id'])" *ngIf="item['default'] !== true"
+                    style="font-size: 11px; font-weight: 600; color: #ffffff">Set as
+                    default
+                  </div>
+                </div>
+
+              </ion-item>
+            </ion-radio-group>
+          </ion-list>
+
+          <div style="font-size: 16px; font-weight: bold; color: #ffffff; margin: 30px 20px 15px 20px;">Add New Card
+          </div>
+
+          <div style="width: 100%; padding: 0 15px">
+            <div
+              style="width: 100%; height: calc(63px - 13px); margin-bottom: 13px; background-color: #090913; border-radius: 30px; padding: 0 15px; display: flex; align-items: center;">
+              <ion-input type="name"
+                style="font-size: 14px; font-weight: 600; color: #ffffff; --placeholder-color: #ffffff80;"
+                placeholder="Name on card">
+              </ion-input>
+            </div>
+
+            <div
+              style="width: 100%; height: calc(63px - 13px); margin-bottom: 13px; background-color: #090913; border-radius: 30px; padding: 0 15px; display: flex; align-items: center;">
+              <ion-input 
+                style="font-size: 14px; font-weight: 600; color: #ffffff; --placeholder-color: #ffffff80;"
+                placeholder="0000 0000 0000 0000"
+                [maskito]="cardMask"
+                [maskitoElement]="maskPredicate">
+              </ion-input>
+            </div>
+
+            <div style="width: 100%; display: flex; align-items: center; justify-content: space-between;">
+              <div
+                style="width: calc(50% - 5px); margin-right: 5px; height: 53px; background-color: #090913; border-radius: 30px; padding: 0 15px; display: flex; align-items: center;">
+                <ion-input style="font-size: 14px; font-weight: 600; color: #ffffff; --placeholder-color: #ffffff80;"
+                  placeholder="MM/YYYY">
+                </ion-input>
+              </div>
+
+              <div
+                style="width: calc(50% - 5px); margin-left: 5px; height: 53px; background-color: #090913; border-radius: 30px; padding: 0 15px; display: flex; align-items: center;">
+                <ion-input style="font-size: 14px; font-weight: 600; color: #ffffff; --placeholder-color: #ffffff80;"
+                  placeholder="CVV">
+                </ion-input>
+              </div>
+            </div>
+
+            <div style="width: 100%; display: flex; align-items: center; margin-left: 10px;">
+              <ion-checkbox mode="md"></ion-checkbox>
+              <p style="font-size: 14px; font-weight: 500; color: #ffffff; margin-left: 10px;">Save card</p>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="tab == 'FPX'">
+          <div style="font-size: 16px; font-weight: bold; color: #ffffff; margin-bottom: 10px; padding: 0 20px;">Online
+            Banking</div>
+        </div>
+
+        <div *ngIf="tab == 'Cash'">
+          <div style="width: 100%; padding: 20px; display: flex; flex-direction: column; align-items: center;">
+            <img style="width: 256px; height: 256px; border-radius: 10px; object-fit: cover; background-color: #ffffff;"
+              src="https://upload.wikimedia.org/wikipedia/commons/d/d0/QR_code_for_mobile_English_Wikipedia.svg" alt="">
+            <div style="font-size: 14px; font-weight: 400; color: #ffffff; margin-top: 25px;">Scan the QR code above to
+              pay</div>
+          </div>
+        </div>
+      </div>
+    </ion-content>
+
+    <ion-footer class="ion-no-border">
+      <ion-toolbar class="ion-no-padding" style="--background: inherit; padding-left: 0 !important; padding-right: 0 !important;">
+       
+        <div *ngIf="tab !== 'Cash'"
+          style="width: 100%; display: flex; align-items: center; justify-content: center; padding: 15px;">
+          <ion-button (click)="makePayment()" class="ion-no-padding primary_btn">
+            Make Payment
+          </ion-button>
+        </div>
+
+        <div *ngIf="tab == 'Cash'"
+          style="width: 100%; height: 100px; background-color: #FFD24F; display: flex; align-items: center; justify-content: center; padding: 0 30px;">
+          <div style="font-size: 16px; font-weight: bold; color: #B1650D; text-align: center;">Please contact our staff to make payment via cash</div>
+        </div>
+      </ion-toolbar>
+    </ion-footer>
+
+  </ng-template>
+</ion-modal>
