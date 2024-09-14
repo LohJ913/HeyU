@@ -12,17 +12,17 @@
             <!-- LOGIN -->
             <div *ngIf="tool.lengthof(currentUser)" class="user_info">
               <ion-avatar>
-                <img alt="User Profile Pic" src="https://ionicframework.com/docs/img/demos/avatar.svg" />
+                <img alt="User Profile Pic" src="{{currentUser['picture']}}" />
               </ion-avatar>
 
               <div>
-                <img src="assets/material/sample_title.png" alt="">
-                <div class="username">John Doe</div>
+                <!-- <img src="assets/material/sample_title.png" alt=""> -->
+                <div class="username">{{currentUser['name']}}</div>
               </div>
             </div>
 
             <!-- NO LOGIN -->
-            <div *ngIf="!tool.lengthof(currentUser)" (click)="loginTrigger = true" class="user_info">
+            <div *ngIf="!tool.lengthof(currentUser)" (click)="tool.navTo('login')" class="user_info">
               <ion-avatar style="border: 1px dashed #6860FF80; padding: 5px;">
                 <img alt="User Profile Pic" src="https://ionicframework.com/docs/img/demos/avatar.svg" />
               </ion-avatar>
@@ -39,15 +39,12 @@
             Lobby
             <ion-icon slot="end" src="assets/svg/lobby.svg"></ion-icon>
           </ion-button>
-
-
         </div>
       </ion-toolbar>
     </ion-header>
 
     <!-- CHECK IN -->
-
-    <div class="checkin_container">
+    <!-- <div class="checkin_container">
       <div class="checkin_box">
         <div style="position: absolute; top: -10px; right: 20px;">
           <div class="arrow_up"></div>
@@ -69,7 +66,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
 
     <!-- WALLET BALANCE -->
     <div (click)="goTopUp()"

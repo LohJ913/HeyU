@@ -292,7 +292,6 @@ export class ChatroomPage implements OnInit {
     });
   }
 
-
   markMessagesAsRead(conversationId, userId, friendId) {
     const messagesRef = firebase.firestore()
       .collection('chatrooms')

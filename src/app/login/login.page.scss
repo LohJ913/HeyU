@@ -3,8 +3,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 20px;
-
+    padding: 0 20px;
+    position: relative;
+    
     .logo {
         width: 200px;
         height: 200px;
@@ -20,7 +21,7 @@
         font-size: 36px;
         font-weight: 900;
         color: #ffffff;
-        margin: 0;
+        margin: 0 0 20px 0;
     }
 
     p {
@@ -31,40 +32,97 @@
     }
 
     .input_container {
-        width: 100%;
-        display: flex;
-        padding-bottom: 10px;
-        border-bottom: 1px solid #28255E;
-        margin: 40px 0;
-
-        .country_code {
-            width: 25%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-right: 1px solid #28255E;
-            margin-right: 10px;
-            color: #ffffff;
-
-            .number {
-                font-size: 16px;
-                font-weight: 700;
-                padding-right: 5px;
-            }
-        }
+        display: grid;
+        grid-template-columns: auto;
+        gap: 20px;
 
         ion-input {
-            width: calc((100% - 60px));
-            min-height: 32px; // Control Height
+            width: 100%;
+            min-height: 50px;
             font-size: 16px;
             font-weight: 600;
             color: #ffffff;
-            --placeholder-color: #7673A8;
-            background-color: transparent;
-            outline: none;
-            border: none;
-            --padding-top: 0px;
-            --padding-bottom: 0px;
+            --placeholder-color: #9f9dcc;
+            --background: #28255E;
+            --padding-start: 20px;
+            --padding-end: 10px;
+            --border-radius: 50px;
+        }
+
+        .forgot_container {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+
+            ion-button {
+                font-size: 13px;
+                padding-top: 2px;
+                padding-bottom: 2px;
+                min-height: fit-content;
+                margin: 0;
+            }
+        }
+
+        // width: 100%;
+        // display: flex;
+        // padding-bottom: 10px;
+        // border-bottom: 1px solid #28255E;
+        // margin: 40px 0;
+
+        // .country_code {
+        //     width: 25%;
+        //     display: flex;
+        //     align-items: center;
+        //     justify-content: center;
+        //     border-right: 1px solid #28255E;
+        //     margin-right: 10px;
+        //     color: #ffffff;
+
+        //     .number {
+        //         font-size: 16px;
+        //         font-weight: 700;
+        //         padding-right: 5px;
+        //     }
+        // }
+
+        // ion-input {
+        //     width: calc((100% - 60px));
+        //     min-height: 32px; // Control Height
+        //     font-size: 16px;
+        //     font-weight: 600;
+        //     color: #ffffff;
+        //     --placeholder-color: #7673A8;
+        //     background-color: transparent;
+        //     outline: none;
+        //     border: none;
+        //     --padding-top: 0px;
+        //     --padding-bottom: 0px;
+        // }
+    }
+}
+
+.btn_container {
+    display: grid;
+    grid-template-columns: auto;
+    gap: 20px;
+    padding: 20px;
+
+    .liner {
+        color: #9f9dcc;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        .line {
+            width: 100%;
+            border-bottom: 1px solid #9f9dcc80;
+        }
+
+        .text {
+            padding: 0 10px;
+            margin: 20px 0;
         }
     }
 }
@@ -95,5 +153,51 @@
         span {
             color: #B4B2E5;
         }
+    }
+}
+
+.gender_option {
+    width: calc(50% - 10px);
+    height: 112px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 30px;
+    border: 1px solid #6860FF80;
+    color: #ffffff80;
+
+    ion-icon {
+        font-size: 30px;
+        margin-bottom: 5px;
+    }
+
+    h6 {
+        font-size: 16px;
+        font-weight: normal;
+        margin: 0;
+    }
+}
+
+.gender_option_selected {
+    width: calc(50% - 10px);
+    height: 112px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 30px;
+    border: 1px solid #6860FF;
+    color: #ffffff;
+
+    ion-icon {
+        font-size: 30px;
+        margin-bottom: 5px;
+    }
+
+    h6 {
+        font-size: 16px;
+        font-weight: normal;
+        margin: 0;
     }
 }

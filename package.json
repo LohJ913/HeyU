@@ -22,12 +22,18 @@
     "@angular/platform-browser-dynamic": "^18.0.0",
     "@angular/router": "^18.0.0",
     "@capacitor/app": "6.0.1",
+    "@capacitor/camera": "^6.0.2",
     "@capacitor/core": "6.1.2",
     "@capacitor/haptics": "6.0.1",
     "@capacitor/keyboard": "6.0.2",
     "@capacitor/status-bar": "6.0.1",
     "@ionic/angular": "^8.2.7",
+    "@ionic/pwa-elements": "^3.3.0",
     "@maskito/angular": "^3.0.1",
+    "blob-util": "^2.0.2",
+    "country-data-list": "^1.3.4",
+    "country-flag-icons": "^1.5.13",
+    "fancy-random-names": "^1.0.4",
     "ionicons": "^7.0.0",
     "rxjs": "~7.8.0",
     "swiper": "^11.1.12",
@@ -47,6 +53,7 @@
     "@capacitor/cli": "6.1.2",
     "@ionic/angular-toolkit": "^11.0.1",
     "@types/jasmine": "~5.1.0",
+    "@types/node": "^22.5.5",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
     "eslint": "^8.57.0",
@@ -62,6 +69,9 @@
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
     "typescript": "~5.4.0"
+  },
+  "browser": {
+    "crypto": false
   },
   "description": "An Ionic project"
 }

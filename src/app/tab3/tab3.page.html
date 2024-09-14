@@ -9,13 +9,13 @@
         <div class="header_container">
           <div class="user_info">
             <ion-avatar>
-              <img alt="User Profile Pic" src="https://i.pravatar.cc/300" />
+              <img alt="User Profile Pic" src="{{currentUser['picture']}}" />
             </ion-avatar>
 
-            <div>
-              <img src="assets/material/sample_title.png" alt="">
-              <div class="username">John Doe</div>
-              <div class="userid">ID: HEYU001002</div>
+            <div style="width: calc(100% - 95px);">
+              <!-- <img src="assets/material/sample_title.png" alt=""> -->
+              <div class="username">{{currentUser['name']}}</div>
+              <!-- <div class="userid">ID: {{currentUser['id']}}</div> -->
             </div>
           </div>
 

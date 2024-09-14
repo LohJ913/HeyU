@@ -1,7 +1,7 @@
-<ion-content [fullscreen]="true" [scrollY]="false"
+<ion-content [fullscreen]="true"
   style="--background: url(/assets/background/login_bg.jpg) center center / cover no-repeat fixed;">
 
-  <ion-header class="ion-no-border">
+  <ion-header class="ion-no-border" style="position: sticky; top: 0;">
     <ion-toolbar class="ion-no-padding" style="--background: transparent;">
       <div class="header_container">
         <ion-button (click)="back()" fill="clear">
@@ -19,17 +19,23 @@
     <div style="width: 100%; display: flex; flex-direction: column; align-items: center; padding: 20px 0;">
 
       <div style="width: 140px; height: 140px; background-color: #28255e; border-radius: 100%; position: relative">
-        <div
+
+        <img *ngIf="tempImage !== ''" style="width: 100%; height: 100%; object-fit: cover; border-radius: 100%;"
+          src="{{tempImage}}" alt="">
+        <img *ngIf="tempImage == ''" style="width: 100%; height: 100%; object-fit: cover; border-radius: 100%;"
+          src="https://i.imgur.com/sLPx1zW.png" alt="">
+
+        <div (click)="photoPicker()"
           style="width: 44px; height: 44px; background-color: #6860FF; border-radius: 100%; border: 4px solid #080812; display: flex; align-items: center; justify-content: center; position: absolute; bottom: 5px; right: -5px;">
           <ion-icon style="color: #ffffff; font-size: 20px;" name="camera"></ion-icon>
         </div>
       </div>
 
-      <div style="width: 100%; margin: 20px 0;">
+      <div style="width: 100%; margin: 20px 0; padding-bottom: 60px;">
         <div class=input_container>
-          <div class="input_title">Username</div>
+          <div class="input_title">Display Name</div>
           <div class="input_field">
-            <ion-input [(ngModel)]="user['name']" maxlength="20" placeholder="Name that identifies you"></ion-input>
+            <ion-input [(ngModel)]="user['name']" maxlength="20" placeholder="Name that show on the app"></ion-input>
           </div>
           <div id="error_name"></div>
         </div>
@@ -38,14 +44,13 @@
           <div class="input_title">Gender</div>
           <div style="width: 100%; display: flex; align-items: center; justify-content: space-between;">
             <div class="gender_container" (click)="selectGender(item)" *ngFor="let item of gender; let l = last"
-              [ngStyle]="{'margin-right' : !l ? '10px' : '', 'background-color': selectedGender == item['name'] ? '#6860FF' : '#28255e' }">
+              [ngStyle]="{'margin-right' : !l ? '10px' : '', 'background-color': selectedGender == item['value'] ? '#6860FF' : '#28255e' }">
               <ion-icon style="font-size: 18px;"
-                [src]="selectedGender == item['name'] ? item['icon2'] : item['icon']"></ion-icon>
+                [src]="selectedGender == item['value'] ? item['icon2'] : item['icon']"></ion-icon>
               <div class="gender_text">{{item['name']}}</div>
             </div>
           </div>
           <div id="error_gender"></div>
-
         </div>
 
         <div class=input_container>
@@ -63,6 +68,25 @@
           <div id="error_dob"></div>
 
         </div>
+
+        <div class=input_container>
+          <div class="input_title">Username</div>
+          <div class="input_field">
+            <ion-input [(ngModel)]="user['username']" maxlength="20" placeholder="Name that identifies you"></ion-input>
+          </div>
+          <div id="error_username"></div>
+        </div>
+
+        <div class=input_container>
+          <div class="input_title">Password</div>
+          <div class="input_field">
+            <ion-input [(ngModel)]="user['password']" maxlength="20" placeholder="Name that identifies you">
+              <ion-input-password-toggle slot="end" color="newPurple"></ion-input-password-toggle>
+            </ion-input>
+          </div>
+          <div id="error_username"></div>
+        </div>
+
       </div>
     </div>
   </div>

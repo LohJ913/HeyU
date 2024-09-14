@@ -48,7 +48,7 @@ const routes: Routes = [
   {
     path: 'topup',
     loadChildren: () => import('./topup/topup.module').then( m => m.TopupPageModule),
-    // canActivate: [AuthGuard]
+    canActivate: [AuthGuard]
   },
   {
     path: 'gift-sender',

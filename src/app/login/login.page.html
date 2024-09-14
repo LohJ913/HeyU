@@ -3,6 +3,14 @@
 
   <ion-header class="ion-no-padding">
     <ion-toolbar class="ion-no-border" style="--background: transparent;">
+      <div
+        style="width: 100%; display: flex; align-items: center; justify-content: flex-end; padding: 20px 20px 0 20px;">
+        <ion-button (click)="back()" class="ion-no-padding" color="white" fill="clear"
+          style="font-size: 25px; padding-top: 2px; padding-bottom: 2px; min-height: fit-content; margin: 0;">
+          <ion-icon name="close"></ion-icon>
+        </ion-button>
+      </div>
+
       <div class="logo_container">
         <img class="logo" src="assets/icon/logo.png" alt="">
       </div>
@@ -11,8 +19,6 @@
 
   <div class="content_container">
     <h1>WELCOME</h1>
-    <p>Login / Register</p>
-
     <!-- <div class="input_container">
       <div class="country_code">
         <div class="number">+60</div>
@@ -22,26 +28,106 @@
       <ion-input type="tel" placeholder="Enter phone number"></ion-input>
     </div> -->
 
-    <ion-input type="password" placeholder="Confirm Password"></ion-input>
+    <div class="input_container">
+      <div>
+        <ion-input [(ngModel)]="loginUser['username']" type="text" placeholder="Username"></ion-input>
+        <div id="error_username"></div>
+      </div>
+
+      <div>
+        <ion-input [(ngModel)]="loginUser['password']" type="password" placeholder="Password">
+          <ion-input-password-toggle slot="end" color="newPurple"></ion-input-password-toggle>
+        </ion-input>
+        <div id="error_password"></div>
+      </div>
+
+      <div class="forgot_container">
+        <ion-button (click)="tool.navTo('forgot-pass')" class="ion-no-padding" color="newPurple" fill="clear">
+          Forgot Password?
+        </ion-button>
+      </div>
+    </div>
 
   </div>
 
-  <div style="display: grid; grid-template-columns: auto; gap: 20px; padding: 20px;">
-    <ion-button (click)="tool.navTo('otp-verify')" class="ion-no-padding primary_btn">
+  <div class="btn_container">
+    <ion-button (click)="userLogin()" class="ion-no-padding primary_btn">
       Login
     </ion-button>
 
-    <ion-button (click)="guestLogin()" class="ion-no-padding secondary_btn">
+    <div class="liner">
+      <div class="line"></div>
+      <div class="text">or</div>
+      <div class="line"></div>
+    </div>
+
+    <ion-button id="preference" class="ion-no-padding secondary_btn">
       Continue as guest
+
+      <ion-modal trigger="preference" style="--background: #00000000;">
+        <ng-template>
+          <ion-content scrollY="false" style="--background: #00000000;">
+            <div
+              style="width: 100vw; height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px;">
+
+              <div style="width: 100%; padding: 20px 20px 0 20px; background-color: #212238; border-radius: 30px;">
+
+                <div style="font-size: 16px; font-weight: 700; color: #ffffff; margin-bottom: 20px;">I'm interested
+                  on </div>
+
+                <div
+                  style="width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 30px;">
+
+                  <div (click)="interested = 'male'"
+                    [ngClass]="interested == 'male' ? 'gender_option_selected' : interested == '' ? 'gender_option' : 'gender_option'">
+                    <ion-icon name="male"></ion-icon>
+                    <h6>Male</h6>
+                  </div>
+
+                  <div (click)="interested = 'female'"
+                    [ngClass]="interested == 'female' ? 'gender_option_selected' : interested == '' ? 'gender_option' : 'gender_option'">
+                    <ion-icon name="male"></ion-icon>
+                    <h6>Female</h6>
+                  </div>
+
+                </div>
+
+                <div style="width: 100%; gap: 10px;">
+                  <ion-button (click)="guestLogin()" [disabled]="interested == ''" class="ion-no-padding primary_btn">
+                    Confirm
+                  </ion-button>
+                  <ion-button (click)="modalCtrl.dismiss(); interested = '';" class="ion-no-padding third_btn">
+                    Cancel
+                  </ion-button>
+                </div>
+
+              </div>
+
+            </div>
+          </ion-content>
+        </ng-template>
+      </ion-modal>
+
+    </ion-button>
+
+    <ion-button (click)="tool.navTo('register')" class="ion-no-padding third_btn">
+      Create an account
     </ion-button>
   </div>
 </ion-content>
 
-<ion-footer class="ion-no-padding">
+<ion-modal>
+  <ng-template>
+    <ion-content>
+    </ion-content>
+  </ng-template>
+</ion-modal>
+
+<!-- <ion-footer class="ion-no-padding">
   <ion-toolbar class="ion-no-border" style="--background: #080812;">
     <div class="tnc_container">
       <ion-checkbox mode="md"></ion-checkbox>
       <p>I have read and agree to the <span>Terms of Use</span> and <span>Privacy Policy</span></p>
     </div>
   </ion-toolbar>
-</ion-footer>
+</ion-footer> -->
