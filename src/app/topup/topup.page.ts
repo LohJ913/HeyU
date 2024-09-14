@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { IonRouterOutlet, NavController } from '@ionic/angular';
 import { MaskitoOptions, MaskitoElementPredicate, maskitoTransform } from '@maskito/core';
+import { ReadService } from '../services/read.service';
+import { WriteService } from '../services/write.service';
 
 @Component({
   selector: 'app-topup',
@@ -24,7 +26,7 @@ export class TopupPage implements OnInit {
   };
 
   readonly maskPredicate: MaskitoElementPredicate = async (el) => (el as HTMLIonInputElement).getInputElement();
-  
+
   packageList = [
     {
       amount: 5000,
@@ -84,9 +86,13 @@ export class TopupPage implements OnInit {
     }
   ]
 
+  uid = localStorage.getItem('heyu_uid')
+
   constructor(
     public router: IonRouterOutlet,
-    public navCtrl: NavController
+    public navCtrl: NavController,
+    private readService: ReadService,
+    private writeService: WriteService,
   ) { }
 
   ngOnInit() {
@@ -99,7 +105,16 @@ export class TopupPage implements OnInit {
   }
 
   makePayment() {
+    const amount = 50; // Top-up amount
 
+    this.writeService.topUpCredits(this.uid, amount)
+      .then(() => {
+        console.log('Credits successfully topped up!');
+        // swal it 
+      })
+      .catch((error) => {
+        console.error('Error during top-up:', error);
+      });
   }
 
   compareWith(o1, o2) {
@@ -124,5 +139,6 @@ export class TopupPage implements OnInit {
   back() {
     this.router.canGoBack() ? this.navCtrl.pop() : this.navCtrl.navigateRoot('tabs/tab1', { animated: true, animationDirection: 'back' })
   }
+
 }
 

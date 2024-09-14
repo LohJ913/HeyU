@@ -1,6 +1,8 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { IonRouterOutlet, NavController } from '@ionic/angular';
 import Swiper from 'swiper';
+import { ReadService } from '../services/read.service';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-profile-user',
@@ -67,14 +69,30 @@ export class ProfileUserPage implements OnInit {
     }
   ]
   selectedGift: any = {};
+  id: any;
+  uid: any = localStorage.getItem('heyu_uid') || ''
+  userProfile: any = {}
 
   constructor(
     public router: IonRouterOutlet,
-    public navCtrl: NavController
+    public navCtrl: NavController,
+    private readService: ReadService,
+    private activatedRoute: ActivatedRoute,
   ) { }
 
   ngOnInit() {
     this.arrayGift = this.groupArray(this.gifts, 8)
+    this.activatedRoute.queryParams.subscribe(a => {
+      this.id = a['id']
+      this.readService.getUserProfileOnce('user01')
+        .then((profileData) => {
+          this.userProfile = profileData;
+          console.log('Profile fetched:', this.userProfile);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    })
   }
 
   back() {

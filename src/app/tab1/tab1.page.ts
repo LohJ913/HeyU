@@ -4,6 +4,7 @@ import { Subscription, distinctUntilChanged } from 'rxjs';
 import { DataService } from '../services/data.service';
 import { ToolService } from '../services/tool.service';
 import firebase from 'firebase';
+import { ReadService } from '../services/read.service';
 
 @Component({
   selector: 'app-tab1',
@@ -16,52 +17,59 @@ export class Tab1Page implements OnInit {
   currentUser: any = {};
   loginTrigger: boolean = false;
 
+  firestore = firebase.firestore();
+  people: any = [];
+  popular: any = [];
+
   constructor(
     public navCtrl: NavController,
     public tool: ToolService,
-    private dataService: DataService
-  ) { }
+    private dataService: DataService,
+    private readService: ReadService
+  ) {
 
-  firestore = firebase.firestore()
-
-  people: any = []
-  popular: any = []
+  }
 
   ngOnInit(): void {
+
     this.userSubscribe = this.dataService.userInfo.pipe(distinctUntilChanged()).subscribe(async (info) => {
       console.log(info);
+      this.currentUser = info;
+    });
+    this.getHotGirls();
+    this.getOutlets();
+  }
 
-      this.currentUser = info
-    })
+  getOutlets() {
+    // Access a GeoCollection
 
-    this.getHotGirls()
   }
 
   getHotGirls() {
-
-    this.firestore.collection('profiles').where('gender', '==', 'female').where('verified', '==', true).get().then((snapshot) => {
-      const users: any = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      console.log(users)
-      this.people = users
-      this.popular = users.sort((a: any, b: any) => ((b['view'] || 0) - (a['view'] || 0)))
-      console.log(this.popular)
-    })
-
-
-
+    this.readService.getHotGirls().subscribe({
+      next: (data) => {
+        this.people = JSON.parse(JSON.stringify(data));
+        this.popular = data.sort((a, b) => ((b['view'] || 0) - (a['view'] || 0)));
+        console.log('Popular users:', this.popular);
+      },
+      error: (error) => {
+        console.error('Error fetching hot girls:', error);
+      },
+      complete: () => {
+        console.log('Fetching hot girls completed.');
+      }
+    });
   }
 
   goLobby() {
-    this.navCtrl.navigateForward('lobby')
-
+    this.navCtrl.navigateForward('lobby');
   }
 
-  goUser() {
-    this.navCtrl.navigateForward('profile-user')
+  goUser(user: any) {
+    this.navCtrl.navigateForward(`profile-user?id=${user['id']}`);
   }
 
   goTopUp() {
-    this.navCtrl.navigateForward('topup')
+    this.navCtrl.navigateForward('topup');
   }
-
 }

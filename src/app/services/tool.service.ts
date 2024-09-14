@@ -5,6 +5,7 @@ import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { defineCustomElements } from '@ionic/pwa-elements/loader';
 import { base64StringToBlob, blobToDataURL } from 'blob-util';
 import { distinctUntilChanged } from 'rxjs/operators';
+import { DatePipe } from '@angular/common';
 
 @Injectable({
   providedIn: 'root'
@@ -16,6 +17,8 @@ export class ToolService {
     public toastCtrl: ToastController,
     public loadingCtrl: LoadingController,
     private http: HttpClient,
+    private datePipe: DatePipe
+    ,
   ) { }
 
   lengthof(x) {
@@ -115,9 +118,9 @@ export class ToolService {
         // Check Camera Permissions
         const permissions = await Camera.checkPermissions();
         console.log(permissions);
-  
+
         defineCustomElements(window);
-  
+
         // Get Photo
         const image = await Camera.getPhoto({
           quality: 90,
@@ -129,16 +132,16 @@ export class ToolService {
           promptLabelPhoto: 'Select from Photo Library',
           promptLabelCancel: 'Cancel'
         });
-  
+
         // Convert Base64 String to Blob
         let imageBlob = base64StringToBlob(image.base64String.replace(/^data:image\/\w+;base64,/, ""), 'image/png');
         var dataURL = await blobToDataURL(imageBlob);
-  
+
         // Compress Image
         this.compressBase64Image(dataURL, 500, 500, 1).then((res) => {
           let compressedBlob = base64StringToBlob(res.replace(/^data:image\/\w+;base64,/, ""), 'image/png');
           let filesize = compressedBlob.size;
-  
+
           // Check if file size is below the limit
           if (filesize < 10485768) {
             resolve(dataURL); // Resolve the promise on successful upload
@@ -154,8 +157,28 @@ export class ToolService {
       }
     });
   }
-  
+
   getBlobSizeInMB(blob: Blob): number {
     return blob.size / (1024 * 1024);
+  }
+
+  makeDateNicer(dater: any): Promise<string> {
+    let today = new Date().getTime();
+    return new Promise((resolve) => {
+      if (this.datePipe.transform(dater, 'yyyyMMdd') == this.datePipe.transform(today, 'yyyyMMdd')) {
+        resolve('Today');
+      } else if (this.datePipe.transform(dater, 'yyyyMMdd') < this.datePipe.transform(today, 'yyyyMMdd')) {
+        console.log('here')
+        if (this.datePipe.transform(dater, 'yyyyMMdd') >= this.datePipe.transform(new Date(new Date(today).getFullYear(), new Date(today).getMonth(), new Date(today).getDate() - 1, 0, 0, 0), 'yyyyMMdd')) {
+          resolve('Yesterday');
+        } else if (this.datePipe.transform(dater, 'yyyyMMdd') >= this.datePipe.transform(new Date(new Date(today).getFullYear(), new Date(today).getMonth(), new Date(today).getDate() - 6, 0, 0, 0), 'yyyyMMdd')) {
+          resolve(this.datePipe.transform(dater, 'EEEE'));
+        } else {
+          resolve(this.datePipe.transform(dater, 'dd/MM/yyyy'));
+        }
+      } else {
+        resolve(this.datePipe.transform(dater, 'dd/MM/yyyy'));
+      }
+    });
   }
 }
