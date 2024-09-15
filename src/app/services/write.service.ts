@@ -61,8 +61,59 @@ export class WriteService {
     });
   }
 
-  async sendMessage(message: string, conversationId: string, friend_id: string, uid: string, user_profile: any): Promise<void> {
+  markMessagesAsRead(conversationId: string, userId: string, friendId: string): Promise<void> {
+    const messagesRef = this.firestore
+      .collection('chatrooms')
+      .doc(conversationId)
+      .collection('messages')
+      .where('senderId', '==', userId)
+      .where('isRead', '==', false);
+
+    return messagesRef.get().then((querySnapshot) => {
+      const batch = this.firestore.batch();
+      let unreadCount = 0;
+
+      querySnapshot.forEach((doc) => {
+        unreadCount++;
+        batch.update(doc.ref, { isRead: true });
+      });
+
+      return batch.commit().then(() => {
+        console.log('Messages marked as read');
+        // Update chat summary (reset unreadCount)
+        return this.updateChatSummary(userId, friendId, {
+          unreadCount: 0,
+          delivered: true,
+          read: true
+        });
+      });
+    }).catch((error) => {
+      console.error('Error updating message read status:', error);
+      throw error;  // Re-throw the error for handling elsewhere
+    });
+  }
+
+  // Function to update the chat summary
+  updateChatSummary(userId: string, friendId: string, statusUpdate: any): Promise<void> {
+    const chatSummaryRef = this.firestore
+      .collection('users')
+      .doc(friendId)
+      .collection('chats')
+      .doc(userId);
+
+    return chatSummaryRef.update(statusUpdate)
+      .then(() => {
+        console.log('Chat summary updated');
+      })
+      .catch((error) => {
+        console.error('Error updating chat summary:', error);
+        throw error;  // Re-throw the error for handling elsewhere
+      });
+  }
+
+  async sendMessage(message: string, conversationId: string, friend_id: string, uid: string, user_profile: any, friend_profile: any): Promise<void> {
     return new Promise(async (resolve, reject) => {
+      console.log(message, conversationId, friend_id, uid, user_profile, friend_profile)
       if (message.trim()) {
         const firestore = firebase.firestore();
         const batch = firestore.batch();
@@ -113,8 +164,8 @@ export class WriteService {
           lastMessageType: "text",
           lastMessageDate: firebase.firestore.FieldValue.serverTimestamp(),
           lastMessageBy: uid,
-          picture: user_profile['picture'],
-          name: user_profile['name'],
+          picture: user_profile['picture'] || '',
+          name: user_profile['name'] || '',
           uid: uid,
           unreadCount: 0,
           delivered: false,
@@ -126,6 +177,9 @@ export class WriteService {
           lastMessageType: newMessage.type,
           lastMessageDate: firebase.firestore.FieldValue.serverTimestamp(),
           lastMessageBy: uid,
+          picture: friend_profile['picture'] || '',
+          name: friend_profile['name'] || '',
+          uid: friend_id,
           unreadCount: firebase.firestore.FieldValue.increment(1),
           delivered: false,
         }, { merge: true });
@@ -146,8 +200,10 @@ export class WriteService {
     });
   }
 
-  async sendGift(giftDetails: { giftId: string, giftPrice: number, giftName: string, giftPicture: string }, conversationId: string, friend_id: string, uid: string, user_profile: any): Promise<void> {
+  async sendGift(giftDetails: { giftId: string, gem: number, giftName: string, giftPicture: string }, conversationId: string, friend_id: string, uid: string, user_profile: any, friend_profile: any): Promise<void> {
     const firestore = firebase.firestore();
+
+    console.log(giftDetails, conversationId, friend_id, uid, user_profile, friend_profile)
 
     try {
       await firestore.runTransaction(async (transaction) => {
@@ -155,7 +211,7 @@ export class WriteService {
         const userDoc = await transaction.get(userRef);
         const userData = userDoc.data();
 
-        if (!userData || userData.credits < giftDetails.giftPrice) {
+        if (!userData || userData.coin < giftDetails.gem) {
           throw new Error('Insufficient credits');
         }
 
@@ -164,12 +220,13 @@ export class WriteService {
         const messagesRef = conversationRef.collection('messages').doc(); // Auto-generate a unique ID
         const userChatRef = firestore.collection('users').doc(uid).collection('chats').doc(friend_id);
         const otherUserChatRef = firestore.collection('users').doc(friend_id).collection('chats').doc(uid);
+        const giftTransactionRef = firestore.collection('gift_transactions').doc()
 
         // Prepare new gift data
         const newGift = {
           senderId: uid,
           giftId: giftDetails.giftId,
-          giftPrice: giftDetails.giftPrice,
+          giftPrice: giftDetails.gem,
           giftName: giftDetails.giftName,
           giftPicture: giftDetails.giftPicture,
           type: "gift",
@@ -219,13 +276,30 @@ export class WriteService {
           lastMessageType: "gift",
           lastMessageDate: firebase.firestore.FieldValue.serverTimestamp(),
           lastMessageBy: uid,
+          picture: friend_profile['picture'] || '',
+          name: friend_profile['name'] || '',
+          uid: friend_id,
           unreadCount: firebase.firestore.FieldValue.increment(1),
           delivered: false,
         }, { merge: true });
 
+
+        // Push gift transactions
+        batch.set(giftTransactionRef, {
+          giftPrice: giftDetails.gem,
+          giftId: giftDetails.giftId,
+          giftName: giftDetails.giftName,
+          giftPicture: giftDetails.giftPicture,
+          recipientId: friend_id,
+          recipientName: friend_profile['name'] || '',
+          senderId: uid,
+          senderName: user_profile['name'] || '',
+          timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true });
+
         // Deduct the credits from the user's account
         transaction.update(userRef, {
-          credits: firebase.firestore.FieldValue.increment(-giftDetails.giftPrice)
+          credits: firebase.firestore.FieldValue.increment(-giftDetails.gem)
         });
 
         // Commit the transaction
@@ -248,20 +322,43 @@ export class WriteService {
       });
   }
 
-  async topUpCredits(uid: string, topUpAmount: number): Promise<void> {
-    const userRef = this.firestore.collection('users').doc(uid);
+  async topUpCredits(uid: string, topupPackage: { amount: number, bonus: string, credits: number }, method: string): Promise<void> {
+    console.log(uid, topupPackage, method)
+    const firestore = this.firestore;
+    const userRef = firestore.collection('profiles').doc(uid);
+    const transactionsRef = firestore.collection('transactions').doc(); // Auto-generate transaction ID
 
-    // Use Firestore's increment method to add credits atomically
-    return userRef.update({
-      credits: firebase.firestore.FieldValue.increment(topUpAmount)
-    })
-      .then(() => {
-        'Topup success'
-      })
-      .catch((error) => {
-        console.error('Error topping up credits:', error);
-        throw error; 
+    const topUpAmount = topupPackage['gem']; // Total coins (amount + bonus)
+    // Prepare transaction data
+    const transactionData = {
+      amount: topupPackage.amount,
+      bonus: topupPackage.bonus,
+      credits: topupPackage.credits,
+      method: method || 'online',
+      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+      type: 'topup',
+      uid: uid
+    };
+
+    // Run transaction to update user's coins and record the transaction
+    return firestore.runTransaction(async (transaction) => {
+      const userDoc = await transaction.get(userRef);
+
+      if (!userDoc.exists) {
+        throw new Error("User does not exist!");
+      }
+
+      // Increment the user's coins
+      transaction.update(userRef, {
+        coin: firebase.firestore.FieldValue.increment(topUpAmount)
       });
+
+      // Record the transaction
+      transaction.set(transactionsRef, transactionData);
+    }).then(() => {
+    }).catch((error) => {
+      throw error; // Rethrow the error for further handling
+    });
   }
 
 }

@@ -2,7 +2,11 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { IonRouterOutlet, NavController } from '@ionic/angular';
 import Swiper from 'swiper';
 import { ReadService } from '../services/read.service';
+import { DataService } from '../services/data.service';
+import { ToolService } from '../services/tool.service';
 import { ActivatedRoute } from '@angular/router';
+import { WriteService } from '../services/write.service';
+import { Subscription, distinctUntilChanged } from 'rxjs';
 
 @Component({
   selector: 'app-profile-user',
@@ -21,49 +25,49 @@ export class ProfileUserPage implements OnInit {
   gifts = [
     {
       id: '001',
-      thumbnail: 'assets/gifting/g_1.png',
+      picture: 'assets/gifting/g_1.png',
       name: 'Kiss Kiss',
       gem: 300
     },
     {
       id: '002',
-      thumbnail: 'assets/gifting/g_2.png',
+      picture: 'assets/gifting/g_2.png',
       name: 'Kiss Kiss',
       gem: 300
     },
     {
       id: '003',
-      thumbnail: 'assets/gifting/g_3.png',
+      picture: 'assets/gifting/g_3.png',
       name: 'Kiss Kiss',
       gem: 300
     },
     {
       id: '004',
-      thumbnail: 'assets/gifting/g_4.png',
+      picture: 'assets/gifting/g_4.png',
       name: 'Kiss Kiss',
       gem: 300
     },
     {
       id: '005',
-      thumbnail: 'assets/gifting/g_5.png',
+      picture: 'assets/gifting/g_5.png',
       name: 'Kiss Kiss',
       gem: 300
     },
     {
       id: '006',
-      thumbnail: 'assets/gifting/g_6.png',
+      picture: 'assets/gifting/g_6.png',
       name: 'Kiss Kiss',
       gem: 300
     },
     {
       id: '007',
-      thumbnail: 'assets/gifting/g_7.png',
+      picture: 'assets/gifting/g_7.png',
       name: 'Kiss Kiss',
       gem: 300
     },
     {
       id: '008',
-      thumbnail: 'assets/gifting/g_8.png',
+      picture: 'assets/gifting/g_8.png',
       name: 'Kiss Kiss',
       gem: 300
     }
@@ -72,26 +76,39 @@ export class ProfileUserPage implements OnInit {
   id: any;
   uid: any = localStorage.getItem('heyu_uid') || ''
   userProfile: any = {}
+  currentUser: any = {}
+  userSubscribe;
+  messageText: any
+  conversationId: any;
 
   constructor(
     public router: IonRouterOutlet,
     public navCtrl: NavController,
     private readService: ReadService,
     private activatedRoute: ActivatedRoute,
+    private dataService: DataService,
+    private writeService: WriteService,
+    public toolService: ToolService,
   ) { }
 
   ngOnInit() {
     this.arrayGift = this.groupArray(this.gifts, 8)
     this.activatedRoute.queryParams.subscribe(a => {
       this.id = a['id']
-      this.readService.getUserProfileOnce('user01')
+      this.conversationId = [this.uid, this.id].sort().join('|');
+      this.readService.getUserProfileOnce(this.id)
         .then((profileData) => {
           this.userProfile = profileData;
+          if (this.userProfile['dob']) this.userProfile['age'] = this.toolService.calculateAgeFromString(this.userProfile['dob'])
           console.log('Profile fetched:', this.userProfile);
         })
         .catch((error) => {
           console.error(error);
         });
+    })
+    this.userSubscribe = this.dataService.userInfo.pipe(distinctUntilChanged()).subscribe(async (info) => {
+      this.currentUser = info
+      console.log(info)
     })
   }
 
@@ -114,5 +131,26 @@ export class ProfileUserPage implements OnInit {
 
   selectGift(x) {
     this.selectedGift = x
+  }
+
+  sendGift() {
+    // this.writeService.sendGift()
+
+    this.writeService.sendGift(
+      this.selectedGift,
+      this.conversationId,
+      this.id,
+      this.uid,
+      this.currentUser,
+      this.userProfile
+    ).then(() => {
+      console.log('Message sent successfully.');
+      this.openGift = false;
+      setTimeout(() => {
+        this.navCtrl.navigateForward(`chatroom?id=${this.id}`)
+      }, 500);
+    }).catch((error) => {
+      console.error('Error sending message:', error);
+    });
   }
 }

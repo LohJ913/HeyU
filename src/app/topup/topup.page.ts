@@ -3,6 +3,8 @@ import { IonRouterOutlet, NavController } from '@ionic/angular';
 import { MaskitoOptions, MaskitoElementPredicate, maskitoTransform } from '@maskito/core';
 import { ReadService } from '../services/read.service';
 import { WriteService } from '../services/write.service';
+import { DataService } from '../services/data.service';
+import { Subscription, distinctUntilChanged } from 'rxjs';
 
 @Component({
   selector: 'app-topup',
@@ -86,28 +88,37 @@ export class TopupPage implements OnInit {
     }
   ]
 
-  uid = localStorage.getItem('heyu_uid')
+  uid = localStorage.getItem('heyu_uid') || ''
 
   constructor(
     public router: IonRouterOutlet,
     public navCtrl: NavController,
     private readService: ReadService,
     private writeService: WriteService,
+    private dataService: DataService,
   ) { }
 
+  currentUser: any = {}
+  userSubscribe: any;
+
   ngOnInit() {
+
+
+    console.log(this.uid)
+    this.userSubscribe = this.dataService.userInfo.pipe(distinctUntilChanged()).subscribe(async (info) => {
+      this.currentUser = info
+      console.log(info)
+    })
   }
 
 
   selectTab(ev) {
     this.tab = ev.detail.value
-
   }
 
   makePayment() {
-    const amount = 50; // Top-up amount
 
-    this.writeService.topUpCredits(this.uid, amount)
+    this.writeService.topUpCredits(this.uid, this.selectedPackage,'online')
       .then(() => {
         console.log('Credits successfully topped up!');
         // swal it 
@@ -141,4 +152,6 @@ export class TopupPage implements OnInit {
   }
 
 }
+
+
 

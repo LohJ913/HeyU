@@ -2,9 +2,10 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import firebase from 'firebase';
 import { DatePipe } from '@angular/common';
-import { takeUntil } from 'rxjs/operators';
-import { Subject } from 'rxjs';
+import { distinctUntilChanged, takeUntil } from 'rxjs/operators';
+import { Subject, Subscription } from 'rxjs';
 import { ReadService } from '../services/read.service';
+import { DataService } from '../services/data.service';
 
 @Component({
   selector: 'app-tab2',
@@ -18,9 +19,12 @@ export class Tab2Page implements OnInit, OnDestroy {
     public navCtrl: NavController,
     private datePipe: DatePipe,
     private readService: ReadService,
+    private dataService: DataService,
   ) { }
 
-  uid = 'user01'
+  userSubscribe: Subscription;
+  currentUser: any = {};
+  uid = localStorage.getItem('heyu_uid') || ''
   limit = 20;
   filteredChat: any = []
   search: any = ''
@@ -34,17 +38,24 @@ export class Tab2Page implements OnInit, OnDestroy {
   }
 
   async ngOnInit() {
-    localStorage.setItem('heyu_uid', 'user01')
+    this.userSubscribe = this.dataService.userInfo.pipe(distinctUntilChanged()).subscribe(async (info) => {
+      console.log(info);
+      this.currentUser = info;
+      // this.uid = info['id']
+      localStorage.setItem('heyu_uid', 'user01')
+      // localStorage.setItem('heyu_uid', this.currentUser['id'])
+      this.readService.chats$
+        .pipe(takeUntil(this.unsubscribe$))  // Use takeUntil to auto-unsubscribe
+        .subscribe((chats) => {
+          this.chats = chats;
+          console.log(chats)
+          this.filterChats();  // Or any other post-processing logic
+        });
 
-    this.readService.chats$
-      .pipe(takeUntil(this.unsubscribe$))  // Use takeUntil to auto-unsubscribe
-      .subscribe((chats) => {
-        this.chats = chats;
-        this.filterChats();  // Or any other post-processing logic
-      });
+      // Start listening for Firestore changes
+      this.readService.setupListener(this.uid);
+    });
 
-    // Start listening for Firestore changes
-    this.readService.setupListener(this.uid);
   }
 
   ionViewWillEnter() {
@@ -52,6 +63,8 @@ export class Tab2Page implements OnInit, OnDestroy {
   }
 
   filterChats() {
+    console.log(this.chats);
+    
     let filterChats = JSON.parse(JSON.stringify(this.chats) || '[]').filter((item: any) => (item.name.toLowerCase().includes(this.search.toLowerCase())))
     this.filteredChat = filterChats
   }

@@ -7,16 +7,17 @@
         </ion-button>
 
         <ion-avatar>
-          <img alt="User Profile Pic"
-            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQzZ4T4FK1ZvTzyHHIhxX19nNaB77qRoxmBJQ&s" />
+          <img alt="User Profile Pic" [src]="friendProfile['picture']" />
         </ion-avatar>
 
         <div>
-          <h1 style="font-size: 18px; font-weight: bold; color: #ffffff; margin: 0 0 5px 0;">Elizabeth.O</h1>
+          <h1 style="font-size: 18px; font-weight: bold; color: #ffffff; margin: 0 0 5px 0;">{{friendProfile['name'] ||
+            ''}}</h1>
           <div style="width: 100%; display: flex; flex-wrap: wrap; gap: 5px;">
-            <div
+            <div *ngIf="friendProfile['dob']"
               style="height: 23px; padding: 3px 8px; display: flex; align-items: center; justify-content: center; background-color: #212238; border-radius: 30px;">
-              <ion-icon style="font-size: 14px; color: #B2AEFF; margin-right: 5px;" name="female-outline"></ion-icon>
+              <ion-icon style="font-size: 14px; color: #B2AEFF; margin-right: 5px;"
+                [name]="friendProfile['gender'] ? 'male-outline' : 'female-outline'"></ion-icon>
               <div style="font-size: 12px; font-weight: normal; color: #ffffff;">24</div>
             </div>
 
@@ -81,49 +82,54 @@
   <ion-list style="background: transparent; padding: 15px;">
     <div *ngFor="let item of messages" style=" margin-bottom: 10px;">
       <div *ngIf="item.senderId != uid"
-      style="width: fit-content; max-width: calc(100% - 40px); background-color: #212238; padding: 8px 10px; border-radius: 0 15px 15px 15px;">
-      <span style="color: #ECDDDD; margin: 0;">{{item.text}}</span>
-      <div
-        style="width: 60px; height: 12px; position: relative; display: flex; align-items: center; justify-content: flex-end; float: right;">
-
-        <div
-          style="width: 100%; font-size: 10px; font-weight: normal; color: #ECDDDD; text-align: end; position: absolute; top: 5px;">
-          12:03 PM</div>
-
-      </div>
-    </div>
-
-
-    <div *ngIf="item.senderId == uid" style="width: 100%; display: flex; justify-content: flex-end;">
-      <div
-        style="width: fit-content; max-width: calc(70%); background-color: #ECDDDD; padding: 8px 10px; border-radius: 15px 0 15px 15px;">
-        <span style="color: #14152C; margin: 0;">{{item.text}}</span>
-
+        style="width: fit-content; max-width: calc(100% - 40px); background-color: #212238; padding: 8px 10px; border-radius: 0 15px 15px 15px;">
+        <span style="color: #ECDDDD; margin: 0;">{{item.text}}</span>
         <div
           style="width: 60px; height: 12px; position: relative; display: flex; align-items: center; justify-content: flex-end; float: right;">
 
-          <div *ngIf="!item.timestamp" class="snippet" data-title="dot-flashing">
-            <div class="stage">
-              <div class="dot-flashing"></div>
+          <div
+            style="width: 100%; font-size: 10px; font-weight: normal; color: #ECDDDD; text-align: end; position: absolute; top: 5px;">
+            {{item.date | date : 'h:mm a'}}</div>
+        </div>
+      </div>
+
+
+      <div *ngIf="item.senderId == uid" style="width: 100%; display: flex; justify-content: flex-end;">
+        <div
+          style="width: max-content; max-width: calc(70%); background-color: #ECDDDD; padding: 8px 10px; border-radius: 15px 0 15px 15px;">
+          <span style="color: #14152C; margin: 0;">{{item.text}}</span>
+
+          <div
+            style="width: 60px; height: 12px; position: relative; display: flex; align-items: center; justify-content: flex-end; float: right;">
+
+            <div *ngIf="!item.timestamp" class="snippet" data-title="dot-flashing">
+              <div class="stage">
+                <div class="dot-flashing"></div>
+              </div>
+            </div>
+
+            <div *ngIf="item.timestamp"
+              style="width: fit-content; display: flex; align-items: center; justify-content: flex-end; position: absolute; top: 5px;">
+              <div style="width: 100%; font-size: 11px; font-weight: normal; color: #14152C; text-align: end;">
+                {{item.date | date : 'h:mm a'}}</div>
+
+              <ion-icon *ngIf="item.timestamp"
+                [ngStyle]="{'color': item.isRead ? 'blue' : item.isDelivered ? '#333' : '#333'}"
+                [name]="item.isRead ? 'checkmark-done-outline' : item.isDelivered ? 'checkmark-done-outline' : 'checkmark-outline' "
+                style="font-size: 13px;margin-top: 1px; margin-right: 3px;"></ion-icon>
             </div>
           </div>
-          <div *ngIf="item.timestamp"
-            style="width: 100%; font-size: 11px; font-weight: normal; color: #14152C; text-align: end; position: absolute; top: 5px;">
-            {{item.date | date : 'h:mm a'}}
-          </div>
-          <ion-icon *ngIf="item.timestamp" [ngStyle]="{'color': item.isRead ? 'blue' : item.isDelivered ? '#333' : '#333'}" [name]="item.isRead ? 'checkmark-done-outline' : item.isDelivered ? 'checkmark-done-outline' : 'checkmark-outline' " style="font-size: 13px;margin-top: 1px; margin-right: 3px;"></ion-icon>
         </div>
       </div>
     </div>
-    </div>
-
   </ion-list>
 </ion-content>
 
 <ion-footer class="ion-no-border">
   <ion-toolbar class="ion-no-padding" style="--background: #080812; border-top: 1px solid #1D1E34;">
     <div style="width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 15px 10px;">
-      <ion-input style="width: calc(100% - 61px);" placeholder="Enter message...">
+      <ion-input (keyup)="sendMessage($event)" [(ngModel)]="messageText" style="width: calc(100% - 61px);"
+        placeholder="Enter message...">
         <ion-icon style="font-size: 20px; color: #E0DFE4; margin-right: 10px;" slot="start"
           src="assets/svg/chat_noti_btn/smile_face.svg" aria-hidden="true"></ion-icon>
       </ion-input>
@@ -151,7 +157,7 @@
             <div
               style="width: max-content; height: 30px; padding: 0 15px 0 5px; border-radius: 30px; background-color: #212238; display: flex; align-items: center; justify-content: center;">
               <ion-icon style="font-size: 26px;" src="assets/svg/hey_coin.svg"></ion-icon>
-              <div style="font-size: 14px; font-weight: 00; color: #ffffff; margin-left: 5px;">13,988</div>
+              <div style="font-size: 14px; font-weight: 00; color: #ffffff; margin-left: 5px;">{{(myProfile['credits'] || 0) | number:'1.0-0'}}</div>
             </div>
           </div>
 

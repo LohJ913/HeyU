@@ -1,5 +1,5 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { NavController, IonRouterOutlet } from '@ionic/angular';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { NavController, IonRouterOutlet, IonContent } from '@ionic/angular';
 import { ActivatedRoute } from '@angular/router';
 import firebase from 'firebase';
 import { ReadService } from '../services/read.service';
@@ -12,6 +12,8 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./chatroom.page.scss'],
 })
 export class ChatroomPage implements OnInit, OnDestroy {
+
+  @ViewChild(IonContent) content: IonContent;
 
   constructor(
     private navCtrl: NavController,
@@ -75,7 +77,7 @@ export class ChatroomPage implements OnInit, OnDestroy {
   ]
 
   messages: any = []
-  uid = localStorage.getItem('heyu_uid') || 'user01'
+  uid = localStorage.getItem('heyu_uid') || ''
   myProfile = JSON.parse(localStorage.getItem('heyu_profile') || '{}')
   fid = ''
   messageText: any
@@ -167,7 +169,8 @@ export class ChatroomPage implements OnInit, OnDestroy {
       this.conversationId,
       this.fid,
       this.uid,
-      this.myProfile
+      this.myProfile,
+      this.friendProfile
     )
       .then(() => {
         console.log('Message sent successfully.');
@@ -177,64 +180,36 @@ export class ChatroomPage implements OnInit, OnDestroy {
       });
   }
 
-  async sendMessage() {
-    this.writeService.sendMessage(
-      this.messageText,
-      this.conversationId,
-      this.fid,
-      this.uid,
-      this.myProfile
-    )
-      .then(() => {
-        console.log('Message sent successfully.');
-      })
-      .catch((error) => {
-        console.error('Error sending message:', error);
-      });
-    this.messageText = ''
+  async sendMessage(ev) {
+
+    console.log(this.messageText);
+
+    if (ev.keyCode === 13) { // keyCode for the Enter key is 13
+      this.writeService.sendMessage(
+        this.messageText,
+        this.conversationId,
+        this.fid,
+        this.uid,
+        this.myProfile,
+        this.friendProfile
+      )
+        .then(() => {
+          console.log('Message sent successfully.');
+          this.messageText = ''
+        })
+        .catch((error) => {
+          console.error('Error sending message:', error);
+        });
+    }
   }
 
-  markMessagesAsRead(conversationId, userId, friendId) {
-    const messagesRef = firebase.firestore()
-      .collection('chatrooms')
-      .doc(conversationId)
-      .collection('messages')
-      .where('senderId', '==', this.uid)
-      .where('isRead', '==', false);
-
-    messagesRef.get().then((querySnapshot) => {
-      const batch = firebase.firestore().batch();
-      let unreadCount = 0;
-
-      querySnapshot.forEach((doc) => {
-        unreadCount++;
-        batch.update(doc.ref, { isRead: true });
-      });
-
-      return batch.commit().then(() => {
-        console.log('Messages marked as read');
-
-        // Update chat summary (reset unreadCount)
-        this.updateChatSummary(userId, friendId, { unreadCount: 0, delivered: true, read: true });
-      });
-    }).catch((error) => {
-      console.error('Error updating message read status:', error);
-    });
-  }
-
-  updateChatSummary(userId, friendId, statusUpdate) {
-    const chatSummaryRef = firebase.firestore()
-      .collection('users')
-      .doc(friendId)
-      .collection('chats')
-      .doc(userId);
-
-    chatSummaryRef.update(statusUpdate)
+  markMessagesAsRead(conversationId: string, userId: string, friendId: string): void {
+    this.writeService.markMessagesAsRead(conversationId, userId, friendId)
       .then(() => {
-        console.log('Chat summary updated');
+        console.log('Messages marked as read and chat summary updated.');
       })
       .catch((error) => {
-        console.error('Error updating chat summary:', error);
+        console.error('Error in marking messages as read:', error);
       });
   }
 

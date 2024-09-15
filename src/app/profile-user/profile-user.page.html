@@ -17,8 +17,8 @@
   </ion-header>
 
   <div style="width: 100%; position: relative;">
-    <img style="width: 100vw; height: 100vw;" alt="User Profile Pic"
-      src="https://img.freepik.com/premium-photo/asian-girls-education-happy-beautiful-asian-girl-is-smilling_911620-8519.jpg" />
+    <img style="width: 100vw; height: 100vw; object-fit: cover;" alt="User Profile Pic"
+      [src]="userProfile['picture']" />
 
     <div style="width: 100%; position: relative;">
 
@@ -30,7 +30,7 @@
           <ion-icon style="font-size: 16px; color: #ffffff; margin-left: 5px;" name="heart-outline"></ion-icon>
         </div>
 
-        <!-- <div
+        <div
           style="width: 128px; padding: 10px 17px; background: linear-gradient(90deg, #6961FFaa 0%, #7570ccaa 100%); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); border-radius: 15px;">
 
           <div style="font-size: 13px; font-weight: 700; color: #ffffff; margin-bottom: 4px;">Available in</div>
@@ -55,12 +55,13 @@
               12
             </div>
           </div>
-        </div> -->
+        </div>
       </div>
 
       <div
         style="width: 100%; padding: 60px 15px 0 15px; background: linear-gradient(0deg, #14152C 0%, #14152C80 30%, #00000000 100%); position: absolute; bottom: 0;">
-        <h1 style="font-size: 22px; font-weight: bold; color: #ffffff; margin: 0;">Elizabeth.O, 27</h1>
+        <h1 style="font-size: 22px; font-weight: bold; color: #ffffff; margin: 0;">{{userProfile['name']}}<span
+            *ngIf="userProfile['dob']">, {{this.userProfile['age']}}</span></h1>
       </div>
     </div>
   </div>
@@ -107,10 +108,13 @@
       <h3 style="font-size: 16px; font-weight: 700; color: #6860FF;">My Photos</h3>
 
       <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 5px;">
-        <img *ngFor="let item of [0,1,2,3,4,5,6,7,8]"
-          style="width: 100%; height: 115px; object-fit: cover; border-radius: 5px;"
-          src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTnyFtAO26JwnBc_2r7CgPX5d4pHA-mi2XNKCObWCNzgtttGN7-8oAdCdA7NBp48t6mZeU&usqp=CAU"
-          alt="">
+        <ion-thumbnail *ngFor="let item of [0,1,2,3,4,5,6,7,8]" style="width: 100%; height: 115px; object-fit: cover; border-radius: 5px;">
+          <img
+            style="width: 100%; height: 100%; object-fit: cover; border-radius: 5px;"
+            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTnyFtAO26JwnBc_2r7CgPX5d4pHA-mi2XNKCObWCNzgtttGN7-8oAdCdA7NBp48t6mZeU&usqp=CAU"
+            alt="">
+        </ion-thumbnail>
+
       </div>
     </div>
   </div>
@@ -142,7 +146,8 @@
           <div style="width: calc(100% - 75px); margin-left: 10px;">
             <div style="display: flex; align-items: center; margin-bottom: 10px;">
               <img style="width: 18px; margin-right: 10px;" src="assets/material/country/JP.png" alt="">
-              <h3 style="font-size: 18px; font-weight: bold; color: #ffffff; margin: 0;">Elizabeth.O, 27</h3>
+              <h3 style="font-size: 18px; font-weight: bold; color: #ffffff; margin: 0;">{{userProfile['name'] || ''}}
+              </h3>
             </div>
             <div style="background-color: #393580; border-radius: 0 15px 15px 15px; padding: 10px;">
               <p style="font-size: 12px; font-weight: normal; color: #ffffff; font-style: italic; margin: 0;">“ Cannot
@@ -162,7 +167,8 @@
           <div
             style="width: max-content; height: 30px; padding: 0 15px 0 5px; border-radius: 30px; background-color: #212238; display: flex; align-items: center; justify-content: center;">
             <ion-icon style="font-size: 26px;" src="assets/svg/hey_coin.svg"></ion-icon>
-            <div style="font-size: 14px; font-weight: 00; color: #ffffff; margin-left: 5px;">13,988</div>
+            <div style="font-size: 14px; font-weight: 00; color: #ffffff; margin-left: 5px;">{{currentUser['credits'] ||
+              0}}</div>
           </div>
         </div>
 
@@ -171,7 +177,7 @@
             <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); padding: 0 15px;">
               <div *ngFor="let item of giftList" (click)="selectGift(item)"
                 [ngClass]="selectedGift['id'] == item['id'] ? 'each_gift_selected': 'each_gift'">
-                <img style="width: 54px; height: 51px; object-fit: cover;" src="{{item['thumbnail']}}" alt="">
+                <img style="width: 54px; height: 51px; object-fit: cover;" src="{{item['picture']}}" alt="">
 
                 <h6>{{item['name']}}</h6>
 
@@ -186,7 +192,8 @@
         </swiper-container>
 
         <div style="width: 100%; display: flex; align-items: center; justify-content: center; padding: 15px;">
-          <ion-button class="ion-no-padding primary_btn">
+          <ion-button [disabled]="!toolService.lengthof(selectedGift)" (click)="sendGift()"
+            class="ion-no-padding primary_btn">
             Send
           </ion-button>
         </div>

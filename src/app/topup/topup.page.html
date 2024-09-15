@@ -9,7 +9,7 @@
       <div style="font-size: 14px; font-weight: 500; color: #ffffff; margin-bottom: 3px;">Balance</div>
       <div style="display: flex; align-items: center; justify-content: flex-start;">
         <ion-icon style="font-size: 28px;" src="assets/svg/hey_coin.svg"></ion-icon>
-        <div style="font-size: 28px; font-weight: bold; color: #ffffff; margin-left: 5px;">13,988</div>
+        <div style="font-size: 28px; font-weight: bold; color: #ffffff; margin-left: 5px;">{{(currentUser['credits'] || 0) | number: '1.0-0'}}</div>
       </div>
     </div>
 

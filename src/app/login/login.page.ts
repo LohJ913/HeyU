@@ -4,7 +4,9 @@ import { IonRouterOutlet, ModalController, NavController } from '@ionic/angular'
 import firebase from 'firebase';
 import 'firebase/auth'
 declare var require;
-const { getRandomName, getNRandomNames, names } = require('fancy-random-names');
+// const { getRandomName, getNRandomNames, names } = require('fancy-random-names');
+import namesjson from '../../assets/json/names.json'
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-login',
@@ -20,14 +22,20 @@ export class LoginPage implements OnInit {
     password: ''
   }
 
+  generatedNames = namesjson
+
   constructor(
     public tool: ToolService,
     public navCtrl: NavController,
     public modalCtrl: ModalController,
-    public checkRoute: IonRouterOutlet
+    public checkRoute: IonRouterOutlet,
+    private http: HttpClient
   ) { }
 
   async ngOnInit() {
+
+
+    console.log(this.generatedNames)
     // this.firestore.collection('profiles').onSnapshot((doc) => {
     //   console.log(doc.data());
 
@@ -87,9 +95,11 @@ export class LoginPage implements OnInit {
         password: this.loginUser['password']
       }
 
-      firebase.auth().signInWithEmailAndPassword(signUpInfo['email'], signUpInfo['password']).then(() => {
-        this.tool.dismissLoading()
+      firebase.auth().signInWithEmailAndPassword(signUpInfo['email'], signUpInfo['password']).then(async () => {
+        await this.tool.dismissLoading()
         this.navCtrl.navigateRoot('tabs/tab1', { animated: true, animationDirection: 'forward' })
+      }, async error => {
+        await this.tool.dismissLoading()
       })
     }
   }
@@ -98,11 +108,12 @@ export class LoginPage implements OnInit {
     // this.firestore.collection('test').doc('f').set({
     //   n: '11'
     // })
+    
     this.tool.showLoading('Please wait...')
 
     firebase.auth().signInAnonymously().then(async (ano) => {
       let obj = {
-        name: getRandomName(),
+        name: this.getRandomName(),
         gender: this.interested == 'female' ? 'male' : 'female',
         interested: this.interested,
         id: ano.user.uid,
@@ -117,5 +128,11 @@ export class LoginPage implements OnInit {
         })
       })
     })
+  }
+
+  getRandomName() {
+    let array = this.interested == 'female' ? this.generatedNames['male'] : this.generatedNames['female']
+    var randomName = array[Math.floor(Math.random() * array.length)];
+    return randomName
   }
 }

@@ -18,7 +18,6 @@ export class ToolService {
     public loadingCtrl: LoadingController,
     private http: HttpClient,
     private datePipe: DatePipe
-    ,
   ) { }
 
   lengthof(x) {
@@ -181,4 +180,24 @@ export class ToolService {
       }
     });
   }
+
+  calculateAgeFromString(dobString: string): number {
+    // Split the date string into day, month, and year
+    const [day, month, year] = dobString.split('/').map(Number);
+    
+    // Create a new Date object using the parsed values
+    const birthDate = new Date(year, month - 1, day); // Month is zero-based in JS
+    
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+  
+    // Check if the birthday hasn't occurred yet this year
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+  
+    return age;
+  }
+  
 }

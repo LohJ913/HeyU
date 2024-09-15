@@ -25,7 +25,8 @@ export class Tab1Page implements OnInit {
     public navCtrl: NavController,
     public tool: ToolService,
     private dataService: DataService,
-    private readService: ReadService
+    private readService: ReadService,
+    private toolService: ToolService,
   ) {
 
   }
@@ -41,15 +42,15 @@ export class Tab1Page implements OnInit {
   }
 
   getOutlets() {
-    // Access a GeoCollection
 
   }
 
   getHotGirls() {
     this.readService.getHotGirls().subscribe({
       next: (data) => {
-        this.people = JSON.parse(JSON.stringify(data));
-        this.popular = data.sort((a, b) => ((b['view'] || 0) - (a['view'] || 0)));
+        let everyone = (data || []).filter((a: any) => (a['age'] = a['dob'] ? this.toolService.calculateAgeFromString(a['dob']) : 18))
+        this.people = JSON.parse(JSON.stringify(everyone));
+        this.popular = everyone.sort((a, b) => ((b['view'] || 0) - (a['view'] || 0)));
         console.log('Popular users:', this.popular);
       },
       error: (error) => {

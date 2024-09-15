@@ -28,6 +28,7 @@ export class AppComponent {
           if (doc.exists) {
             console.log(doc.data());
 
+            localStorage.setItem('heyu_uid', user.uid)
             dataService.updateUser(doc.data())
           }
         })
