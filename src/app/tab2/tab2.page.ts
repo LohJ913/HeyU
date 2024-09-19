@@ -42,19 +42,20 @@ export class Tab2Page implements OnInit, OnDestroy {
       console.log(info);
       this.currentUser = info;
       // this.uid = info['id']
-      localStorage.setItem('heyu_uid', 'user01')
       // localStorage.setItem('heyu_uid', this.currentUser['id'])
-      this.readService.chats$
-        .pipe(takeUntil(this.unsubscribe$))  // Use takeUntil to auto-unsubscribe
-        .subscribe((chats) => {
-          this.chats = chats;
-          console.log(chats)
-          this.filterChats();  // Or any other post-processing logic
-        });
+
 
       // Start listening for Firestore changes
-      this.readService.setupListener(this.uid);
     });
+
+    this.readService.chats$
+      .pipe(takeUntil(this.unsubscribe$))  // Use takeUntil to auto-unsubscribe
+      .subscribe((chats) => {
+        this.chats = chats;
+        console.log(chats)
+        this.filterChats();  // Or any other post-processing logic
+      });
+    this.readService.setupListener(this.uid);
 
   }
 
@@ -64,7 +65,7 @@ export class Tab2Page implements OnInit, OnDestroy {
 
   filterChats() {
     console.log(this.chats);
-    
+
     let filterChats = JSON.parse(JSON.stringify(this.chats) || '[]').filter((item: any) => (item.name.toLowerCase().includes(this.search.toLowerCase())))
     this.filteredChat = filterChats
   }

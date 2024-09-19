@@ -200,10 +200,17 @@ export class WriteService {
     });
   }
 
-  async sendGift(giftDetails: { giftId: string, gem: number, giftName: string, giftPicture: string }, conversationId: string, friend_id: string, uid: string, user_profile: any, friend_profile: any): Promise<void> {
+  async sendGift(
+    giftDetails: { id: string, gem: number, name: string, picture: string },
+    conversationId: string,
+    friend_id: string,
+    uid: string,
+    user_profile: any,
+    friend_profile: any
+  ): Promise<void> {
     const firestore = firebase.firestore();
 
-    console.log(giftDetails, conversationId, friend_id, uid, user_profile, friend_profile)
+    console.log(giftDetails, conversationId, friend_id, uid, user_profile, friend_profile);
 
     try {
       await firestore.runTransaction(async (transaction) => {
@@ -211,38 +218,36 @@ export class WriteService {
         const userDoc = await transaction.get(userRef);
         const userData = userDoc.data();
 
-        if (!userData || userData.coin < giftDetails.gem) {
+        if (!userData || userData.credits < giftDetails.gem) {
           throw new Error('Insufficient credits');
         }
 
-        const batch = firestore.batch();
         const conversationRef = firestore.collection('chatrooms').doc(conversationId);
         const messagesRef = conversationRef.collection('messages').doc(); // Auto-generate a unique ID
         const userChatRef = firestore.collection('users').doc(uid).collection('chats').doc(friend_id);
         const otherUserChatRef = firestore.collection('users').doc(friend_id).collection('chats').doc(uid);
-        const giftTransactionRef = firestore.collection('gift_transactions').doc()
+        const giftTransactionRef = firestore.collection('gift_transactions').doc();
 
         // Prepare new gift data
         const newGift = {
           senderId: uid,
-          giftId: giftDetails.giftId,
+          giftId: giftDetails.id || '',
           giftPrice: giftDetails.gem,
-          giftName: giftDetails.giftName,
-          giftPicture: giftDetails.giftPicture,
+          giftName: giftDetails.name,
+          giftPicture: giftDetails.picture,
           type: "gift",
           timestamp: firebase.firestore.FieldValue.serverTimestamp(),
           localTimestamp: new Date().getTime(),
           isDelivered: false,
         };
 
-        // Add the new gift to the messages subcollection
-        batch.set(messagesRef, newGift);
+        // Perform operations inside transaction
+        transaction.set(messagesRef, newGift);
 
-        // Prepare conversation data update
         const conversationData = {
           participants: [friend_id, uid],
           lastMessage: {
-            text: `Gift: ${giftDetails.giftId}`, // gift message
+            text: `Gift: ${giftDetails.name}`, // gift message
             type: "gift",
             timestamp: firebase.firestore.FieldValue.serverTimestamp(),
           },
@@ -255,11 +260,10 @@ export class WriteService {
           },
         };
 
-        batch.set(conversationRef, conversationData, { merge: true });
+        transaction.set(conversationRef, conversationData, { merge: true });
 
-        // Set for the other user
-        batch.set(otherUserChatRef, {
-          lastMessage: `Gift: ${giftDetails.giftName}`,// gift message
+        transaction.set(otherUserChatRef, {
+          lastMessage: `Gift: ${giftDetails.name}`, // gift message
           lastMessageType: "gift",
           lastMessageDate: firebase.firestore.FieldValue.serverTimestamp(),
           lastMessageBy: uid,
@@ -270,9 +274,8 @@ export class WriteService {
           delivered: false,
         }, { merge: true });
 
-        // Set for the current user
-        batch.set(userChatRef, {
-          lastMessage: `Gift: ${giftDetails.giftName}`,// gift message
+        transaction.set(userChatRef, {
+          lastMessage: `Gift: ${giftDetails.name}`, // gift message
           lastMessageType: "gift",
           lastMessageDate: firebase.firestore.FieldValue.serverTimestamp(),
           lastMessageBy: uid,
@@ -283,13 +286,11 @@ export class WriteService {
           delivered: false,
         }, { merge: true });
 
-
-        // Push gift transactions
-        batch.set(giftTransactionRef, {
+        transaction.set(giftTransactionRef, {
           giftPrice: giftDetails.gem,
-          giftId: giftDetails.giftId,
-          giftName: giftDetails.giftName,
-          giftPicture: giftDetails.giftPicture,
+          giftId: giftDetails.id,
+          giftName: giftDetails.name,
+          giftPicture: giftDetails.picture,
           recipientId: friend_id,
           recipientName: friend_profile['name'] || '',
           senderId: uid,
@@ -301,9 +302,6 @@ export class WriteService {
         transaction.update(userRef, {
           credits: firebase.firestore.FieldValue.increment(-giftDetails.gem)
         });
-
-        // Commit the transaction
-        return Promise.resolve(); // Transaction is committed when returning successfully
       });
 
       console.log('Transaction successful.');
@@ -311,6 +309,7 @@ export class WriteService {
       console.error('Error in transaction:', error);
     }
   }
+
 
   updateProfile(uid: string, profileData: any): Promise<void> {
     return this.firestore.collection('profiles').doc(uid).update(profileData)
@@ -323,12 +322,12 @@ export class WriteService {
   }
 
   async topUpCredits(uid: string, topupPackage: { amount: number, bonus: string, credits: number }, method: string): Promise<void> {
-    console.log(uid, topupPackage, method)
+    console.log(uid,topupPackage)
     const firestore = this.firestore;
     const userRef = firestore.collection('profiles').doc(uid);
     const transactionsRef = firestore.collection('transactions').doc(); // Auto-generate transaction ID
 
-    const topUpAmount = topupPackage['gem']; // Total coins (amount + bonus)
+    const topUpAmount = topupPackage['credits']; // Total credits (amount + bonus)
     // Prepare transaction data
     const transactionData = {
       amount: topupPackage.amount,
@@ -340,7 +339,7 @@ export class WriteService {
       uid: uid
     };
 
-    // Run transaction to update user's coins and record the transaction
+    // Run transaction to update user's credits and record the transaction
     return firestore.runTransaction(async (transaction) => {
       const userDoc = await transaction.get(userRef);
 
@@ -348,9 +347,9 @@ export class WriteService {
         throw new Error("User does not exist!");
       }
 
-      // Increment the user's coins
+      // Increment the user's credits
       transaction.update(userRef, {
-        coin: firebase.firestore.FieldValue.increment(topUpAmount)
+        credits: firebase.firestore.FieldValue.increment(topUpAmount)
       });
 
       // Record the transaction

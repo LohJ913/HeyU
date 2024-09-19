@@ -95,31 +95,37 @@
 
 
       <div *ngIf="item.senderId == uid" style="width: 100%; display: flex; justify-content: flex-end;">
-        <div
+        <div *ngIf="item.type == 'text'"
           style="width: max-content; max-width: calc(70%); background-color: #ECDDDD; padding: 8px 10px; border-radius: 15px 0 15px 15px;">
           <span style="color: #14152C; margin: 0;">{{item.text}}</span>
 
-          <div
-            style="width: 60px; height: 12px; position: relative; display: flex; align-items: center; justify-content: flex-end; float: right;">
+        </div>
 
-            <div *ngIf="!item.timestamp" class="snippet" data-title="dot-flashing">
-              <div class="stage">
-                <div class="dot-flashing"></div>
-              </div>
-            </div>
+        <div *ngIf="item.type == 'gift'">
+          <img [src]="item.giftPicture" alt="" style="width: 60px; height: 60px; object-fit: contain;">  
+        </div>
 
-            <div *ngIf="item.timestamp"
-              style="width: fit-content; display: flex; align-items: center; justify-content: flex-end; position: absolute; top: 5px;">
-              <div style="width: 100%; font-size: 11px; font-weight: normal; color: #14152C; text-align: end;">
-                {{item.date | date : 'h:mm a'}}</div>
+        <div
+        style="width: 60px; height: 12px; position: relative; display: flex; align-items: center; justify-content: flex-end; float: right;">
 
-              <ion-icon *ngIf="item.timestamp"
-                [ngStyle]="{'color': item.isRead ? 'blue' : item.isDelivered ? '#333' : '#333'}"
-                [name]="item.isRead ? 'checkmark-done-outline' : item.isDelivered ? 'checkmark-done-outline' : 'checkmark-outline' "
-                style="font-size: 13px;margin-top: 1px; margin-right: 3px;"></ion-icon>
-            </div>
+        <div *ngIf="!item.timestamp" class="snippet" data-title="dot-flashing">
+          <div class="stage">
+            <div class="dot-flashing"></div>
           </div>
         </div>
+
+        <div *ngIf="item.timestamp"
+          style="width: fit-content; display: flex; align-items: center; justify-content: flex-end; position: absolute; top: 5px;">
+          <div style="width: 100%; font-size: 11px; font-weight: normal; color: #14152C; text-align: end;">
+            {{item.date | date : 'h:mm a'}}</div>
+
+          <ion-icon *ngIf="item.timestamp"
+            [ngStyle]="{'color': item.isRead ? 'blue' : item.isDelivered ? '#333' : '#333'}"
+            [name]="item.isRead ? 'checkmark-done-outline' : item.isDelivered ? 'checkmark-done-outline' : 'checkmark-outline' "
+            style="font-size: 13px;margin-top: 1px; margin-right: 3px;"></ion-icon>
+        </div>
+      </div>
+      
       </div>
     </div>
   </ion-list>

@@ -165,7 +165,7 @@ export class ToolService {
     let today = new Date().getTime();
     return new Promise((resolve) => {
       if (this.datePipe.transform(dater, 'yyyyMMdd') == this.datePipe.transform(today, 'yyyyMMdd')) {
-        resolve('Today');
+        resolve(this.datePipe.transform(dater, 'h:mm a'));
       } else if (this.datePipe.transform(dater, 'yyyyMMdd') < this.datePipe.transform(today, 'yyyyMMdd')) {
         console.log('here')
         if (this.datePipe.transform(dater, 'yyyyMMdd') >= this.datePipe.transform(new Date(new Date(today).getFullYear(), new Date(today).getMonth(), new Date(today).getDate() - 1, 0, 0, 0), 'yyyyMMdd')) {

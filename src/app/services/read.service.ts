@@ -48,7 +48,7 @@ export class ReadService {
           }
           if (change.type === 'removed') {
             console.log('Chat removed: ', change.doc.data());
-            this.chatsSubject.next([...this.chats]);  // Emit the updated chats array to subscribers
+            // this.chatsSubject.next([...this.chats]);  // Emit the updated chats array to subscribers
           }
           if (change.doc.data().lastMessageBy !== uid && !change.doc.data().delivered) {
             this.writeService.updateDelivered([uid, change.doc.id], (change.doc.data().lastDeliveryDate) || null);

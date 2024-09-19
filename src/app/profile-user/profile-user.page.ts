@@ -108,7 +108,7 @@ export class ProfileUserPage implements OnInit {
     })
     this.userSubscribe = this.dataService.userInfo.pipe(distinctUntilChanged()).subscribe(async (info) => {
       this.currentUser = info
-      console.log(info)
+      // console.log(info)
     })
   }
 
