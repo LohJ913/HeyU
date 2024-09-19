@@ -1,0 +1,172 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="ion-no-padding" style="--background: #382D62;">
+    <div
+      style="width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 10px 20px 10px 10px;">
+
+      <div style="display: flex; align-items: center;">
+        <ion-button (click)="back()" fill="clear">
+          <ion-icon slot="icon-only" color="white" name="chevron-back"></ion-icon>
+        </ion-button>
+
+        <div
+          style="width: 170px; display: flex; align-items: center; background-color: #282047; border-radius: 30px; padding-right: 5px;">
+          <div
+            style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 100%; background-color: #100E1F; border: 1.5px solid #60448F; position: relative;">
+            <ion-avatar style="width: 100%; height: 100%;">
+              <img
+                src="https://img.freepik.com/premium-photo/asian-girls-education-happy-beautiful-asian-girl-is-smilling_911620-8519.jpg" />
+            </ion-avatar>
+
+            <div
+              style="padding: 1px 8px; border-radius: 30px; border: 1px solid #B37AB4; background: linear-gradient(0, #8843D1 0%, #4C1DA3 100%); position: absolute; bottom: -7px;">
+              <div style="font-size: 8px; font-weight: 700; color: #ffffff;">Host</div>
+            </div>
+          </div>
+
+          <div style="width: calc(100% - 50px); margin-left: 10px;">
+            <h3
+              style="width: 100%; font-size: 12px; font-weight: 700; color: #ffffff; margin: 0 0 3px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+              Jonathan.L
+            </h3>
+
+            <h6
+              style="width: 100%; font-size: 10px; font-weight: normal; color: #B4B2E5; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+              Room ID: 2013
+            </h6>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 5px;">
+        <ion-button
+          style="width: 40px; height: 40px; --background: #282047; --border-radius: 100%; border-radius: 100%;">
+          <ion-icon slot="icon-only" style="color: #d9d9d9;" name="arrow-redo"></ion-icon>
+        </ion-button>
+
+        <ion-button
+          style="width: 40px; height: 40px; --background: #282047; --border-radius: 100%; border-radius: 100%;">
+          <ion-icon slot="icon-only" style="color: #d9d9d9;" name="ellipsis-vertical"></ion-icon>
+        </ion-button>
+      </div>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" style="--background: #382D62;">
+  <div style="width: 100%; padding: 20px;">
+    <div
+      style="width: 100%; min-height: 80px; display: flex; align-items: center; justify-content: space-between; padding: 15px 0; border-radius: 10px; background: linear-gradient(90deg, #6A79FF 0%, #8032FF 100%); margin-bottom: 30px;">
+
+      <div
+        style="width: calc(100% / 3); height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0 5px;">
+        <h6 style="font-size: 12px; font-weight: normal; color: #ffffff; margin: 0 0 10px 0;">Time</h6>
+
+        <h6 style="font-size: 12px; font-weight: bold; color: #ffffff; text-align: center; margin: 0;">{{1726660800000 |
+          date:
+          'hh:mm a'}}</h6>
+      </div>
+
+      <div
+        style="width: calc(100% / 3); height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0 5px; border-left: 1px solid #916FFF; border-right: 1px solid #916FFF;">
+        <h6 style="font-size: 12px; font-weight: normal; color: #ffffff; margin: 0 0 10px 0;">Date</h6>
+
+        <h6 style="font-size: 12px; font-weight: bold; color: #ffffff; text-align: center; margin: 0;">{{1726660800000 |
+          date:
+          'hh:mm a'}}</h6>
+      </div>
+
+      <div
+        style="width: calc(100% / 3); height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0 5px;">
+        <h6 style="font-size: 12px; font-weight: normal; color: #ffffff; margin: 0 0 10px 0;">Location</h6>
+
+        <h6 style="font-size: 12px; font-weight: bold; color: #ffffff; text-align: center; margin: 0;">VSING Puchong
+        </h6>
+      </div>
+    </div>
+
+    <div class="party_desc_container">
+      <div
+        style="min-width: 180px; height: 30px; display: flex; align-items: center; justify-content: center; background: url(/assets/material/party_info_box.png) center center / cover no-repeat fixed; position: absolute; top: -16px;">
+        <h1 style="font-size: 14px; font-weight: bold; color: #ffffff; margin: 0;">About This Party</h1>
+      </div>
+
+      <p
+        style="width: 100%; font-size: 12px; font-weight: normal; color: #ffffff; text-align: center; margin: 5px 0 20px 0;">
+        Lorem ipsum dolor sit amet,
+        consectetur adipiscing elit. Sed at magna
+        tristique, tempor nisi pretium, porta arcu. Nam nunc enim, mattis eget velit nec, vestibulum laoreet
+        leo.
+        Aenean quis elementum mi. </p>
+
+      <div style="width: 100%; display: flex; align-items: center; justify-content: space-around;">
+
+        <div style="display: flex; flex-direction: column; align-items: center;">
+          <h1 style="font-size: 14px; font-weight: bold; color: #ffffff; margin: 0 0 5px 0;">Occasion</h1>
+
+          <div
+            style="font-size: 12px; font-weight: 400; color: #ffffff; border-radius: 30px; padding: 4px 10px; background: linear-gradient(100deg, #B821F8 0%, #FF2D95 48%, #FF971D 100%);">
+            Birthday</div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; align-items: center;">
+          <h1 style="font-size: 14px; font-weight: bold; color: #ffffff; margin: 0 0 5px 0;">Who can join?</h1>
+
+          <div
+            style="font-size: 12px; font-weight: 400; color: #ffffff; border-radius: 30px; padding: 4px 10px; background: linear-gradient(100deg, #B821F8 0%, #FF2D95 48%, #FF971D 100%);">
+            Female Only</div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="participant_container">
+
+      <div
+        style="min-width: 180px; height: 30px; display: flex; align-items: center; justify-content: center; background: url(/assets/material/participant_box.png) center center / cover no-repeat fixed; position: absolute; top: -30px;">
+        <h1 style="font-size: 14px; font-weight: bold; color: #ffffff; margin: 0;">Participants</h1>
+      </div>
+
+      <div
+        style="width: 100%; display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); background: linear-gradient(0, #36136A 0%, #51287C 100%); padding: 15px 0; border-radius: 2px; gap: 15px;">
+        <div *ngFor="let pa of participant_list; let i = index;"
+          style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0 5px;">
+
+          <div *ngIf="tool.lengthof(pa)" style="display: flex; flex-direction: column; align-items: center;">
+            <div style="width: 51px; height: 51px; border-radius: 100%; background-color: #280F55;">
+              <ion-avatar style="width: 100%; height: 100%;">
+                <img [src]="pa.thumbnail" />
+              </ion-avatar>
+            </div>
+
+            <h6
+              style="width: 100%; font-size: 12px; font-weight: 700; color: #9972C4; text-align: center; margin: 3px 0 0 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+              {{pa.name}}</h6>
+          </div>
+
+          <div *ngIf="!tool.lengthof(pa)" style="display: flex; flex-direction: column; align-items: center;">
+            <div
+              style="width: 49px; height: 49px; display: flex; align-items: center; justify-content: center; border-radius: 100%; background-color: #280F55; border: 2px solid #533780;">
+              <ion-icon style="font-size: 20px; color: #533780;" name="add"></ion-icon>
+            </div>
+
+            <h6
+              style="width: 100%; font-size: 12px; font-weight: 700; color: #9972C400; text-align: center; margin: 3px 0 0 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+              Nothing</h6>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</ion-content>
+<ion-footer class="ion-no-border">
+  <ion-toolbar class="ion-no-padding" style="--background: #382D62;">
+    <div style="width: 100%; padding: 20px;">
+      <ion-button class="ion-no-padding primary_btn">
+        Request to join
+      </ion-button>
+    </div>
+  </ion-toolbar>
+</ion-footer>

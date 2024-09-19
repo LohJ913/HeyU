@@ -33,37 +33,37 @@ export class TopupPage implements OnInit {
     {
       amount: 5000,
       bonus: 0,
-      gem: 500,
+      credits: 500,
       id: 'P001'
     },
     {
       amount: 10000,
       bonus: 10,
-      gem: 1000,
+      credits: 1000,
       id: 'P002'
     },
     {
       amount: 15000,
       bonus: 15,
-      gem: 3500,
+      credits: 3500,
       id: 'P003'
     },
     {
       amount: 20000,
       bonus: 30,
-      gem: 5000,
+      credits: 5000,
       id: 'P004'
     },
     {
       amount: 25000,
       bonus: 50,
-      gem: 10500,
+      credits: 10500,
       id: 'P005'
     },
     {
       amount: 30000,
       bonus: 75,
-      gem: 25000,
+      credits: 25000,
       id: 'P006'
     }
   ]
@@ -102,9 +102,6 @@ export class TopupPage implements OnInit {
   userSubscribe: any;
 
   ngOnInit() {
-
-
-    console.log(this.uid)
     this.userSubscribe = this.dataService.userInfo.pipe(distinctUntilChanged()).subscribe(async (info) => {
       this.currentUser = info
       console.log(info)
@@ -118,7 +115,7 @@ export class TopupPage implements OnInit {
 
   makePayment() {
 
-    this.writeService.topUpCredits(this.uid, this.selectedPackage,'online')
+    this.writeService.topUpCredits(this.uid, this.selectedPackage, 'online')
       .then(() => {
         console.log('Credits successfully topped up!');
         // swal it 

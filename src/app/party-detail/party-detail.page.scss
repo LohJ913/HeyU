@@ -1,0 +1,29 @@
+.party_desc_container {
+    width: 100%;
+    padding: 20px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(#2A0D65, #2A0D65) padding-box,
+        linear-gradient(90deg, #7D3DFF 0%, #9d39fd66 40%, #6E6DFF 100%) border-box;
+    border: 3px solid transparent;
+    position: relative;
+    margin-bottom: 45px;
+}
+
+.participant_container {
+    width: 100%;
+    padding: 5px;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(0, #4D17A0 0%, #904DD1 100%) padding-box,
+        linear-gradient(0, #9E7ED4 0%, #EA9CB9 100%) border-box;
+    border: 2px solid transparent;
+    position: relative;
+    margin-bottom: 20px;
+}

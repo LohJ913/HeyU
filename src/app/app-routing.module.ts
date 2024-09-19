@@ -61,6 +61,18 @@ const routes: Routes = [
   {
     path: 'lobby',
     loadChildren: () => import('./lobby/lobby.module').then( m => m.LobbyPageModule)
+  },
+  {
+    path: 'party-list',
+    loadChildren: () => import('./party-list/party-list.module').then( m => m.PartyListPageModule)
+  },
+  {
+    path: 'party-add',
+    loadChildren: () => import('./party-add/party-add.module').then( m => m.PartyAddPageModule)
+  },
+  {
+    path: 'party-detail',
+    loadChildren: () => import('./party-detail/party-detail.module').then( m => m.PartyDetailPageModule)
   }
 ];
 @NgModule({

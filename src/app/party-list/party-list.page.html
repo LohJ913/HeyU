@@ -1,0 +1,93 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="ion-no-padding" style="--background: #080812;">
+    <div
+      style="width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 10px 20px 10px 10px;">
+      <ion-button (click)="back()" fill="clear">
+        <ion-icon slot="icon-only" color="white" name="chevron-back"></ion-icon>
+      </ion-button>
+
+      <ion-input
+        style="width: calc(100% - 40px); min-height: 40px; text-align: center; --placeholder-color: #7673A8; --padding-start: 20px;  background-color: #382D62; border-radius: 30px;"
+        [clearInput]="true" type="text" placeholder="Search"></ion-input>
+    </div>
+    <div style="width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 5px 20px;">
+
+      <div style="display: flex; align-items: center; gap: 5px;">
+
+        <ion-select
+          style="--padding-start: 10px; --padding-end: 10px; min-height: 30px; background-color: #6860FF; border-radius: 30px; font-size: 13px; color: #ffffff;"
+          value="female" interface="popover">
+          <ion-select-option value="female">Female Only</ion-select-option>
+          <ion-select-option value="male">Male Only</ion-select-option>
+          <ion-select-option value="all">Both</ion-select-option>
+        </ion-select>
+
+        <ion-select
+          style="--padding-start: 10px; --padding-end: 10px; min-height: 30px; background-color: #6860FF; border-radius: 30px; font-size: 13px; color: #ffffff;"
+          value="any" interface="popover">
+          <ion-select-option value="any">Any Type</ion-select-option>
+        </ion-select>
+
+      </div>
+
+      <ion-button (click)="tool.navTo('party-add')" class="ion-no-padding primary_btn"
+        style="width: 90px; min-height: 30px; font-size: 13px;">
+        <ion-icon slot="start" name="add"></ion-icon>
+        Create
+      </ion-button>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" style="--background: #080812;">
+  <div style="width: 100%; padding: 10px 20px;">
+    <ion-list class="ion-no-padding" style="background-color: #080812;">
+      <ion-item (click)="tool.navTo('party-detail')" *ngFor="let item of [0,1,2,3,4,5,6,7,8,9]" class="ion-no-padding"
+        lines="none"
+        style="--background: #382D62; --padding-start: 15px; --padding-top: 15px; --padding-bottom: 15px; border-radius: 15px; margin-bottom: 20px;">
+        <div style="width: 100%; display: flex;">
+
+          <div
+            style="width: 100px; height: 100px; display: flex; align-items: center; justify-content: center; padding: 3px; border-radius: 100%; background-color: #100E1F; border: 2px solid #E297FF;">
+            <ion-avatar style="width: 100%; height: 100%;">
+              <img
+                src="https://img.freepik.com/premium-photo/asian-girls-education-happy-beautiful-asian-girl-is-smilling_911620-8519.jpg" />
+            </ion-avatar>
+          </div>
+
+
+          <div
+            style="width: calc(100% - 117px); height: 100px; display: flex; flex-direction: column; justify-content: space-between; margin-left: 15px; padding: 5px 0;">
+
+            <div style="width: 100%;">
+              <h3
+                style="width: 100%; font-size: 14px; font-weight: normal; color: #ffffff; margin: 0 0 3px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                Jonathan.L
+              </h3>
+              <p
+                style="font-size: 12px; font-weight: normal; color: #B4B2E5; margin: 0; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical;">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed at magna
+                tristique, tempor nisi pretium, porta arcu. Nam nunc enim, mattis eget velit nec, vestibulum laoreet
+                leo.
+                Aenean quis elementum mi. </p>
+            </div>
+
+            <div style="width: 100%; display: flex; align-items: center; justify-content: space-between;">
+              <div>
+                <h6 style="font-size: 12px; font-weight: normal; color: #ffffff; margin: 0;">{{1726660800000 | date:
+                  'dd/MM/yyyy'}}</h6>
+                <h6 style="font-size: 12px; font-weight: normal; color: #ffffff; margin: 0;">{{1726660800000 | date:
+                  'hh:mm a'}}</h6>
+              </div>
+
+              <div class="request_btn">
+                <ion-icon style="font-size: 12px;" src="assets/svg/party_room.svg"></ion-icon>
+                <h6>Request</h6>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ion-item>
+    </ion-list>
+  </div>
+</ion-content>

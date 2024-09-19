@@ -1,0 +1,118 @@
+<ion-content [fullscreen]="true"
+  style="--background: url(/assets/background/login_bg.jpg) center center / cover no-repeat fixed; position: relative;">
+  <div style="width: 100%;">
+
+    <ion-header class="ion-no-border" style="position: sticky; top: 0;">
+      <ion-toolbar class="ion-no-padding"
+        style="--background: url(/assets/background/login_bg.jpg) 0 0 / cover no-repeat fixed; padding-left: 0 !important; padding-right: 0 !important;">
+
+        <div style="width: 100%;">
+
+          <ion-button style="font-size: 30px;" (click)="back() " fill="clear">
+            <ion-icon slot="icon-only" color="white" name="chevron-back"></ion-icon>
+          </ion-button>
+
+          <div style="width: 100%; padding: 0 20px 20px 20px">
+            <div style="font-size: 32px; font-weight: 800; color: #ffffff; margin-bottom: 3px;">Party Room</div>
+            <div style="font-size: 16px; font-weight: 500; color: #B4B2E5;">Create your own party invitations</div>
+          </div>
+
+        </div>
+      </ion-toolbar>
+    </ion-header>
+
+    <div
+      style="width: 100%; padding: 15px; display: flex; align-items: center; justify-content: center; margin-bottom: 15px">
+      <div style="width: 100%; height: 46px; background-color: #6860FF; border-radius: 30px; padding:0 15px">
+        <ion-select mode="ios" interface="popover" placeholder="Select Location"
+          style="font-size: 16px; font-weight: bold; color: #ffffff; --placeholder-color: #ffffff;">
+          <ion-select-option>Tang Ping</ion-select-option>
+        </ion-select>
+      </div>
+    </div>
+
+    <div style="width: 100%; background-color: #382D62; border-radius: 15px 15px 0 0; padding: 15px;">
+      <div style="font-size: 16px; font-weight: bold; color: #ffffff; margin-bottom: 15px;">Party Info</div>
+
+      <div
+        style="width: 100%; height: 45px; margin-bottom: 13px; background-color: #090913; border-radius: 25px; padding: 0 15px;">
+        <ion-input style="font-size: 14px; font-weight: 500; color: #ffffff; --placeholder-color: #848489;"
+          placeholder="Give your party a title"></ion-input>
+      </div>
+
+      <div style="width: 100%; margin-bottom: 13px; background-color: #090913; border-radius: 25px; padding: 5px 15px;">
+        <ion-textarea style="font-size: 14px; font-weight: 500; color: #ffffff; --placeholder-color: #848489;"
+          placeholder="What is this party about?" rows="3"></ion-textarea>
+      </div>
+
+      <div
+        style="width: 100%; margin-bottom: 13px; display: flex; align-items: center; justify-content: space-between;">
+        <div
+          style="width: calc(50% - 5px); margin-right: 5px; height: 45px; display: flex; align-items: center; background-color: #090913; border-radius: 25px; padding: 5px 15px; margin-right: 5px;">
+          <ion-input type="date"
+            style="font-size: 14px; font-weight: 500; color: #ffffff; --placeholder-color: #848489;"></ion-input>
+        </div>
+
+        <div
+          style="width: calc(50% - 5px); margin-left: 5px; height: 45px; display: flex; align-items: center; background-color: #090913; border-radius: 25px; padding: 5px 15px; margin-right: 5px;">
+          <ion-input type="time"
+            style="font-size: 14px; font-weight: 500; color: #ffffff; --placeholder-color: #848489;"></ion-input>
+        </div>
+      </div>
+
+      <div
+        style="width: 100%; height: 45px; margin-bottom: 35px; background-color: #090913; border-radius: 25px; display: flex; align-items: center;">
+        <div
+          style="width: calc(100% - 130px); height: 100%; display: flex; align-items: center; justify-content: space-between;">
+          <div (click)="selectPax(item)" *ngFor="let item of paxNumber; let i = index" style="width: calc(100% / 4); height: 100%; display: flex; justify-content: center; align-items: center;" [ngStyle]="{'background-color': selectedPax == item ? '#6860FF' : '#090913', 'border-radius': i == 0 ? '25px 0 0 25px' : '0'}">
+            <div style="font-size: 14px; font-weight: bold; color: #ffffff;">{{item}}</div>
+          </div>
+        </div>
+
+        <div style="width: 130px; height: 100%; padding: 5px 0; display: flex; align-items: center;">
+          <ion-input style="font-size: 14px; font-weight: 500; color: #ffffff; border-left: 0.5px solid rgb(132, 132, 137, 0.5); --placeholder-color: #848489; --padding-start: 10px;" placeholder="Enter pax no."></ion-input>
+        </div>
+      </div>
+
+      <div style="font-size: 16px; font-weight: bold; color: #ffffff; margin-bottom: 15px;">Who can join?</div>
+
+      <div
+        style="width: 100%; margin-bottom: 35px; display: flex; align-items: center; justify-content: space-between;">
+        <div class="gender_container" (click)="selectGender(item)" *ngFor="let item of gender; let l = last"
+          [ngStyle]="{'margin-right' : !l ? '10px' : '', 'background-color': selectedGender == item['value'] ? '#6860FF' : '#090913' }">
+          <ion-icon style="font-size: 18px;"
+            [src]="selectedGender == item['value'] ? item['icon2'] : item['icon']"></ion-icon>
+          <div class="gender_text">{{item['name']}}</div>
+        </div>
+      </div>
+
+      <div style="font-size: 16px; font-weight: bold; color: #ffffff; margin-bottom: 15px;">Preferences</div>
+
+      <div style="width: 100%; display: flex; flex-wrap: wrap;">
+        <div (click)="selectPreference(item)"
+          [ngStyle]="{'background-color': selectedPreference == item ? '#6860FF' : '#090913'}"
+          *ngFor="let item of preferences"
+          style="width: fit-content; min-width: 80px; margin-right: 10px; margin-bottom: 10px; background-color: #090913; height: 45px; padding: 0 15px; border-radius: 25px; display: flex; align-items: center; justify-content: center;">
+          <div style="font-size: 14px; font-weight: 500; color: #ffffff;"># {{item}}</div>
+        </div>
+      </div>
+
+
+    </div>
+  </div>
+</ion-content>
+
+<ion-footer class="ion-no-border">
+  <ion-toolbar class="ion-no-padding" style="--background: #14152C;">
+    <div style="width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 15px;">
+      <div>
+        <h6 style="font-size: 14px; font-weight: normal; color: #ffffff; margin: 0;">Estimated Price</h6>
+        <h1 style="font-size: 22px; font-weight: bold; color: #ffffff; margin: 0;">RM&nbsp;{{5000 | number: '.2'}}</h1>
+      </div>
+
+      <ion-button style="width: 45%;" class="ion-no-padding primary_btn">
+        Continue
+      </ion-button>
+    </div>
+  </ion-toolbar>
+</ion-footer>

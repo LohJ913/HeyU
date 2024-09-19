@@ -1,0 +1,15 @@
+.gender_container {
+    width: calc((100% / 3) - 10px);
+    height: 45px;
+    border-radius: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.gender_text {
+    font-size: 14px;
+    color: #ffffff;
+    font-weight: 500;
+    margin-left: 8px;
+}
