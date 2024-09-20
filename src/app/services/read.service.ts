@@ -240,5 +240,22 @@ export class ReadService {
     });
   }
 
+  getProfilefromUsername(username: string): Promise<any[]> {
+    const profileRef = this.firestore
+      .collection('profiles')
+      .where('username', '==', username);
+
+    return profileRef
+      .get()
+      .then(snapshot => {
+        const users: any[] = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        return users; // Return the users array
+      })
+      .catch(error => {
+        console.error('Error fetching profiles:', error);
+        throw error; // Throw error so the caller can catch it
+      });
+  }
+
 }
 

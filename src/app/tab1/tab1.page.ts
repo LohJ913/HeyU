@@ -5,6 +5,7 @@ import { DataService } from '../services/data.service';
 import { ToolService } from '../services/tool.service';
 import firebase from 'firebase';
 import { ReadService } from '../services/read.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-tab1',

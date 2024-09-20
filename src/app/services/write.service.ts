@@ -321,18 +321,18 @@ export class WriteService {
       });
   }
 
-  async topUpCredits(uid: string, topupPackage: { amount: number, bonus: string, credits: number }, method: string): Promise<void> {
+  async topUpCredits(uid: string, topupPackage: { amount: number, bonus: string, gem: number }, method: string): Promise<void> {
     console.log(uid,topupPackage)
     const firestore = this.firestore;
     const userRef = firestore.collection('profiles').doc(uid);
     const transactionsRef = firestore.collection('transactions').doc(); // Auto-generate transaction ID
 
-    const topUpAmount = topupPackage['credits']; // Total credits (amount + bonus)
+    const topUpAmount = topupPackage['gem']; // Total credits (amount + bonus)
     // Prepare transaction data
     const transactionData = {
       amount: topupPackage.amount,
       bonus: topupPackage.bonus,
-      credits: topupPackage.credits,
+      credits: topupPackage.gem,
       method: method || 'online',
       timestamp: firebase.firestore.FieldValue.serverTimestamp(),
       type: 'topup',

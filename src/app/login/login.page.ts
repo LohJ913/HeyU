@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ToolService } from '../services/tool.service';
+import { ReadService } from '../services/read.service';
 import { IonRouterOutlet, ModalController, NavController } from '@ionic/angular';
 import firebase from 'firebase';
 import 'firebase/auth'
@@ -7,6 +8,7 @@ declare var require;
 // const { getRandomName, getNRandomNames, names } = require('fancy-random-names');
 import namesjson from '../../assets/json/names.json'
 import { HttpClient } from '@angular/common/http';
+import Swal from 'sweetalert2'
 
 @Component({
   selector: 'app-login',
@@ -29,11 +31,11 @@ export class LoginPage implements OnInit {
     public navCtrl: NavController,
     public modalCtrl: ModalController,
     public checkRoute: IonRouterOutlet,
-    private http: HttpClient
+    private http: HttpClient,
+    private readService: ReadService
   ) { }
 
   async ngOnInit() {
-
 
     console.log(this.generatedNames)
     // this.firestore.collection('profiles').onSnapshot((doc) => {
@@ -95,12 +97,32 @@ export class LoginPage implements OnInit {
         password: this.loginUser['password']
       }
 
-      firebase.auth().signInWithEmailAndPassword(signUpInfo['email'], signUpInfo['password']).then(async () => {
-        await this.tool.dismissLoading()
-        this.navCtrl.navigateRoot('tabs/tab1', { animated: true, animationDirection: 'forward' })
-      }, async error => {
-        await this.tool.dismissLoading()
+
+      this.readService.getProfilefromUsername(this.loginUser['username']).then((data) => {
+        if (this.tool.lengthof(data)) {
+
+          if (data[0].password == this.loginUser['password']) {
+
+            localStorage.setItem('heyu_uid', data[0]['id'])
+
+          }
+
+          this.tool.dismissLoading()
+        }
+        else {
+
+
+          this.tool.dismissLoading()
+        }
+      }).catch(() => {
+        this.tool.dismissLoading
       })
+      // firebase.auth().signInWithEmailAndPassword(signUpInfo['email'], signUpInfo['password']).then(async () => {
+      //   await this.tool.dismissLoading()
+      //   this.navCtrl.navigateRoot('tabs/tab1', { animated: true, animationDirection: 'forward' })
+      // }, async error => {
+      //   await this.tool.dismissLoading()
+      // }) 
     }
   }
 
@@ -108,7 +130,7 @@ export class LoginPage implements OnInit {
     // this.firestore.collection('test').doc('f').set({
     //   n: '11'
     // })
-    
+
     this.tool.showLoading('Please wait...')
 
     firebase.auth().signInAnonymously().then(async (ano) => {

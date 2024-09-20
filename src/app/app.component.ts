@@ -20,6 +20,8 @@ export class AppComponent {
   ) {
     firebase.initializeApp(FIREBASE_CONFIG);
 
+
+
     firebase.auth().onAuthStateChanged(user => {
       console.log(user);
 
@@ -38,5 +40,7 @@ export class AppComponent {
       }
 
     })
+
+
   }
 }
