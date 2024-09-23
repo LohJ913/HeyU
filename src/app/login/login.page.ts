@@ -97,32 +97,33 @@ export class LoginPage implements OnInit {
         password: this.loginUser['password']
       }
 
-
-      this.readService.getProfilefromUsername(this.loginUser['username']).then((data) => {
-        if (this.tool.lengthof(data)) {
-
-          if (data[0].password == this.loginUser['password']) {
-
-            localStorage.setItem('heyu_uid', data[0]['id'])
-
-          }
-
-          this.tool.dismissLoading()
-        }
-        else {
-
-
-          this.tool.dismissLoading()
-        }
-      }).catch(() => {
-        this.tool.dismissLoading
+      firebase.auth().signInWithEmailAndPassword(signUpInfo['email'], signUpInfo['password']).then(async () => {
+        await this.tool.dismissLoading()
+        this.navCtrl.navigateRoot('tabs/tab1', { animated: true, animationDirection: 'forward' })
+      }, async error => {
+        await this.tool.dismissLoading()
       })
-      // firebase.auth().signInWithEmailAndPassword(signUpInfo['email'], signUpInfo['password']).then(async () => {
-      //   await this.tool.dismissLoading()
-      //   this.navCtrl.navigateRoot('tabs/tab1', { animated: true, animationDirection: 'forward' })
-      // }, async error => {
-      //   await this.tool.dismissLoading()
-      // }) 
+
+
+      // this.readService.getProfilefromUsername(this.loginUser['username']).then((data) => {
+      //   if (this.tool.lengthof(data)) {
+
+      //     if (data[0].password == this.loginUser['password']) {
+
+      //       localStorage.setItem('heyu_uid', data[0]['id'])
+
+      //     }
+
+      //     this.tool.dismissLoading()
+      //   }
+      //   else {
+
+
+      //     this.tool.dismissLoading()
+      //   }
+      // }).catch(() => {
+      //   this.tool.dismissLoading
+      // })
     }
   }
 

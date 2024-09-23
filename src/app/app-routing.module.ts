@@ -73,6 +73,10 @@ const routes: Routes = [
   {
     path: 'party-detail',
     loadChildren: () => import('./party-detail/party-detail.module').then( m => m.PartyDetailPageModule)
+  },
+  {
+    path: 'topup-modal',
+    loadChildren: () => import('./topup-modal/topup-modal.module').then( m => m.TopupModalPageModule)
   }
 ];
 @NgModule({

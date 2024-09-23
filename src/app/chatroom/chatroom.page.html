@@ -38,7 +38,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true" style="--background: #080812;">
+<ion-content #content [fullscreen]="true" style="--background: #080812;">
 
   <!-- <div
     style="width: 100%; padding: 20px 15px 15px 15px; display: flex; justify-content: center; align-items: center; flex-direction: column;">
@@ -79,55 +79,26 @@
     </div>
   </div> -->
 
-  <ion-list style="background: transparent; padding: 15px;">
-    <div *ngFor="let item of messages" style=" margin-bottom: 10px;">
-      <div *ngIf="item.senderId != uid"
-        style="width: fit-content; max-width: calc(100% - 40px); background-color: #212238; padding: 8px 10px; border-radius: 0 15px 15px 15px;">
-        <span style="color: #ECDDDD; margin: 0;">{{item.text}}</span>
-        <div
-          style="width: 60px; height: 12px; position: relative; display: flex; align-items: center; justify-content: flex-end; float: right;">
+  <ion-list style="background: transparent; padding: 15px 15px 0 15px;">
+    <!-- <div *ngFor="let item of messages" style=" margin-bottom: 10px;"> -->
 
-          <div
-            style="width: 100%; font-size: 10px; font-weight: normal; color: #ECDDDD; text-align: end; position: absolute; top: 5px;">
-            {{item.date | date : 'h:mm a'}}</div>
-        </div>
-      </div>
+    <ion-item *ngFor="let item of messages; let i = index; let f = first;" lines="none" class="ion-no-padding"
+      style="--background: transparent; --inner-padding-end: 0px; margin-bottom: 10px;">
 
-
-      <div *ngIf="item.senderId == uid" style="width: 100%; display: flex; justify-content: flex-end;">
-        <div *ngIf="item.type == 'text'"
-          style="width: max-content; max-width: calc(70%); background-color: #ECDDDD; padding: 8px 10px; border-radius: 15px 0 15px 15px;">
-          <span style="color: #14152C; margin: 0;">{{item.text}}</span>
-
-          <div
-            style="width: 60px; height: 12px; position: relative; display: flex; align-items: center; justify-content: flex-end; float: right;">
-
-            <div *ngIf="!item.timestamp" class="snippet" data-title="dot-flashing">
-              <div class="stage">
-                <div class="dot-flashing"></div>
-              </div>
-            </div>
-
-            <div *ngIf="item.timestamp"
-              style="width: fit-content; display: flex; align-items: center; justify-content: flex-end; position: absolute; top: 5px;">
-              <div style="width: 100%; font-size: 11px; font-weight: normal; color: #14152C; text-align: end;">
-                {{item.date | date : 'h:mm a'}}</div>
-
-              <ion-icon *ngIf="item.timestamp"
-                [ngStyle]="{'color': item.isRead ? 'blue' : item.isDelivered ? '#333' : '#333'}"
-                [name]="item.isRead ? 'checkmark-done-outline' : item.isDelivered ? 'checkmark-done-outline' : 'checkmark-outline' "
-                style="font-size: 13px;margin-top: 1px; margin-right: 3px;"></ion-icon>
-            </div>
-          </div>
+      <div style="width: 100%;">
+        <!-- DATE DISPLAY -->
+        <div *ngIf="messages[f ? 0 : i - 1 == 0 ? 1 : i - 1].date + 3600000 < item.date"
+          style="width: 100%; display: flex; align-items: center; justify-content: center; margin: 20px 0px;">
+          <div style="font-size: 8px; color: #ffffff;">{{tool.dateShow(item.date)}}</div>
         </div>
 
-        <div *ngIf="item.type == 'gift'"
-          style="width: max-content; max-width: calc(70%); background-color: #ECDDDD; padding: 8px 10px; border-radius: 15px 0 15px 15px;">
-          <img [src]="item.giftPicture" alt="" style="width: 90px; height: 90px; object-fit: contain;">
-
-          <div style="width: 100%; display: flex; justify-content: flex-end;">
+        <!-- OTHERS -->
+        <div *ngIf="item.senderId != uid" style="width: 100%;">
+          <div *ngIf="item.type == 'text'"
+            style="width: fit-content; max-width: calc(100% - 40px); background-color: #212238; padding: 8px 10px; border-radius: 0 15px 15px 15px;">
+            <span style="color: #ECDDDD; margin: 0;">{{item.text}}</span>
             <div
-              style="width: 60px; height: 12px; position: relative; display: flex; align-items: center; justify-content: flex-end;">
+              style="width: 70px; height: 12px; position: relative; display: flex; align-items: center; justify-content: flex-end; float: right;">
 
               <div *ngIf="!item.timestamp" class="snippet" data-title="dot-flashing">
                 <div class="stage">
@@ -136,7 +107,66 @@
               </div>
 
               <div *ngIf="item.timestamp"
-                style="width: fit-content; display: flex; align-items: center; justify-content: flex-end;">
+                style="width: fit-content; display: flex; align-items: center; justify-content: flex-end; position: absolute; top: 5px;">
+                <div style="width: 100%; font-size: 11px; font-weight: normal; color: #ECDDDD; text-align: end;">
+                  {{item.date | date : 'h:mm a'}}</div>
+
+                <ion-icon *ngIf="item.timestamp"
+                  [ngStyle]="{'color': item.isRead ? 'blue' : item.isDelivered ? '#999' : '#999'}"
+                  [name]="item.isRead ? 'checkmark-done-outline' : item.isDelivered ? 'checkmark-done-outline' : 'checkmark-outline' "
+                  style="font-size: 13px;margin-top: 1px; margin-right: 3px;"></ion-icon>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="item.type == 'gift'"
+            style="width: fit-content; max-width: calc(100% - 40px); background-color: #212238; padding: 8px 10px; border-radius: 0 15px 15px 15px;">
+
+            <img [src]="item.giftPicture" alt="" style="width: 90px; height: 90px; object-fit: contain;">
+
+            <div style="width: 100%; display: flex; justify-content: flex-end;">
+              <div
+                style="width: 60px; height: 12px; position: relative; display: flex; align-items: center; justify-content: flex-end;">
+
+                <div *ngIf="!item.timestamp" class="snippet" data-title="dot-flashing">
+                  <div class="stage">
+                    <div class="dot-flashing"></div>
+                  </div>
+                </div>
+
+                <div *ngIf="item.timestamp"
+                  style="width: fit-content; display: flex; align-items: center; justify-content: flex-end;">
+                  <div style="width: 100%; font-size: 11px; font-weight: normal; color: #ECDDDD; text-align: end;">
+                    {{item.date | date : 'h:mm a'}}</div>
+
+                  <ion-icon *ngIf="item.timestamp"
+                    [ngStyle]="{'color': item.isRead ? 'blue' : item.isDelivered ? '#999' : '#999'}"
+                    [name]="item.isRead ? 'checkmark-done-outline' : item.isDelivered ? 'checkmark-done-outline' : 'checkmark-outline' "
+                    style="font-size: 13px;margin-top: 1px; margin-right: 3px;"></ion-icon>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ME -->
+        <div *ngIf="item.senderId == uid" style="width: 100%; display: flex; justify-content: flex-end;">
+          <div *ngIf="item.type == 'text'"
+            style="width: max-content; max-width: calc(70%); background-color: #ECDDDD; padding: 8px 10px; border-radius: 15px 0 15px 15px;">
+            <span style="color: #14152C; margin: 0;">{{item.text}}</span>
+
+            <div
+              style="width: 70px; height: 12px; position: relative; display: flex; align-items: center; justify-content: flex-end; float: right;">
+
+              <div *ngIf="!item.timestamp" class="snippet" data-title="dot-flashing">
+                <div class="stage">
+                  <div class="dot-flashing"></div>
+                </div>
+              </div>
+
+              <div *ngIf="item.timestamp"
+                style="width: fit-content; display: flex; align-items: center; justify-content: flex-end; position: absolute; top: 5px;">
                 <div style="width: 100%; font-size: 11px; font-weight: normal; color: #14152C; text-align: end;">
                   {{item.date | date : 'h:mm a'}}</div>
 
@@ -147,20 +177,57 @@
               </div>
             </div>
           </div>
-        </div>
 
+          <div *ngIf="item.type == 'gift'"
+            style="width: max-content; max-width: calc(70%); background-color: #ECDDDD; padding: 8px 10px; border-radius: 15px 0 15px 15px;">
+
+            <img [src]="item.giftPicture" alt="" style="width: 90px; height: 90px; object-fit: contain;">
+
+            <div style="width: 100%; display: flex; justify-content: flex-end;">
+              <div
+                style="width: 60px; height: 12px; position: relative; display: flex; align-items: center; justify-content: flex-end;">
+
+                <div *ngIf="!item.timestamp" class="snippet" data-title="dot-flashing">
+                  <div class="stage">
+                    <div class="dot-flashing"></div>
+                  </div>
+                </div>
+
+                <div *ngIf="item.timestamp"
+                  style="width: fit-content; display: flex; align-items: center; justify-content: flex-end;">
+                  <div style="width: 100%; font-size: 11px; font-weight: normal; color: #14152C; text-align: end;">
+                    {{item.date | date : 'h:mm a'}}</div>
+
+                  <ion-icon *ngIf="item.timestamp"
+                    [ngStyle]="{'color': item.isRead ? 'blue' : item.isDelivered ? '#333' : '#333'}"
+                    [name]="item.isRead ? 'checkmark-done-outline' : item.isDelivered ? 'checkmark-done-outline' : 'checkmark-outline' "
+                    style="font-size: 13px;margin-top: 1px; margin-right: 3px;"></ion-icon>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
       </div>
-    </div>
+    </ion-item>
+
+    <!-- </div> -->
   </ion-list>
 </ion-content>
 
 <ion-footer class="ion-no-border">
   <ion-toolbar class="ion-no-padding" style="--background: #080812; border-top: 1px solid #1D1E34;">
     <div style="width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 15px 10px;">
-      <ion-input (keyup)="sendMessage($event)" [(ngModel)]="messageText" style="width: calc(100% - 61px);"
+      <!-- (keyup)="sendMessage($event)"  -->
+      <ion-input [(ngModel)]="messageText" style="width: calc(100% - 61px); --padding-end: 8px;"
         placeholder="Enter message...">
         <ion-icon style="font-size: 20px; color: #E0DFE4; margin-right: 10px;" slot="start"
           src="assets/svg/chat_noti_btn/smile_face.svg" aria-hidden="true"></ion-icon>
+
+        <ion-button *ngIf="messageText !== ''" (click)="sendMessage($event)" color="newPurple" slot="end"
+          aria-label="Send message">
+          <ion-icon slot="icon-only" name="send" aria-hidden="true"></ion-icon>
+        </ion-button>
       </ion-input>
 
       <ion-button (click)="sendGift = true" class="ion-no-padding" fill="clear">
@@ -178,7 +245,7 @@
         <div (click)="sendGift = false" style="width: 100%; height: calc(100vh - 411px);">
         </div>
 
-        <div style="width: 100%; height: 280px; background-color: #14152C; border-radius: 15px 15px 0 0;">
+        <div style="width: 100%; height: 300px; background-color: #14152C; border-radius: 15px 15px 0 0;">
 
           <div
             style="width: 100%; display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; padding: 15px;">
@@ -191,11 +258,11 @@
             </div>
           </div>
 
-          <div style="width: 100%; display: flex; align-items: center; overflow-x: scroll; padding-left: 5px;">
+          <!-- <div style="width: 100%; display: flex; align-items: center; overflow-x: scroll; padding-left: 5px;">
             <div *ngFor="let item of gifts" (click)="selectGift(item)"
               [ngClass]="selectedGift['id'] == item['id'] ? 'each_gift_selected': 'each_gift'">
 
-              <img style="width: 54px; height: 51px; object-fit: cover;" src="{{item['thumbnail']}}" alt="">
+              <img style="width: 54px; height: 51px; object-fit: cover;" src="{{item['picture']}}" alt="">
 
               <h6>{{item['name']}}</h6>
 
@@ -205,23 +272,47 @@
                 </div>
               </div>
             </div>
-          </div>
+          </div> -->
+
+          <swiper-container class="swiper" pagination (slidechange)="logActiveIndex()">
+            <swiper-slide *ngFor="let giftList of arrayGift" style="padding-bottom: 20px;">
+              <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); ">
+                <div *ngFor="let item of giftList" (click)="selectGift(item)"
+                  [ngClass]="selectedGift['id'] == item['id'] ? 'each_gift_selected': 'each_gift'">
+                  <img style="width: 54px; height: 51px; object-fit: cover;" src="{{item['picture']}}" alt="">
+
+                  <h6>{{item['name']}}</h6>
+
+                  <div style="display: flex; align-items: center; justify-content: center;">
+                    <ion-icon style="font-size: 12px;" src="assets/svg/hey_coin.svg"></ion-icon>
+                    <div style="font-size: 12px; font-weight: 500; color: #FFD24F; margin-left: 3px;">{{item['gem']}}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </swiper-slide>
+          </swiper-container>
         </div>
       </div>
 
     </ion-content>
 
-
     <ion-footer class="ion-no-border">
-      <ion-toolbar class="ion-no-padding" style="--background: #14152C; border-top: 1px solid #1D1E34;">
+      <ion-toolbar class="ion-no-padding" style="--background: #14152C;">
         <div
-          style="width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 15px 10px;">
-          <ion-input style="width: calc(100% - 61px);" placeholder="Enter message...">
+          style="width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 10px 10px 15px 10px;">
+          <ion-input [(ngModel)]="messageText" style="width: calc(100% - 61px); --padding-end: 8px;"
+            placeholder="Enter message...">
             <ion-icon style="font-size: 20px; color: #E0DFE4; margin-right: 10px;" slot="start"
               src="assets/svg/chat_noti_btn/smile_face.svg" aria-hidden="true"></ion-icon>
+
+            <ion-button *ngIf="messageText !== ''" (click)="sendMessage($event)" color="newPurple" slot="end"
+              aria-label="Send message">
+              <ion-icon slot="icon-only" name="send" aria-hidden="true"></ion-icon>
+            </ion-button>
           </ion-input>
 
-          <ion-button (click)="sendGift = true" class="ion-no-padding" fill="clear">
+          <ion-button (click)="giftSender()" class="ion-no-padding" fill="clear">
             <ion-icon style="font-size: 51px;" slot="icon-only" src="assets/svg/chat_noti_btn/gift_btn.svg"></ion-icon>
           </ion-button>
         </div>

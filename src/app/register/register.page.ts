@@ -22,10 +22,10 @@ export class RegisterPage implements OnInit {
   firestore = firebase.firestore();
   user = {
     username: '',
-    name: '',
+    // name: '',
     gender: '',
-    dob: '',
-    picture: 'https://i.imgur.com/sLPx1zW.png',
+    // dob: '',
+    // picture: 'https://i.imgur.com/sLPx1zW.png',
     password: ''
   }
   tempImage = '';
@@ -73,15 +73,14 @@ export class RegisterPage implements OnInit {
         }
 
         let obj = {
+          name: this.user['username'],
           username: this.user['username'],
           password: this.user['password'],
-          name: this.user['name'],
-          gender: this.user['gender'],
-          interested: this.user['gender'] == 'female' ? 'male' : 'female',
+          gender: this.user['gender'] == 'others' ? 'others' : this.user['gender'] == 'female' ? 'male' : 'female',
+          interested: this.user['gender'],
           id: ano.user.uid,
           guest: false,
-          picture: this.user['picture'],
-          dob: this.datePipe.transform(this.user['dob'], 'dd/MM/yyyy')
+          picture: 'https://i.imgur.com/sLPx1zW.png'
         }
 
         await this.firestore.collection('profiles').doc(ano.user.uid).set(obj).then(async () => {
@@ -89,6 +88,16 @@ export class RegisterPage implements OnInit {
           this.navCtrl.navigateRoot('tabs/tab1', { animated: true, animationDirection: 'forward' })
         })
       }, error => {
+        console.log(error);
+
+        if (error['code'] == 'auth/email-already-in-use') {
+          const element = document.getElementById('error_reg_username');
+
+          let errorMessage = 'Username has been taken';
+
+          element.innerHTML = `<div style="font-size: 11px; color: #ff5050; margin-top: 10px;">${errorMessage}</div>`;
+        }
+
         this.tool.dismissLoading()
       })
     }
@@ -98,30 +107,56 @@ export class RegisterPage implements OnInit {
     let isValid = true;
 
     for (const key in this.user) {
-      const element = document.getElementById('error_' + key);
+      const element = document.getElementById('error_reg_' + key);
 
       if (element) {
 
-        if (this.user[key] === "") {
-          let errorMessage = "";
+        // if (this.user[key] === "") {
+        let errorMessage = "";
 
-          if (key === 'name') {
-            errorMessage = 'Name is required';
-          } else if (key === 'gender') {
-            errorMessage = 'Please select your gender ';
-          } else if (key === 'dob') {
-            errorMessage = 'Please select your date of birth';
-          } else if (key === 'username') {
+        if (key === 'username') {
+
+          if (this.user[key] === "") {
             errorMessage = 'Username is required';
-          } else if (key === 'password') {
-            errorMessage = 'Password is required';
+
+            element.innerHTML = `<div style="font-size: 11px; color: #ff5050; margin-top: 10px;">${errorMessage}</div>`;
+            isValid = false;
+          } else if (/\s/g.test(this.user[key])) {
+            errorMessage = 'Username cannot have space';
+
+            element.innerHTML = `<div style="font-size: 11px; color: #ff5050; margin-top: 10px;">${errorMessage}</div>`;
+            isValid = false;
+          } else {
+            element.innerHTML = ""; // Clear any previous error message
           }
 
-          element.innerHTML = `<div style="font-size: 11px; color: #ff5050; margin-top: 10px;">${errorMessage}</div>`;
-          isValid = false;
-        } else {
-          element.innerHTML = ""; // Clear any previous error message
+        } else if (key === 'password') {
+
+          if (this.user[key] === "") {
+            errorMessage = 'Password is required';
+
+            element.innerHTML = `<div style="font-size: 11px; color: #ff5050; margin-top: 10px;">${errorMessage}</div>`;
+            isValid = false;
+          } else {
+            element.innerHTML = ""; // Clear any previous error message
+          }
+
+        } else if (key === 'gender') {
+
+          if (this.user[key] === "") {
+            errorMessage = 'Please select the interested gender';
+
+            element.innerHTML = `<div style="font-size: 11px; color: #ff5050; margin-top: 10px;">${errorMessage}</div>`;
+            isValid = false;
+          } else {
+            element.innerHTML = ""; // Clear any previous error message
+          }
+
         }
+
+        // } else {
+        //   element.innerHTML = ""; // Clear any previous error message
+        // }
       }
     }
 

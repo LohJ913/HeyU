@@ -6,6 +6,7 @@ import { defineCustomElements } from '@ionic/pwa-elements/loader';
 import { base64StringToBlob, blobToDataURL } from 'blob-util';
 import { distinctUntilChanged } from 'rxjs/operators';
 import { DatePipe } from '@angular/common';
+import swal from 'sweetalert'
 
 @Injectable({
   providedIn: 'root'
@@ -163,41 +164,145 @@ export class ToolService {
 
   makeDateNicer(dater: any): Promise<string> {
     let today = new Date().getTime();
+    let result;
     return new Promise((resolve) => {
       if (this.datePipe.transform(dater, 'yyyyMMdd') == this.datePipe.transform(today, 'yyyyMMdd')) {
-        resolve(this.datePipe.transform(dater, 'h:mm a'));
+        result = 'Today, ' + this.datePipe.transform(dater, 'h:mm a')
+        resolve(result);
       } else if (this.datePipe.transform(dater, 'yyyyMMdd') < this.datePipe.transform(today, 'yyyyMMdd')) {
-        console.log('here')
         if (this.datePipe.transform(dater, 'yyyyMMdd') >= this.datePipe.transform(new Date(new Date(today).getFullYear(), new Date(today).getMonth(), new Date(today).getDate() - 1, 0, 0, 0), 'yyyyMMdd')) {
-          resolve('Yesterday');
+          result = 'Yesterday'
+          resolve(result);
         } else if (this.datePipe.transform(dater, 'yyyyMMdd') >= this.datePipe.transform(new Date(new Date(today).getFullYear(), new Date(today).getMonth(), new Date(today).getDate() - 6, 0, 0, 0), 'yyyyMMdd')) {
-          resolve(this.datePipe.transform(dater, 'EEEE'));
+          result = this.datePipe.transform(dater, 'EEEE')
+          resolve(result);
         } else {
-          resolve(this.datePipe.transform(dater, 'dd/MM/yyyy'));
+          result = this.datePipe.transform(dater, 'dd/MM/yyyy')
+          resolve(result);
         }
       } else {
-        resolve(this.datePipe.transform(dater, 'dd/MM/yyyy'));
+        result = this.datePipe.transform(dater, 'dd/MM/yyyy')
+        resolve(result);
       }
     });
   }
 
+  dateShow(date) {
+    var display
+    var year = new Date(date).getFullYear()
+    var month = new Date(date).getMonth()
+    var day = parseInt(String(new Date(date).getDate()).padStart(2, '0'));
+
+    var weekday = new Date(date).getDay()
+    var week = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+
+    var today = new Date(year, month, day); // Today
+    var now = new Date(); // Now
+
+    var diff_days = Math.ceil((new Date().getTime() - new Date(date).getTime()) / 1000 / 3600 / 24);
+    var is_yesterday = diff_days === 1;
+    var last_7days = (diff_days > 1 && diff_days < 7);
+
+    now.setHours(0);
+    now.setMinutes(0);
+    now.setSeconds(0, 0);
+
+    if (today.getTime() == now.getTime()) {
+      // Today
+      // display = this.datepipe.transform(date, 'h:mm a')
+      display = 'Today' + ', ' + this.datePipe.transform(date, 'h:mm a')
+    }
+    else if (is_yesterday) {
+      // Yesterday
+      display = 'Yesterday' + ', ' + this.datePipe.transform(date, 'h:mm a')
+    }
+    else if (last_7days) {
+      // Less than a week 
+      display = week[weekday] + ', ' + this.datePipe.transform(date, 'h:mm a')
+
+    } else {
+      display = this.datePipe.transform(date, 'M/d/y, h:mm a')
+    }
+
+    return display
+  }
+
+
   calculateAgeFromString(dobString: string): number {
     // Split the date string into day, month, and year
     const [day, month, year] = dobString.split('/').map(Number);
-    
+
     // Create a new Date object using the parsed values
     const birthDate = new Date(year, month - 1, day); // Month is zero-based in JS
-    
+
     const today = new Date();
     let age = today.getFullYear() - birthDate.getFullYear();
     const monthDiff = today.getMonth() - birthDate.getMonth();
-  
+
     // Check if the birthday hasn't occurred yet this year
     if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
       age--;
     }
-  
+
     return age;
   }
-  
+
+  groupArray(arr, chunkSize) {
+    const groupedArray = [];
+    for (let i = 0; i < arr.length; i += chunkSize) {
+      groupedArray.push(arr.slice(i, i + chunkSize));
+    }
+    return groupedArray;
+  }
+
+
+  swalConfirm(title: string, text: string, icon: string,) {
+    return new Promise((resolve, reject) => {
+      swal({
+        title: title,
+        text: text,
+        icon: icon,
+        buttons: ["Cancel", "Confirm"],
+      })
+        .then((confirm) => {
+          if (confirm) {
+
+
+            // Simulate saving or perform save action here
+            // For demonstration purposes, resolve the promise
+            resolve(true);
+          } else {
+            resolve(false);
+          }
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    });
+
+  }
+
+  swalLoading(title: any, text: any, dismiss: boolean) {
+    swal({
+      title: title,
+      text: text,
+      closeOnEsc: dismiss,
+      closeOnClickOutside: dismiss,
+      buttons: [dismiss],
+    });
+  }
+
+  swalDismiss() {
+    swal.close()
+  }
+
+  swal(icon: string, title: string, text: string, timer: number) {
+    swal({
+      icon: icon,
+      title: title,
+      text: text,
+      timer: timer,
+    })
+  }
+
 }

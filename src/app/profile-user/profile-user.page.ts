@@ -68,8 +68,8 @@ export class ProfileUserPage implements OnInit {
     {
       id: '008',
       picture: 'assets/gifting/g_8.png',
-      name: 'Kiss Kiss',
-      gem: 300
+      name: 'Love Kiss',
+      gem: 33300
     }
   ]
   selectedGift: any = {};
@@ -92,7 +92,7 @@ export class ProfileUserPage implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.arrayGift = this.groupArray(this.gifts, 8)
+    this.arrayGift = this.toolService.groupArray(this.gifts, 8)
     this.activatedRoute.queryParams.subscribe(a => {
       this.id = a['id']
       this.conversationId = [this.uid, this.id].sort().join('|');
@@ -121,21 +121,11 @@ export class ProfileUserPage implements OnInit {
     this.currentIndex = i
   }
 
-  groupArray(arr, chunkSize) {
-    const groupedArray = [];
-    for (let i = 0; i < arr.length; i += chunkSize) {
-      groupedArray.push(arr.slice(i, i + chunkSize));
-    }
-    return groupedArray;
-  }
-
   selectGift(x) {
     this.selectedGift = x
   }
 
   sendGift() {
-    // this.writeService.sendGift()
-
     this.writeService.sendGift(
       this.selectedGift,
       this.conversationId,

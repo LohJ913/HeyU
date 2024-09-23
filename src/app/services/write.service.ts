@@ -240,7 +240,7 @@ export class WriteService {
           localTimestamp: new Date().getTime(),
           isDelivered: false,
         };
-
+        
         // Perform operations inside transaction
         transaction.set(messagesRef, newGift);
 
@@ -358,6 +358,88 @@ export class WriteService {
     }).catch((error) => {
       throw error; // Rethrow the error for further handling
     });
+  }
+
+  createRoom(uid: string, roomData: any, transactionData: any) {
+    const roomRef = this.firestore.collection('rooms').doc(); // Create a new room document
+    const transactionRef = this.firestore.collection('transactions').doc(); // Create a new transaction document
+    const userRef = this.firestore.collection('profiles').doc(uid); // Reference to the user's profile (where credits are stored)
+
+    return this.firestore.runTransaction(async (transaction) => {
+      const userDoc = await transaction.get(userRef);
+
+      if (!userDoc.exists) {
+        throw new Error('User not found');
+      }
+
+      const userCredits = userDoc.data().credits;
+      const totalCost = transactionData.total;
+
+      // Check if the user has enough credits
+      if (userCredits < totalCost) {
+        throw new Error('Insufficient credits');
+      }
+
+      // Deduct the total cost from the user's credits
+      const newCredits = userCredits - totalCost;
+      transaction.update(userRef, { credits: newCredits });
+
+      // Add room data to 'rooms' collection
+      transaction.set(roomRef, {
+        amount: roomData.amount,
+        date: roomData.date,
+        location: roomData.location,
+        locationName: roomData.locationName,
+        recipient: roomData.recipient,
+        timestamp: roomData.timestamp,
+        uid: roomData.uid,
+      });
+
+      // Add transaction data to 'transactions' collection
+      transaction.set(transactionRef, {
+        byName: transactionData.byName,
+        byUid: transactionData.byUid,
+        cost: transactionData.cost,
+        event_id: roomRef.id,
+        fee: transactionData.fee,
+        status: transactionData.status,
+        timestamp: transactionData.timestamp,
+        toName: transactionData.toName,
+        toUid: transactionData.toUid,
+        total: transactionData.total,
+        type: transactionData.type,
+      });
+
+      return { roomId: roomRef.id, transactionId: transactionRef.id, newCredits };
+    }).then((result) => {
+      console.log('Room, transaction, and credit deduction successful:', result);
+      return result;
+    }).catch((error) => {
+      console.error('Transaction failed: ', error);
+      throw error;
+    });
+  }
+
+  requestJoinParty(id: string, uid: string, profile: { name: string; picture: string; uid: string }) {
+    const roomRef = this.firestore.collection('rooms').doc(id);
+
+    return roomRef.update({
+      users: firebase.firestore.FieldValue.arrayUnion(uid),
+      applicants: firebase.firestore.FieldValue.arrayUnion(profile)
+    })
+      .then(() => {
+        console.log('Successfully added to users and applicants');
+      })
+      .catch((error) => {
+        console.error('Error adding to room:', error);
+      });
+  }
+
+
+  acceptUserToParty(id: string, uid: string, profile: { name: string; picture: string; uid: string }) {
+    const roomRef = this.firestore.collection('rooms').doc(id);
+
+
   }
 
 }

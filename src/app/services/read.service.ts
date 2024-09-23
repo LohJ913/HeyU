@@ -257,5 +257,63 @@ export class ReadService {
       });
   }
 
+  getMyRooms(uid: string) {
+    const roomsRef = this.firestore
+      .collection('rooms')
+      .where('date', ">=", new Date())
+      .where('users', 'array-contains', uid);
+
+    return roomsRef
+      .get()
+      .then(snapshot => {
+        const rooms: any[] = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        return rooms; // Return the users array
+      })
+      .catch(error => {
+        console.error('Error fetching rooms:', error);
+        throw error; // Throw error so the caller can catch it
+      });
+  }
+
+  subMyHostings(uid: string): Observable<any[]> {
+    return new Observable(observer => {
+      // Firestore real-time listener using onSnapshot()
+      const unsubscribe = this.firestore.collection('rooms')
+        .where('uid', '==', uid)
+        .where('date', ">=", new Date())
+        .onSnapshot(snapshot => {
+          const rooms: any[] = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          observer.next(rooms);
+        }, error => {
+          console.error('Error fetching rooms:', error);
+          observer.error(error);
+        });
+
+      // Return the unsubscribe function in the cleanup
+      return () => {
+        unsubscribe();  // Unsubscribe from the real-time listener
+        console.log('Unsubscribed from Firestore listener');
+      };
+    });
+  }
+
+  getPartyList(uid: string) {
+    // for ambasador
+    const roomsRef = this.firestore
+      .collection('rooms')
+      .where('date', ">=", new Date())
+
+    return roomsRef
+      .get()
+      .then(snapshot => {
+        const rooms: any[] = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        return rooms; // Return the users array
+      })
+      .catch(error => {
+        console.error('Error fetching rooms:', error);
+        throw error; // Throw error so the caller can catch it
+      });
+  }
+
 }
 

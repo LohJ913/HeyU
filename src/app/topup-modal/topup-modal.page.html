@@ -1,0 +1,34 @@
+<ion-content [fullscreen]="true">
+  <div style="width: 100vw; height: 100vh; display: flex; justify-content: center; align-items: flex-end;">
+    <div
+      style="width: 100%; border-radius: 20px 20px 0px 0px; background: linear-gradient(180deg, #382D62 0%, #080812 100%); padding: 20px; position: relative;">
+      <div style="font-size: 20px; font-weight: bold; color: #ffffff; margin-bottom: 3px;">Insufficient Balance</div>
+      <div style="font-size: 14px; font-weight: 500; color: #ffffff; margin-bottom: 30px;">Current Balance : <b>80</b>
+      </div>
+
+      <img style="width: 128px; height: 119px; object-fit: cover; position: absolute; top: -40px; right: 20px;"
+        src="assets/material/hey_coin_shadow.png" alt="">
+
+      <div
+        style="width: 100%; display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 20px 11px; margin-bottom: 30px;">
+        <div *ngFor="let item of [1,2,3,4,5,6]"
+          style="height: 144px; border-radius: 20px; background-color: #382D62; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 10px; position: relative;">
+          <div
+            style="width: fit-content; min-width: 89px; height: 23px; background-color: #FF2D95; border-radius: 30px; display: flex; align-items: center; justify-content: center; position: absolute; top: -10px; left: 0; right: 0; margin: 0 auto; padding: 0 10px;">
+            <div style="font-size: 12px; font-weight: 400; color: #ffffff;">Best Deal</div>
+          </div>
+          <div style="display: flex; flex-direction: column; align-items: center; margin-top: 10px;">
+            <ion-icon style="font-size: 40px;" slot="start" src="assets/svg/hey_coin.svg"></ion-icon>
+            <div style="font-size: 18px; font-weight: bold; color: #ffffff; margin: 5px 0 3px 0;">80</div>
+            <div style="font-size: 12px; font-weight: bold; color: #FFD24F">+10% bonus</div>
+          </div>
+          <div style="font-size: 12px; font-weight: bold; color: rgb(255, 255, 255, 0.6)">RM 8.00</div>
+        </div>
+      </div>
+
+      <ion-button class="ion-no-padding primary_btn">
+        Top Up </ion-button>
+
+    </div>
+  </div>
+</ion-content>

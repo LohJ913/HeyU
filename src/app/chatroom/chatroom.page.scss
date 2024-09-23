@@ -37,6 +37,7 @@ ion-input {
     display: flex;
     flex-direction: column;
     align-items: center;
+    border: 1px solid transparent;
 
     h6 {
         font-size: 12px;
@@ -64,4 +65,23 @@ ion-input {
         color: #6860FF;
         margin: 5px 0 2px 0;
     }
+}
+
+.swiper {
+    --swiper-pagination-color: #ffffff;
+    --swiper-pagination-left: auto;
+    // --swiper-pagination-right: 8px;
+    --swiper-pagination-bottom: 0;
+    --swiper-pagination-top: auto;
+    --swiper-pagination-fraction-color: inherit;
+    --swiper-pagination-progressbar-bg-color: rgba(0, 0, 0, 0.25);
+    --swiper-pagination-progressbar-size: 4px;
+    --swiper-pagination-bullet-size: 8px;
+    --swiper-pagination-bullet-width: 8px;
+    --swiper-pagination-bullet-height: 8px;
+    --swiper-pagination-bullet-inactive-color: #ffffff30;
+    --swiper-pagination-bullet-inactive-opacity: 1;
+    --swiper-pagination-bullet-opacity: 1;
+    --swiper-pagination-bullet-horizontal-gap: 4px;
+    --swiper-pagination-bullet-vertical-gap: 6px;
 }

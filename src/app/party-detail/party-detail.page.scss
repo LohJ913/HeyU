@@ -1,3 +1,19 @@
+.header_btn_container {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+
+    ion-button {
+        width: 40px;
+        height: 40px;
+        --background: #282047;
+        --background-activated: #28204780;
+        --background-focused: #28204780;
+        --border-radius: 100%;
+        border-radius: 100%;
+    }
+}
+
 .party_desc_container {
     width: 100%;
     padding: 20px;
@@ -26,4 +42,67 @@
     border: 2px solid transparent;
     position: relative;
     margin-bottom: 20px;
+}
+
+ion-popover {
+    --background: #25252599;
+    --color: white;
+    --width: 250px;
+}
+
+ion-popover ion-content {
+    --background: #25252599;
+}
+
+ion-input {
+    min-height: 45px;
+    font-size: 16px;
+    font-weight: normal;
+    color: #ffffff;
+    --placeholder-color: #9392AB;
+    --background: #282047;
+    --border-radius: 30px;
+    --padding-start: 15px;
+}
+
+.group_chat_container {
+    position: relative;
+
+    .mask_div {
+        width: 100%;
+        padding: 30px;
+        background: linear-gradient(180deg, rgba(56, 45, 98, 1) 0%, rgba(255, 255, 255, 0) 100%);
+        position: absolute;
+        top: 0;
+        z-index: 1000;
+    }
+
+    .group_chat {
+        height: 50vh;
+        display: flex;
+        flex-direction: column-reverse;
+        overflow-y: auto;
+        padding: 0 15px;
+        position: relative;
+
+        ion-list {
+            background: transparent;
+        }
+
+        ion-item {
+            width: 100%;
+            --background: transparent;
+            --inner-padding-end: 0;
+            --min-height: auto;
+            margin-bottom: 10px;
+        }
+
+        ion-item:first-child {
+            --background: transparent;
+            --inner-padding-end: 0;
+            --min-height: auto;
+            margin-bottom: 10px;
+            margin-top: 60px;
+        }
+    }
 }

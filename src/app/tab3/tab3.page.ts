@@ -4,6 +4,7 @@ import 'firebase/auth'
 import { DataService } from '../services/data.service';
 import { ToolService } from '../services/tool.service';
 import { Subscription, distinctUntilChanged } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-tab3',
@@ -17,7 +18,8 @@ export class Tab3Page implements OnInit {
 
   constructor(
     public tool: ToolService,
-    private dataService: DataService
+    private dataService: DataService,
+    private http: HttpClient,
   ) { }
 
   ngOnInit() {
@@ -32,4 +34,18 @@ export class Tab3Page implements OnInit {
     })
   }
 
+  bindAccount() {
+    console.log(this.currentUser);
+
+    let body = {
+      uid: this.currentUser['id'],
+      email: 'heytest003@heyu.com',
+      password: '123123123'
+    }
+
+    this.http.post('https://us-central1-heyu-bed49.cloudfunctions.net/requests/bindUserAccount', body).subscribe(res => {
+      console.log(res);
+
+    })
+  }
 }
