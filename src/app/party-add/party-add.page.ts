@@ -3,7 +3,9 @@ import { NavController, IonRouterOutlet } from '@ionic/angular';
 import { ToolService } from '../services/tool.service';
 import { ReadService } from '../services/read.service';
 import { DataService } from '../services/data.service';
-import { Subscription, distinctUntilChanged } from 'rxjs';
+import { Subscription, distinctUntilChanged, timestamp } from 'rxjs';
+import firebase from 'firebase';
+import { WriteService } from '../services/write.service';
 
 @Component({
   selector: 'app-party-add',
@@ -18,6 +20,7 @@ export class PartyAddPage implements OnInit {
     public tool: ToolService,
     private readService: ReadService,
     private dataService: DataService,
+    private writeService: WriteService,
   ) { }
 
   gender = [
@@ -52,7 +55,23 @@ export class PartyAddPage implements OnInit {
 
   userSubscribe: any;
   currentUser: any;
-  roomInfo: any = {}
+  roomInfo: any = {
+    description: "I want sex tonight",
+    preferences: [], 
+    uid: '',
+    type: 'party',
+    users: [],
+    locationId: "",
+    locationName: "",
+    date: new Date(),
+    target: ['female'] // add male, others
+  }
+
+  costing = {
+    total: 10000,
+    fee: 100,
+    deposit: 9900
+  }
 
   ngOnInit() {
     this.userSubscribe = this.dataService.userInfo.pipe(distinctUntilChanged()).subscribe(async (info) => {
@@ -62,9 +81,46 @@ export class PartyAddPage implements OnInit {
   }
 
   createRoom() {
-    this.tool.swalConfirm('Party Room Confirmation', `${this.roomInfo['total']} gems will be deducted from your account. Would you like to proceed?`, 'warning').then((a) => {
-      if (a == true) {
 
+    // run checker
+
+    if (['date',].some((a) => (this.roomInfo[a] == '' || this.roomInfo[a] == null))) {
+      // reject
+    }
+
+    this.tool.swalConfirm('Party Room Confirmation', `${this.roomInfo['total']} gems will be deducted from your account. Would you like to proceed?`, 'warning').then(async (a) => {
+      if (a == true) {
+        // uid: string, roomData: any, transactionData: any): Promise<{ success: boolean; roomId?: string; transactionId?: string; newCredits?: number; message?: string 
+
+        let body = {
+          total: this.costing['total'], // budget
+          deposit: this.costing['deposit'],
+          fee: this.costing['fee'],
+          type: 'party',  //fixed
+          uid: this.uid,
+          byName: this.currentUser['name'] || '',
+          preferences: ['firm bubble shaped butt', 'japanese or chinese', 'petite', "speaks fucking english"],
+          title: this.roomInfo['title'] || "",
+          description: this.roomInfo['description'] || "",
+          locationId: 'vsinghqmalaysia',
+          locationName: 'VSING HQ',
+          target: ['female'],
+          datetime: this.tool.dateTransform(this.roomInfo['date'], 'YYYYMMdd_hhmm'),
+          date: 1730300400000,
+          time_start: new Date(1730300400000),
+          time_end: new Date(1730300400000 + (5 * 60 * 60 * 1000)),
+          duration: 5, //hours,
+          status: 'pending',
+          users: [this.uid]
+        }
+
+
+
+        await this.writeService.createRoom(this.uid, body).then((res) => {
+          console.log(res)
+        }).catch((err) => {
+          console.log(err)
+        })
       }
     })
   }
@@ -91,8 +147,5 @@ export class PartyAddPage implements OnInit {
     this.route.canGoBack() ? this.navCtrl.pop() : this.navCtrl.navigateRoot('tabs/tab1', { animated: true, animationDirection: 'back' })
   }
 
-  proceed() {
-
-  }
 
 }

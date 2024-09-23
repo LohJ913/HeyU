@@ -42,7 +42,7 @@
 <ion-content [fullscreen]="true" style="--background: #080812;">
   <div style="width: 100%; padding: 10px 20px;">
     <ion-list class="ion-no-padding" style="background-color: #080812;">
-      <ion-item (click)="tool.navTo('party-detail')" *ngFor="let item of [0,1,2,3,4,5,6,7,8,9]" class="ion-no-padding"
+      <ion-item (click)="viewParty(item)" *ngFor="let item of partyrooms" class="ion-no-padding"
         lines="none"
         style="--background: #382D62; --padding-start: 15px; --padding-top: 15px; --padding-bottom: 15px; border-radius: 15px; margin-bottom: 20px;">
         <div style="width: 100%; display: flex;">

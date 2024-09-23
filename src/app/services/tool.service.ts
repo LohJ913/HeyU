@@ -305,4 +305,8 @@ export class ToolService {
     })
   }
 
+  dateTransform(x: any, format: string) {
+    return this.datePipe.transform(x, format)
+  }
+
 }

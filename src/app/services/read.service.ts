@@ -260,8 +260,9 @@ export class ReadService {
   getMyRooms(uid: string) {
     const roomsRef = this.firestore
       .collection('rooms')
-      .where('date', ">=", new Date())
-      .where('users', 'array-contains', uid);
+      .where('users', 'array-contains', uid)
+      .where('date', ">=", new Date());
+
 
     return roomsRef
       .get()
@@ -278,8 +279,7 @@ export class ReadService {
   subMyHostings(uid: string): Observable<any[]> {
     return new Observable(observer => {
       // Firestore real-time listener using onSnapshot()
-      const unsubscribe = this.firestore.collection('rooms')
-        .where('uid', '==', uid)
+      const unsubscribe = this.firestore.collection('users').doc(uid).collection('rooms')
         .where('date', ">=", new Date())
         .onSnapshot(snapshot => {
           const rooms: any[] = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -297,11 +297,11 @@ export class ReadService {
     });
   }
 
-  getPartyList(uid: string) {
+  getPartyList() {
     // for ambasador
     const roomsRef = this.firestore
       .collection('rooms')
-      .where('date', ">=", new Date())
+      .where('time_start', ">=", new Date())
 
     return roomsRef
       .get()
@@ -313,6 +313,16 @@ export class ReadService {
         console.error('Error fetching rooms:', error);
         throw error; // Throw error so the caller can catch it
       });
+  }
+
+  getRoomInfo(roomId: string): Promise<any> {
+    return this.firestore.collection('rooms').doc(roomId).get().then((doc) => {
+      if (doc.exists) {
+        return doc.data();
+      } else {
+        throw new Error('No such profile exists!');
+      }
+    });
   }
 
 }

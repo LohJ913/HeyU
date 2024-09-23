@@ -281,7 +281,7 @@
 <ion-footer class="ion-no-border">
   <ion-toolbar *ngIf="!joined" class="ion-no-padding" style="--background: #382D62;">
     <div style="width: 100%; padding: 20px;">
-      <ion-button (click)="joined == false ? joined = true : joined = false" class="ion-no-padding primary_btn">
+      <ion-button (click)="joined == false ? requestJoin() : joined = false" class="ion-no-padding primary_btn">
         Request to join
       </ion-button>
     </div>

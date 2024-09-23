@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import firebase from 'firebase'
 import { ToolService } from './tool.service';
+import { timestamp } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -201,24 +202,26 @@ export class WriteService {
   }
 
   async sendGift(
-    giftDetails: { id: string, gem: number, name: string, picture: string },
+    giftDetails: { id: string; gem: number; name: string; picture: string },
     conversationId: string,
     friend_id: string,
     uid: string,
     user_profile: any,
     friend_profile: any
-  ): Promise<void> {
+  ): Promise<{ success: boolean; message?: string }> {
     const firestore = firebase.firestore();
 
-    console.log(giftDetails, conversationId, friend_id, uid, user_profile, friend_profile);
-
     try {
-      await firestore.runTransaction(async (transaction) => {
+      const result = await firestore.runTransaction(async (transaction) => {
         const userRef = firestore.collection('profiles').doc(uid);
         const userDoc = await transaction.get(userRef);
         const userData = userDoc.data();
 
-        if (!userData || userData.credits < giftDetails.gem) {
+        if (!userData) {
+          throw new Error('User not found');
+        }
+
+        if (userData.credits < giftDetails.gem) {
           throw new Error('Insufficient credits');
         }
 
@@ -240,7 +243,7 @@ export class WriteService {
           localTimestamp: new Date().getTime(),
           isDelivered: false,
         };
-        
+
         // Perform operations inside transaction
         transaction.set(messagesRef, newGift);
 
@@ -304,12 +307,12 @@ export class WriteService {
         });
       });
 
-      console.log('Transaction successful.');
+      return { success: true };
     } catch (error) {
       console.error('Error in transaction:', error);
+      return { success: false, message: error.message };
     }
   }
-
 
   updateProfile(uid: string, profileData: any): Promise<void> {
     return this.firestore.collection('profiles').doc(uid).update(profileData)
@@ -322,7 +325,7 @@ export class WriteService {
   }
 
   async topUpCredits(uid: string, topupPackage: { amount: number, bonus: string, gem: number }, method: string): Promise<void> {
-    console.log(uid,topupPackage)
+    console.log(uid, topupPackage)
     const firestore = this.firestore;
     const userRef = firestore.collection('profiles').doc(uid);
     const transactionsRef = firestore.collection('transactions').doc(); // Auto-generate transaction ID
@@ -360,86 +363,230 @@ export class WriteService {
     });
   }
 
-  createRoom(uid: string, roomData: any, transactionData: any) {
+  async createRoom(uid: string, roomData: any): Promise<{ success: boolean; roomId?: string; transactionId?: string; newCredits?: number; message?: string }> {
     const roomRef = this.firestore.collection('rooms').doc(); // Create a new room document
     const transactionRef = this.firestore.collection('transactions').doc(); // Create a new transaction document
     const userRef = this.firestore.collection('profiles').doc(uid); // Reference to the user's profile (where credits are stored)
 
-    return this.firestore.runTransaction(async (transaction) => {
-      const userDoc = await transaction.get(userRef);
+    console.log(uid, roomData);
+    try {
+      const result = await this.firestore.runTransaction(async (transaction) => {
+        const userDoc = await transaction.get(userRef);
 
-      if (!userDoc.exists) {
-        throw new Error('User not found');
-      }
+        if (!userDoc.exists) {
+          throw new Error('User not found');
+        }
 
-      const userCredits = userDoc.data().credits;
-      const totalCost = transactionData.total;
+        const userCredits = userDoc.data().credits;
+        const totalCost = roomData.total;
 
-      // Check if the user has enough credits
-      if (userCredits < totalCost) {
-        throw new Error('Insufficient credits');
-      }
+        // Check if the user has enough credits
+        if (userCredits < totalCost) {
+          throw new Error('Insufficient credits');
+        }
 
-      // Deduct the total cost from the user's credits
-      const newCredits = userCredits - totalCost;
-      transaction.update(userRef, { credits: newCredits });
+        // Deduct the total cost from the user's credits
+        const newCredits = userCredits - totalCost;
+        transaction.update(userRef, { credits: newCredits });
 
-      // Add room data to 'rooms' collection
-      transaction.set(roomRef, {
-        amount: roomData.amount,
-        date: roomData.date,
-        location: roomData.location,
-        locationName: roomData.locationName,
-        recipient: roomData.recipient,
-        timestamp: roomData.timestamp,
-        uid: roomData.uid,
+        // Add room data to 'rooms' collection
+        transaction.set(roomRef, {
+          timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+          byName: roomData['byName'] || '',
+          byUid: uid || '',
+          status: "pending",
+          deposit: roomData['deposit'],
+          fee: roomData['fee'] || 0,
+          total_initial: roomData['total'],
+          balance: roomData['total'] - roomData['fee'],
+          title: roomData['title'] || "",
+          description: roomData['description'] || "",
+          locationId: roomData.locationId,
+          locationName: roomData.locationName,
+          date: roomData.date,
+          datetime: roomData.datetime,
+          time_start: roomData['time_start'],
+          time_end: roomData['time_end'],
+          duration: roomData['duration'],
+          target: roomData['target'] || ['female'],
+          preferences: roomData['preferences'],
+          users: roomData['users'] || [uid],
+        });
+
+        // Add transaction data to 'transactions' collection
+        transaction.set(transactionRef, {
+          byName: roomData.byName,
+          byUid: roomData.uid,
+          event_id: roomRef.id,
+          event_date: roomData.date,
+          status: "pending",
+          timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+          total: roomData.total || 0,
+          fee: roomData.fee || 0,
+          type: 'party',
+          deposit: roomData.deposit || 0,
+        });
+
+        // Add room reference under user's rooms
+        const userRoomsRef = this.firestore.collection('users').doc(uid).collection('rooms').doc(roomRef.id);
+        transaction.set(userRoomsRef, {
+          timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+          byName: roomData['byName'] || '',
+          byUid: uid || '',
+          status: "pending",
+          deposit: roomData['deposit'],
+          fee: roomData['fee'] || 0,
+          total_initial: roomData['total'],
+          balance: roomData['total'] - roomData['fee'],
+          title: roomData['title'] || "",
+          description: roomData['description'] || "",
+          locationId: roomData.locationId,
+          locationName: roomData.locationName,
+          date: roomData.date,
+          datetime: roomData.datetime,
+          time_start: roomData['time_start'],
+          time_end: roomData['time_end'],
+          duration: roomData['duration'],
+          target: roomData['target'] || ['female'],
+          preferences: roomData['preferences'],
+          users: roomData['users'] || [uid],
+        });
+
+        // type = party gift transfer topup
+
+        // Add transaction reference under user's transactions
+        const userTransRef = this.firestore.collection('users').doc(uid).collection('transactions').doc(transactionRef.id);
+        transaction.set(userTransRef, {
+          transactionId: transactionRef.id,
+          event_id: roomRef.id,
+          event_date: roomData.date,
+          total: roomData.total || 0,
+          fee: roomData.fee || 0,
+          type: 'party',
+          deposit: roomData.deposit || 0,
+          status: "pending",
+          timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+        });
+
+        return { roomId: roomRef.id, transactionId: transactionRef.id, newCredits };
       });
 
-      // Add transaction data to 'transactions' collection
-      transaction.set(transactionRef, {
-        byName: transactionData.byName,
-        byUid: transactionData.byUid,
-        cost: transactionData.cost,
-        event_id: roomRef.id,
-        fee: transactionData.fee,
-        status: transactionData.status,
-        timestamp: transactionData.timestamp,
-        toName: transactionData.toName,
-        toUid: transactionData.toUid,
-        total: transactionData.total,
-        type: transactionData.type,
-      });
-
-      return { roomId: roomRef.id, transactionId: transactionRef.id, newCredits };
-    }).then((result) => {
       console.log('Room, transaction, and credit deduction successful:', result);
-      return result;
-    }).catch((error) => {
+      return { success: true, ...result };
+    } catch (error) {
       console.error('Transaction failed: ', error);
-      throw error;
-    });
+      return { success: false, message: error.message };
+    }
   }
 
-  requestJoinParty(id: string, uid: string, profile: { name: string; picture: string; uid: string }) {
-    const roomRef = this.firestore.collection('rooms').doc(id);
+  requestJoinParty(roomId: string, hostId: string, uid: string, profile: { name: string; picture: string; rate: number, uid: string }): Promise<any> {
+    const roomRef = this.firestore.collection('rooms').doc(roomId);
+    const userRef = this.firestore.collection('users').doc(hostId); // Reference to user's document
 
-    return roomRef.update({
+    const batch = this.firestore.batch(); // Initialize batch
+
+    // Step 1: Update the room (add user to the room and profile to applicants)
+    batch.update(roomRef, {
       users: firebase.firestore.FieldValue.arrayUnion(uid),
       applicants: firebase.firestore.FieldValue.arrayUnion(profile)
-    })
+    });
+
+    // Step 2: Update the user's document (add room to the user's rooms collection)
+    const userRoomsRef = userRef.collection('rooms').doc(roomId);
+    batch.set(userRoomsRef, {
+      users: firebase.firestore.FieldValue.arrayUnion(uid),
+      applicants: firebase.firestore.FieldValue.arrayUnion(profile)
+    });
+
+    // Commit the batch
+    return batch.commit()
       .then(() => {
-        console.log('Successfully added to users and applicants');
+        // Return a custom response after the batch commit
+        return { success: true, message: 'Successfully joined the party', roomId, uid };
       })
       .catch((error) => {
-        console.error('Error adding to room:', error);
+        console.error('Error updating room and user profile:', error);
+        throw error; // Optionally re-throw the error if needed
       });
   }
 
+  async acceptUserToParty(roomId: string, hostId: string, profile: { name: string; picture: string; rate: number, uid: string }): Promise<any> {
+    const roomRef = this.firestore.collection('rooms').doc(roomId);
+    const hostRef = this.firestore.collection('users').doc(hostId); // Host's user document
 
-  acceptUserToParty(id: string, uid: string, profile: { name: string; picture: string; uid: string }) {
-    const roomRef = this.firestore.collection('rooms').doc(id);
+    try {
+      // Run Firestore transaction
+      const result = await this.firestore.runTransaction(async (transaction) => {
+        const roomDoc = await transaction.get(roomRef);
+
+        // Check if the user exists and has sufficient credits
+
+        const roomBalance = roomDoc.data().balance;
+        const userRate = profile['rate']
+        if (userRate < roomBalance) {
+          throw new Error('Insufficient credits');
+        }
+
+        // Deduct the credits from the user
+        const newCredits = roomBalance - userRate;
+        transaction.update(roomRef, {
+          balance: newCredits,
+          participants: firebase.firestore.FieldValue.arrayUnion(profile.uid),
+          applicants: firebase.firestore.FieldValue.arrayRemove(profile),
+          subtotal: firebase.firestore.FieldValue.increment(userRate),
+        });
 
 
+        const hostRoomRef = hostRef.collection('rooms').doc(roomId);
+        transaction.update(hostRoomRef, {
+          balance: newCredits,
+          subtotal: firebase.firestore.FieldValue.increment(userRate),
+          participants: firebase.firestore.FieldValue.arrayUnion(profile.uid),
+          applicants: firebase.firestore.FieldValue.arrayRemove(profile)
+        });
+
+        // *** need to update girls side for jobs and send notification to the girl ***
+
+        return { newCredits, roomId, profile };
+      });
+
+      console.log('Transaction successful:', result);
+      return { success: true, ...result };
+    } catch (error) {
+      console.error('Transaction failed:', error);
+      return { success: false, message: error.message };
+    }
   }
+
+  async rejectUserFromParty(roomId: string, hostId: string, profile: { name: string; picture: string; rate: number, uid: string }): Promise<any> {
+    const roomRef = this.firestore.collection('rooms').doc(roomId);
+    const hostRef = this.firestore.collection('users').doc(hostId).collection('rooms').doc(roomId);
+
+    // Create a Firestore batch
+    const batch = this.firestore.batch();
+
+    // Step 1: Update the room (remove user from applicants)
+    batch.update(roomRef, {
+      applicants: firebase.firestore.FieldValue.arrayRemove(profile),
+      rejections: firebase.firestore.FieldValue.arrayUnion(profile),
+    });
+
+    // Step 2: Update the host's room data
+    batch.update(hostRef, {
+      applicants: firebase.firestore.FieldValue.arrayRemove(profile),
+      rejections: firebase.firestore.FieldValue.arrayUnion(profile),
+    });
+
+    try {
+      // Commit the batch operation
+      await batch.commit();
+      console.log(`User ${profile.uid} rejected successfully from room ${roomId}`);
+      return { success: true, roomId, profile };
+    } catch (error) {
+      console.error('Batch update failed:', error);
+      return { success: false, message: error.message };
+    }
+  }
+
 
 }

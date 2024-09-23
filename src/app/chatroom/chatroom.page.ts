@@ -4,9 +4,10 @@ import { ActivatedRoute } from '@angular/router';
 import firebase from 'firebase';
 import { ReadService } from '../services/read.service';
 import { WriteService } from '../services/write.service';
-import { Subscription } from 'rxjs';
 import { ToolService } from '../services/tool.service';
 import Swiper from 'swiper';
+import { Subscription, distinctUntilChanged } from 'rxjs';
+import { DataService } from '../services/data.service';
 
 @Component({
   selector: 'app-chatroom',
@@ -24,7 +25,8 @@ export class ChatroomPage implements OnInit, OnDestroy {
     private activatedRoute: ActivatedRoute,
     private readService: ReadService,
     private writeService: WriteService,
-    public tool: ToolService
+    public tool: ToolService,
+    private dataService: DataService,
   ) { }
 
   sendGift: boolean = false
@@ -82,7 +84,6 @@ export class ChatroomPage implements OnInit, OnDestroy {
   arrayGift = [];
   messages: any = []
   uid = localStorage.getItem('heyu_uid') || ''
-  myProfile = JSON.parse(localStorage.getItem('heyu_profile') || '{}')
   fid = ''
   messageText: any
   conversationId: any = ''
@@ -94,6 +95,9 @@ export class ChatroomPage implements OnInit, OnDestroy {
   today = new Date().getTime()
   currentIndex = null;
 
+  userSubscribe: any;
+  currentUser: any;
+
   back() {
     this.route.canGoBack() ? this.navCtrl.pop() : this.navCtrl.navigateRoot('tabs/tab2', { animated: true, animationDirection: 'back' })
   }
@@ -103,6 +107,10 @@ export class ChatroomPage implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.userSubscribe = this.dataService.userInfo.pipe(distinctUntilChanged()).subscribe(async (info) => {
+      console.log(info);
+      this.currentUser = info;
+    });
     this.arrayGift = this.tool.groupArray(this.gifts, 4)
     this.activatedRoute.queryParams.subscribe(a => {
       this.fid = a['id']
@@ -135,15 +143,6 @@ export class ChatroomPage implements OnInit, OnDestroy {
           console.log('Profile listener completed.');
         }
       });
-
-    this.readService.getUserProfileOnce(this.uid)
-      .then((profileData) => {
-        this.myProfile = profileData;
-        console.log('Profile fetched:', this.myProfile);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
   }
 
   ionViewDidEnter() {
@@ -160,6 +159,9 @@ export class ChatroomPage implements OnInit, OnDestroy {
       console.log('unsubscribe')
     }
 
+    if (this.userSubscribe) this.userSubscribe.unsubscribe();
+
+
     this.readService.unsubscribeFromChat(this.conversationId);  // Unsubscribe from current chat listener only
   }
 
@@ -168,27 +170,27 @@ export class ChatroomPage implements OnInit, OnDestroy {
   }
 
   async sendingGift() {
-    let giftInfo: any = {}
-    giftInfo = this.selectedGift
-
-    this.writeService.sendGift(
+    let giftInfo: any = {};
+    giftInfo = this.selectedGift;
+  
+    const res = await this.writeService.sendGift(
       giftInfo,
       this.conversationId,
       this.fid,
       this.uid,
-      this.myProfile,
+      this.currentUser,
       this.friendProfile
-    ).then((res) => {
-      console.log(res);
-
+    );
+  
+    if (res.success) {
+      console.log(res)
       console.log('Message sent successfully.');
       console.log(giftInfo);
-
-      // this.myProfile['credits'] = this.myProfile['credits'] - giftInfo['gem']
-      this.scrollToBottomOnInit()
-    }).catch((error) => {
-      console.error('Error sending message:', error);
-    });
+      this.scrollToBottomOnInit();
+    } else {
+      
+      console.error('Error sending message:', res.message);
+    }
   }
 
   async sendMessage(ev) {
@@ -201,7 +203,7 @@ export class ChatroomPage implements OnInit, OnDestroy {
       this.conversationId,
       this.fid,
       this.uid,
-      this.myProfile,
+      this.currentUser,
       this.friendProfile
     ).then(() => {
       console.log('Message sent successfully.');
