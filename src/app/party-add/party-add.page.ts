@@ -57,14 +57,14 @@ export class PartyAddPage implements OnInit {
   currentUser: any;
   roomInfo: any = {
     description: "I want sex tonight",
-    preferences: [], 
+    preferences: [],
     uid: '',
     type: 'party',
     users: [],
     locationId: "",
     locationName: "",
     date: new Date(),
-    target: ['female'] // add male, others
+    gender: ['female'] // add male, others
   }
 
   costing = {
@@ -104,7 +104,7 @@ export class PartyAddPage implements OnInit {
           description: this.roomInfo['description'] || "",
           locationId: 'vsinghqmalaysia',
           locationName: 'VSING HQ',
-          target: ['female'],
+          gender: ['female'],
           datetime: this.tool.dateTransform(this.roomInfo['date'], 'YYYYMMdd_hhmm'),
           date: 1730300400000,
           time_start: new Date(1730300400000),

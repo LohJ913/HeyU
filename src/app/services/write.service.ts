@@ -322,6 +322,28 @@ export class WriteService {
       .catch((error) => {
         console.error('Error updating profile:', error);
       });
+
+    let profile = {
+      gender: "",
+      picture: "",
+      name: "",
+      album: "",
+      uid: "",
+      guest: true,
+      password: "",
+      username: "",
+      credits: 0,
+      id: 'xx',
+      age: "",
+      weight: 0,
+      height: 0,
+      language: [],
+      description: "",
+      rate: 1.50,
+      verified: true,
+      interests: [],
+      country: "",
+    }
   }
 
   async topUpCredits(uid: string, topupPackage: { amount: number, bonus: string, gem: number }, method: string): Promise<void> {
@@ -408,7 +430,7 @@ export class WriteService {
           time_start: roomData['time_start'],
           time_end: roomData['time_end'],
           duration: roomData['duration'],
-          target: roomData['target'] || ['female'],
+          gender: roomData['gender'] || ['female'],
           preferences: roomData['preferences'],
           users: roomData['users'] || [uid],
         });
@@ -447,7 +469,7 @@ export class WriteService {
           time_start: roomData['time_start'],
           time_end: roomData['time_end'],
           duration: roomData['duration'],
-          target: roomData['target'] || ['female'],
+          gender: roomData['gender'] || ['female'],
           preferences: roomData['preferences'],
           users: roomData['users'] || [uid],
         });
@@ -587,6 +609,5 @@ export class WriteService {
       return { success: false, message: error.message };
     }
   }
-
 
 }
