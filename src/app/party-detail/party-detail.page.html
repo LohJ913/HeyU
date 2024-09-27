@@ -50,23 +50,23 @@
               <ion-content class="ion-no-padding">
                 <ion-item [button]="true" style="--background: #25252599;">
                   <ion-icon color="tertiary" slot="start" name="information-circle" size="large"></ion-icon>
-                  <ion-label style="font-size: 13px;">Edit Party Info</ion-label>
+                  <ion-label style="font-size: 13px; color: #ffffff;">Edit Party Info</ion-label>
                 </ion-item>
 
-                <ion-item [button]="true" style="--background: #25252599;">
+                <ion-item (click)="joinRequest = true" [button]="true" style="--background: #25252599;">
                   <ion-icon color="tertiary" slot="start" name="list-circle" size="large"></ion-icon>
-                  <ion-label style="font-size: 13px;">Join request</ion-label>
+                  <ion-label style="font-size: 13px; color: #ffffff;">Join request</ion-label>
                   <ion-note slot="end">6</ion-note>
                 </ion-item>
 
                 <ion-item [button]="true" style="--background: #25252599;">
                   <ion-icon color="danger" slot="start" name="remove-circle" size="large"></ion-icon>
-                  <ion-label style="font-size: 13px;">Delete Party</ion-label>
+                  <ion-label style="font-size: 13px; color: #ffffff;">Delete Party</ion-label>
                 </ion-item>
 
                 <ion-item [button]="true" style="--background: #25252599;">
                   <ion-icon color="danger" slot="start" name="remove-circle" size="large"></ion-icon>
-                  <ion-label style="font-size: 13px;">Leave Party</ion-label>
+                  <ion-label style="font-size: 13px; color: #ffffff;">Leave Party</ion-label>
                 </ion-item>
               </ion-content>
             </ng-template>
@@ -306,3 +306,53 @@
     </div>
   </ion-toolbar>
 </ion-footer>
+
+<ion-modal style="--background: inherit; --backdrop-opacity: 0.7" [isOpen]="joinRequest"
+  (willDismiss)="joinRequest = false">
+  <ng-template>
+    <ion-content [scrollY]="false" style="--background: #382D62">
+
+      <ion-header class="ion-no-border" style="position: sticky; top: 0;">
+        <ion-toolbar class="ion-no-padding"
+          style="padding-left: 0 !important; padding-right: 0 !important; --background: #382D62;">
+
+          <div style="width: 100%; display: flex; align-items: center; justify-content: space-between;">
+            <ion-button style="font-size: 30px;" (click)="joinRequest = false " fill="clear">
+              <ion-icon slot="icon-only" color="white" name="chevron-back"></ion-icon>
+            </ion-button>
+
+            <div style="font-size: 16px; font-weight: bold; color: #ffffff;">Requests</div>
+
+            <ion-button style="font-size: 30px;" fill="clear">
+              <ion-icon style="opacity: 0;" slot="icon-only" color="white" name="chevron-back"></ion-icon>
+            </ion-button>
+          </div>
+        </ion-toolbar>
+      </ion-header>
+
+
+      <div style="width: 100%; background-color: #382D62;">
+        <div *ngFor="let item of requestList; let i = index;"
+          style="width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 15px;">
+          <div style="display: flex; align-items: center; justify-content: flex-start;">
+            <div style="font-size: 14px; font-weight: bold; color: #ffffff; margin-right: 15px;">{{i+1}}.</div>
+            <img style="width: 40px; height: 40px; border-radius: 100%; background-color: #ffffff;" src="" alt="">
+            <div style="margin-left: 10px;">
+              <div style="font-size: 15px; font-weight: bold; color: #ffffff;">{{item['name']}}</div>
+              <div style="font-size: 12px; font-weight: 500; color: #ffffff;">I worth RM {{item['price']}} <span
+                  style="font-size: 10px;">/ hr</span></div>
+            </div>
+          </div>
+
+          <div (click)="accept(item)"
+            style="width: 95px; height: 30px; background-color: #6860FF; border-radius: 30px; display: flex; align-items: center; justify-content: center;">
+            <div style="font-size: 14px; font-weight: bold; color: #ffffff;">Accept</div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </ion-content>
+  </ng-template>
+</ion-modal>
