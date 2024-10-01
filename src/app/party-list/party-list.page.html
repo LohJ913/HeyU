@@ -1,49 +1,54 @@
-<ion-header class="ion-no-border">
-  <ion-toolbar class="ion-no-padding" style="--background: #080812;">
-    <div
-      style="width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 10px 20px 10px 10px;">
-      <ion-button (click)="back()" fill="clear">
-        <ion-icon slot="icon-only" color="white" name="chevron-back"></ion-icon>
-      </ion-button>
+<ion-content [fullscreen]="true" style="--background: #080812;">
+  <ion-header class="ion-no-border" style="position: sticky; top: 0;">
+    <ion-toolbar class="ion-no-padding"
+      style="--background: linear-gradient(180deg, rgba(8,8,18,1) 0%, rgba(8,8,18,0.5) 80%, rgba(8,8,18,0) 100%);">
+      <!-- <div
+        style="width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 10px 20px 10px 10px;">
+        <ion-button (click)="back()" fill="clear">
+          <ion-icon slot="icon-only" color="white" name="chevron-back"></ion-icon>
+        </ion-button>
 
-      <ion-input
-        style="width: calc(100% - 40px); min-height: 40px; text-align: center; --placeholder-color: #7673A8; --padding-start: 20px;  background-color: #382D62; border-radius: 30px;"
-        [clearInput]="true" type="text" placeholder="Search"></ion-input>
-    </div>
-    <div style="width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 5px 20px;">
+        <ion-input
+          style="width: calc(100% - 40px); min-height: 40px; text-align: center; --placeholder-color: #7673A8; --padding-start: 20px;  background-color: #382D62; border-radius: 30px;"
+          [clearInput]="true" type="text" placeholder="Search"></ion-input>
+      </div> -->
 
-      <div style="display: flex; align-items: center; gap: 5px;">
+      <div class="header_container">
+        <div style="width: 100%; display: flex; align-items: center; justify-content: space-between;">
+          <ion-button (click)="back()" fill="clear">
+            <ion-icon style="font-size: 36px;" slot="icon-only" color="white" name="chevron-back"></ion-icon>
+          </ion-button>
 
-        <ion-select
-          style="--padding-start: 10px; --padding-end: 10px; min-height: 30px; background-color: #6860FF; border-radius: 30px; font-size: 13px; color: #ffffff;"
-          value="female" interface="popover">
-          <ion-select-option value="female">Female Only</ion-select-option>
-          <ion-select-option value="male">Male Only</ion-select-option>
-          <ion-select-option value="all">Both</ion-select-option>
-        </ion-select>
+          <ion-button (click)="tool.navTo('party-add')" class="ion-no-padding primary_btn"
+            style="width: 90px; min-height: 30px; font-size: 13px;">
+            <ion-icon slot="start" name="add"></ion-icon>
+            Create
+          </ion-button>
+        </div>
 
-        <ion-select
-          style="--padding-start: 10px; --padding-end: 10px; min-height: 30px; background-color: #6860FF; border-radius: 30px; font-size: 13px; color: #ffffff;"
-          value="any" interface="popover">
-          <ion-select-option value="any">Any Type</ion-select-option>
-        </ion-select>
-
+        <div style="width: 100%; padding: 0 20px;">
+          <div style="font-size: 32px; font-weight: 800; color: #ffffff; margin-bottom: 3px;">Party Room</div>
+        </div>
       </div>
 
-      <ion-button (click)="tool.navTo('party-add')" class="ion-no-padding primary_btn"
-        style="width: 90px; min-height: 30px; font-size: 13px;">
-        <ion-icon slot="start" name="add"></ion-icon>
-        Create
-      </ion-button>
-    </div>
-  </ion-toolbar>
-</ion-header>
+      <div style="width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 0px 20px; margin-bottom: 10px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
 
-<ion-content [fullscreen]="true" style="--background: #080812;">
+          <div *ngFor="let item of activeTabs" (click)="tab = item['value']"
+            [ngClass]="tab == item['value'] ? 'selected_tab' : 'unselected_tab'">
+            {{item['label']}}
+
+            <ion-badge *ngIf="tool.lengthof(item['qty']) > 0"
+              style="font-size: 10px; font-weight: 700; --background: #E25E6C; --color: #ffffff; border: 1px solid #ffffff; position: absolute; top: -8px; right: -10px; z-index: 1000;">{{item['qty']}}</ion-badge>
+          </div>
+        </div>
+      </div>
+    </ion-toolbar>
+  </ion-header>
+
   <div style="width: 100%; padding: 10px 20px;">
     <ion-list class="ion-no-padding" style="background-color: #080812;">
-      <ion-item (click)="viewParty(item)" *ngFor="let item of partyrooms" class="ion-no-padding"
-        lines="none"
+      <ion-item (click)="viewParty(item)" *ngFor="let item of partyrooms" class="ion-no-padding" lines="none"
         style="--background: #382D62; --padding-start: 15px; --padding-top: 15px; --padding-bottom: 15px; border-radius: 15px; margin-bottom: 20px;">
         <div style="width: 100%; display: flex;">
 
@@ -51,10 +56,11 @@
             style="width: 100px; height: 100px; display: flex; align-items: center; justify-content: center; padding: 3px; border-radius: 100%; background-color: #100E1F; border: 2px solid #E297FF; position: relative;">
             <ion-avatar style="width: 100%; height: 100%;">
               <img
-                src="https://img.freepik.com/premium-photo/asian-girls-education-happy-beautiful-asian-girl-is-smilling_911620-8519.jpg" />
+                src="{{item.byPicture || ''}}" />
             </ion-avatar>
 
-            <div style="font-size: 12px; font-weight: 700; color: #000; background-color: #E297FF; padding: 5px 10px; border-radius: 20px; position: absolute; bottom: -2px; z-index: 1000;">
+            <div
+              style="font-size: 12px; font-weight: 700; color: #000; background-color: #E297FF; padding: 5px 10px; border-radius: 20px; position: absolute; bottom: -2px; z-index: 1000;">
               Room ID
             </div>
           </div>
@@ -66,7 +72,7 @@
             <div style="width: 100%;">
               <h3
                 style="width: 100%; font-size: 14px; font-weight: normal; color: #ffffff; margin: 0 0 3px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                Jonathan.L
+                {{item['byName']}}
               </h3>
               <p
                 style="font-size: 12px; font-weight: normal; color: #B4B2E5; margin: 0; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical;">
@@ -78,7 +84,62 @@
 
             <div style="width: 100%; display: flex; align-items: center; justify-content: space-between;">
               <div>
-                <h6 style="font-size: 12px; font-weight: normal; color: #ffffff; margin: 0 0 3px 0;">{{1726660800000 | date:
+                <h6 style="font-size: 12px; font-weight: normal; color: #ffffff; margin: 0 0 3px 0;">{{1726660800000 |
+                  date:
+                  'dd/MM/yyyy'}}</h6>
+                <h6 style="font-size: 12px; font-weight: normal; color: #ffffff; margin: 0;">{{1726660800000 | date:
+                  'hh:mm a'}}</h6>
+              </div>
+
+              <div class="request_btn">
+                <ion-icon style="font-size: 12px;" src="assets/svg/party_room.svg"></ion-icon>
+                <h6>Request</h6>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ion-item>
+    </ion-list>
+
+    <ion-list class="ion-no-padding" style="background-color: #080812;">
+      <ion-item (click)="viewParty(item)" *ngFor="let item of partyrooms" class="ion-no-padding" lines="none"
+        style="--background: #382D62; --padding-start: 15px; --padding-top: 15px; --padding-bottom: 15px; border-radius: 15px; margin-bottom: 20px;">
+        <div style="width: 100%; display: flex;">
+
+          <div
+            style="width: 100px; height: 100px; display: flex; align-items: center; justify-content: center; padding: 3px; border-radius: 100%; background-color: #100E1F; border: 2px solid #E297FF; position: relative;">
+            <ion-avatar style="width: 100%; height: 100%;">
+              <img
+                src="https://img.freepik.com/premium-photo/asian-girls-education-happy-beautiful-asian-girl-is-smilling_911620-8519.jpg" />
+            </ion-avatar>
+
+            <div
+              style="font-size: 12px; font-weight: 700; color: #000; background-color: #E297FF; padding: 5px 10px; border-radius: 20px; position: absolute; bottom: -2px; z-index: 1000;">
+              Room ID
+            </div>
+          </div>
+
+
+          <div
+            style="width: calc(100% - 117px); height: 100px; display: flex; flex-direction: column; justify-content: space-between; margin-left: 15px; padding: 5px 0;">
+
+            <div style="width: 100%;">
+              <h3
+                style="width: 100%; font-size: 14px; font-weight: normal; color: #ffffff; margin: 0 0 3px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                {{item['byName']}}
+              </h3>
+              <p
+                style="font-size: 12px; font-weight: normal; color: #B4B2E5; margin: 0; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical;">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed at magna
+                tristique, tempor nisi pretium, porta arcu. Nam nunc enim, mattis eget velit nec, vestibulum laoreet
+                leo.
+                Aenean quis elementum mi. </p>
+            </div>
+
+            <div style="width: 100%; display: flex; align-items: center; justify-content: space-between;">
+              <div>
+                <h6 style="font-size: 12px; font-weight: normal; color: #ffffff; margin: 0 0 3px 0;">{{1726660800000 |
+                  date:
                   'dd/MM/yyyy'}}</h6>
                 <h6 style="font-size: 12px; font-weight: normal; color: #ffffff; margin: 0;">{{1726660800000 | date:
                   'hh:mm a'}}</h6>
@@ -95,3 +156,17 @@
     </ion-list>
   </div>
 </ion-content>
+
+<!-- <ion-select
+            style="--padding-start: 10px; --padding-end: 10px; min-height: 30px; background-color: #6860FF; border-radius: 30px; font-size: 13px; color: #ffffff;"
+            value="female" interface="popover">
+            <ion-select-option value="female">Female Only</ion-select-option>
+            <ion-select-option value="male">Male Only</ion-select-option>
+            <ion-select-option value="all">Both</ion-select-option>
+          </ion-select>
+
+          <ion-select
+            style="--padding-start: 10px; --padding-end: 10px; min-height: 30px; background-color: #6860FF; border-radius: 30px; font-size: 13px; color: #ffffff;"
+            value="any" interface="popover">
+            <ion-select-option value="any">Any Type</ion-select-option>
+          </ion-select> -->

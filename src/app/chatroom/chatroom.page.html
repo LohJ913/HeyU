@@ -17,15 +17,15 @@
             <div *ngIf="friendProfile['dob']"
               style="height: 23px; padding: 3px 8px; display: flex; align-items: center; justify-content: center; background-color: #212238; border-radius: 30px;">
               <ion-icon style="font-size: 14px; color: #B2AEFF; margin-right: 5px;"
-                [name]="friendProfile['gender'] ? 'male-outline' : 'female-outline'"></ion-icon>
-              <div style="font-size: 12px; font-weight: normal; color: #ffffff;">24</div>
+                [name]="friendProfile['gender']"></ion-icon>
+              <div style="font-size: 12px; font-weight: normal; color: #ffffff;">{{friendProfile['age']}}</div>
             </div>
 
             <div
               style="height: 23px; padding: 3px 8px; display: flex; align-items: center; justify-content: center; background-color: #212238; border-radius: 30px;">
-              <img style="width: 16px; object-fit: contain; margin-right: 5px;" src="assets/material/country/JP.png"
-                alt="">
-              <div style="font-size: 12px; font-weight: normal; color: #ffffff;">Japan</div>
+              <div style="font-size: 12px; font-weight: normal; color: #ffffff;"><span
+                  style="font-size: 16px;">{{friendProfile?.['country']?.['flag']}}&nbsp;</span>{{friendProfile?.['country']?.['name']}}
+              </div>
             </div>
           </div>
         </div>
@@ -111,10 +111,10 @@
                 <div style="width: 100%; font-size: 11px; font-weight: normal; color: #ECDDDD; text-align: end;">
                   {{item.date | date : 'h:mm a'}}</div>
 
-                <ion-icon *ngIf="item.timestamp"
+                <!-- <ion-icon *ngIf="item.timestamp"
                   [ngStyle]="{'color': item.isRead ? 'blue' : item.isDelivered ? '#999' : '#999'}"
                   [name]="item.isRead ? 'checkmark-done-outline' : item.isDelivered ? 'checkmark-done-outline' : 'checkmark-outline' "
-                  style="font-size: 13px;margin-top: 1px; margin-right: 3px;"></ion-icon>
+                  style="font-size: 13px;margin-top: 1px; margin-right: 3px;"></ion-icon> -->
               </div>
             </div>
           </div>
@@ -139,10 +139,10 @@
                   <div style="width: 100%; font-size: 11px; font-weight: normal; color: #ECDDDD; text-align: end;">
                     {{item.date | date : 'h:mm a'}}</div>
 
-                  <ion-icon *ngIf="item.timestamp"
+                  <!-- <ion-icon *ngIf="item.timestamp"
                     [ngStyle]="{'color': item.isRead ? 'blue' : item.isDelivered ? '#999' : '#999'}"
                     [name]="item.isRead ? 'checkmark-done-outline' : item.isDelivered ? 'checkmark-done-outline' : 'checkmark-outline' "
-                    style="font-size: 13px;margin-top: 1px; margin-right: 3px;"></ion-icon>
+                    style="font-size: 13px;margin-top: 1px; margin-right: 3px;"></ion-icon> -->
                 </div>
               </div>
             </div>
@@ -238,7 +238,7 @@
 </ion-footer>
 
 <ion-modal style="--background: inherit; --backdrop-opacity: 0.7" #modal3 [isOpen]="sendGift"
-  (willDismiss)="sendGift = false">
+  (willDismiss)="sendGift = false; selectedGift = {};">
   <ng-template>
     <ion-content [scrollY]="false" style="--background: inherit">
       <div style="width: 100vw; height: 100vh; display: flex; flex-direction: column; justify-content: flex-end;">
@@ -312,9 +312,10 @@
             </ion-button>
           </ion-input>
 
-          <ion-button (click)="giftSender()" class="ion-no-padding" fill="clear">
+          <div id="gift_btn" (click)="giftSender()"
+            [ngClass]="tool.lengthof(selectedGift) ? 'gift_btn_selected' : 'gift_btn'">
             <ion-icon style="font-size: 51px;" slot="icon-only" src="assets/svg/chat_noti_btn/gift_btn.svg"></ion-icon>
-          </ion-button>
+          </div>
         </div>
       </ion-toolbar>
     </ion-footer>

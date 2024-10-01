@@ -1,0 +1,258 @@
+<ion-content style="--background: #080812;">
+  <ion-header class="ion-no-border" style="position: fixed; top: 0;">
+    <ion-toolbar class="ion-no-padding"
+      style="--background: linear-gradient(180deg, rgba(8,8,18,1) 0%, rgba(8,8,18,0) 100%);">
+      <div style="width: 100%; display: flex; align-items: center; ">
+        <ion-button style="font-size: 24px;" (click)="back()" fill="clear">
+          <ion-icon slot="icon-only" color="white" name="chevron-back"></ion-icon>
+        </ion-button>
+
+        <div style="font-size: 18px; font-weight: bold; color: #ffffff;">Profile</div>
+      </div>
+    </ion-toolbar>
+  </ion-header>
+
+  <div style="width: 100vw; padding: 15px;">
+    <div
+      style="width: 100%; display: flex; align-items: center; flex-direction: column; justify-content: center; margin-top: 50px; margin-bottom: 30px;">
+      <div style="width: 135px; height: 135px; background-color: #28255e; border-radius: 100%; position: relative">
+
+        <img *ngIf="tempImage !== ''" style="width: 100%; height: 100%; object-fit: cover; border-radius: 100%;"
+          src="{{tempImage}}" alt="">
+        <img *ngIf="tempImage == ''" style="width: 100%; height: 100%; object-fit: cover; border-radius: 100%;"
+          src="https://i.imgur.com/sLPx1zW.png" alt="">
+
+        <div (click)="photoPicker()"
+          style="width: 44px; height: 44px; background-color: #6860FF; border-radius: 100%; border: 4px solid #080812; display: flex; align-items: center; justify-content: center; position: absolute; bottom: 5px; right: -5px;">
+          <ion-icon style="color: #ffffff; font-size: 20px;" name="camera"></ion-icon>
+        </div>
+      </div>
+
+      <div *ngIf="currentUser?.['username']"
+        style="font-size: 14px; font-weight: 600; color: #B4B2E5; margin-top: 15px;">ID: {{currentUser?.['username'] ||
+        "-"}}</div>
+    </div>
+
+    <div style="width: 100%; margin: 20px 0; padding-bottom: 60px;">
+      <div class=input_container>
+        <div class="input_title">Name</div>
+        <div class="input_field">
+          <ion-input [(ngModel)]="currentUser['name']" maxlength="20"
+            placeholder="Name that identifies you"></ion-input>
+        </div>
+        <div id="error_reg_username"></div>
+      </div>
+
+      <div class=input_container>
+        <div class="input_title">Bio</div>
+        <div class="input_field">
+          <ion-input [(ngModel)]="currentUser['description']" maxlength="20"
+            placeholder="Short biographical profile of you"></ion-input>
+        </div>
+        <div id="error_reg_description"></div>
+      </div>
+
+      <div style="font-size: 20px; font-weight: bold; color: #ffffff; margin: 20px 0 10px 0;">My basic</div>
+
+      <div style="width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 15px 10px; margin-bottom: 15px;">
+        <!-- GENDER -->
+        <div class="each_basic">
+          <div style="display: flex; align-items: center; justify-content: flex-start;">
+            <ion-icon style="font-size: 18px;" slot="start" src="assets/profile/gender.svg"></ion-icon>
+
+            <ion-select [(ngModel)]="currentUser['gender']" interface="popover" class="ion-no-padding"
+              style="width: 90px; font-size: 14px; font-weight: bold; color: #ffffff; margin-left: 10px; --placeholder-color: #9D9AF980;"
+              placeholder="Gender">
+              <ion-select-option value="male">Male</ion-select-option>
+              <ion-select-option value="female">Female</ion-select-option>
+              <ion-select-option value="others">Others</ion-select-option>
+            </ion-select>
+
+          </div>
+          <ion-icon style="color: #9D9AF9;" name="chevron-forward"></ion-icon>
+        </div>
+
+        <!-- DOB -->
+        <div id="dobTrigger" class="each_basic">
+          <div style="display: flex; align-items: center; justify-content: flex-start;">
+            <ion-icon style="font-size: 18px;" slot="start" src="assets/profile/dob.svg"></ion-icon>
+            <div style="font-size: 14px; font-weight: bold; color: #ffffff; margin-left: 10px;">{{currentUser['dob'] |
+              date:
+              "dd MMM yyyy"}}</div>
+          </div>
+          <ion-icon style="color: #9D9AF9;" name="chevron-forward"></ion-icon>
+
+          <ion-popover trigger="dobTrigger" style="--min-width: 350px; --width: 350px;">
+            <ng-template>
+              <ion-datetime max="{{birthDate}}" presentation="date" [(ngModel)]="currentUser['dob']"></ion-datetime>
+            </ng-template>
+          </ion-popover>
+        </div>
+
+        <!-- SPOKEN LANGUAGE -->
+        <div class="each_basic">
+          <div style="display: flex; align-items: center; justify-content: flex-start;">
+            <ion-icon style="font-size: 18px;" slot="start" src="assets/profile/language.svg"></ion-icon>
+            <!-- <div style="font-size: 14px; font-weight: bold; color: #ffffff; margin-left: 10px;">{{currentUser['language'] }}
+            </div> -->
+
+            <ion-select [(ngModel)]="currentUser['language']" [multiple]="true" interface="popover"
+              class="ion-no-padding"
+              style="width: 90px; font-size: 14px; font-weight: bold; color: #ffffff; margin-left: 10px; --placeholder-color: #9D9AF980;"
+              placeholder="Language">
+              <ion-select-option *ngFor="let item of languageList"
+                value="{{item.value}}">{{item.label}}</ion-select-option>
+            </ion-select>
+          </div>
+          <ion-icon style="color: #9D9AF9;" name="chevron-forward"></ion-icon>
+        </div>
+
+        <!-- HEIGHT -->
+        <div id="heightTrigger" class="each_basic">
+          <div style="display: flex; align-items: center; justify-content: flex-start;">
+            <ion-icon style="font-size: 18px;" slot="start" src="assets/profile/height.svg"></ion-icon>
+            <div style="font-size: 14px; font-weight: bold; color: #ffffff; margin-left: 10px;">
+              {{currentUser['height']}}&nbsp;cm
+            </div>
+          </div>
+          <ion-icon style="color: #9D9AF9;" name="chevron-forward"></ion-icon>
+
+          <ion-popover trigger="heightTrigger">
+            <ng-template>
+              <ion-item style="--background: #25252599;" lines="none">
+                <ion-input [(ngModel)]="currentUser['height']" type="number" placeholder="Height"></ion-input>
+                <ion-note slot="end">cm</ion-note>
+              </ion-item>
+            </ng-template>
+          </ion-popover>
+        </div>
+
+        <!-- COUNTRY -->
+        <div id="countryListTrigger" (click)="showCountry()" class="each_basic">
+          <div style="display: flex; align-items: center; justify-content: flex-start;">
+            <ion-icon style="font-size: 18px;" slot="start" src="assets/profile/country.svg"></ion-icon>
+            <div [ngStyle]="{'color': currentUser['country']['name'] ? '#ffffff' : '#9D9AF944' }"
+              style="font-size: 14px; font-weight: bold; margin-left: 10px; width: 90px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+              {{currentUser['country']['name'] || 'Country'}}
+            </div>
+          </div>
+          <ion-icon style="color: #9D9AF9;" name="chevron-forward"></ion-icon>
+        </div>
+
+        <!-- WEIGHT -->
+        <div id="weightTrigger" class="each_basic">
+          <div style="display: flex; align-items: center; justify-content: flex-start;">
+            <ion-icon style="font-size: 18px;" slot="start" src="assets/profile/weight.svg"></ion-icon>
+            <div style="font-size: 14px; font-weight: bold; color: #ffffff; margin-left: 10px;">
+              {{currentUser['weight']}}&nbsp;kg
+            </div>
+          </div>
+          <ion-icon style="color: #9D9AF9;" name="chevron-forward"></ion-icon>
+
+          <ion-popover trigger="weightTrigger">
+            <ng-template>
+              <ion-item style="--background: #25252599;" lines="none">
+                <ion-input [(ngModel)]="currentUser['weight']" type="number" placeholder="Weight"></ion-input>
+                <ion-note slot="end">kg</ion-note>
+              </ion-item>
+            </ng-template>
+          </ion-popover>
+        </div>
+      </div>
+
+      <div style="font-size: 20px; font-weight: bold; color: #ffffff; margin: 30px 0 10px 0;">My interest</div>
+
+      <div style="width: 100%; display: flex; align-items: center; flex-wrap: wrap; gap: 10px;">
+        <div (click)="openHobby()"
+          style="width: 80px; height: 32px; border-radius: 30px; background-color: #221E56; border: 2px dashed #6860ff; display: flex; align-items: center; justify-content: center;">
+          <div style="font-size: 12px; font-weight: 500; color: #9D9AF9;">Add +</div>
+
+          <ion-modal [isOpen]="interestTrigger" (willDismiss)="interestTrigger = false">
+            <ng-template>
+              <ion-content [scrollEvents]="true" (ionScroll)="logScrolling($event)" style="--background: #0B0931;">
+                <ion-header id="header" class="ion-no-border" style="position: fixed; top: 0;">
+                  <ion-toolbar class="ion-no-padding" style="--background: transparent !important;">
+                    <ion-button style="font-size: 24px;" (click)="modalCtrl.dismiss()" fill="clear">
+                      <ion-icon slot="icon-only" color="white" name="chevron-back"></ion-icon>
+                    </ion-button>
+                  </ion-toolbar>
+                </ion-header>
+
+                <div style="width: 100%; padding-bottom: 40px;">
+
+                  <div style="width: 100%; padding: 20px; margin-top: 40px;">
+                    <div
+                      style="font-size: 22px; font-weight: 500; letter-spacing: 0.5px; color: #ffffff; text-align: center; margin-bottom: 10px;">
+                      What do you love</div>
+                    <div
+                      style="font-size: 12px; font-weight: 300; color: #ffffff; letter-spacing: 0.5px; text-align: center; margin-bottom: 20px;">
+                      Tap once on your favourite interest</div>
+                  </div>
+
+                  <div
+                    style="width: 100%; padding-left: 20px; display: flex; align-items: center; flex-wrap: wrap; margin-bottom: 50px;">
+                    <div (click)="selectHobby(x)" *ngFor="let x of interestList"
+                      [ngStyle]="{'background-color': checkselect(x)? '#5300FF' : '#393580'}"
+                      style="width: fit-content; padding: 10px 15px; border-radius: 30px; display: flex; align-items: center; justify-content: center; margin-right: 10px; margin-bottom: 10px;">
+                      <div style="font-size: 12px; font-weight: 400; color: #ffffff; text-transform: capitalize;">
+                        {{x.value}}
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </ion-content>
+
+              <ion-footer class="ion-no-border" style="width: 100%; position: fixed; bottom: 0;">
+                <ion-toolbar class="ion-no-padding"
+                  style="--background: linear-gradient(0deg, #14152C 0%, #14152cd0 50%, #14152c00 100%);">
+                  <div style="width: 100%; display: flex; align-items: center; justify-content: center; padding: 15px;">
+                    <ion-button (click)="saveHobby()" class="ion-no-padding primary_btn" style="--color: #ffffff;">
+                      Save
+                    </ion-button>
+                  </div>
+                </ion-toolbar>
+              </ion-footer>
+            </ng-template>
+          </ion-modal>
+        </div>
+
+        <div *ngFor="let item of currentUser['interests']"
+          style="width: fit-content; padding: 0 10px; height: 32px; border-radius: 30px; background-color: #221E56; border: 2px solid #6860ff; display: flex; align-items: center; justify-content: center;">
+          <div style="font-size: 12px; font-weight: 500; color: #9D9AF9;">{{item.value}}</div>
+        </div>
+      </div>
+
+      <div style="font-size: 20px; font-weight: bold; color: #ffffff; margin: 30px 0 10px 0;">My album</div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 5px;">
+        <div *ngIf="tool.lengthof(tempPhoto || [] ) < 9" (click)="addPhoto()"
+          style="height: 115px; border-radius: 5px; background-color: #221E56; border: 2px dashed #6860ff; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+          <div style="font-size: 16px; font-weight: 500; color: #9D9AF9;">Add +</div>
+          <div style="font-size: 10px; font-weight: lighter; color: #9D9AF9;">(Max 9 photo)</div>
+        </div>
+
+        <ion-thumbnail *ngFor="let item of (tempPhoto || []); let i = index;"
+          style="width: 100%; height: 115px; object-fit: cover; border-radius: 5px; position: relative;">
+          <img style="width: 100%; height: 100%; object-fit: cover; border-radius: 5px;" src="{{item.url}}" alt="">
+
+          <ion-button (click)="removePhoto(i)" class="ion-no-padding" shape="round" color="danger"
+            style="min-width: 25px; min-height: 25px; position: absolute; top: 0; right: 0;">
+            <ion-icon slot="icon-only" name="remove-circle"></ion-icon>
+          </ion-button>
+        </ion-thumbnail>
+      </div>
+    </div>
+  </div>
+</ion-content>
+
+<ion-footer class="ion-no-border" style="width: 100%; position: fixed; bottom: 0;">
+  <ion-toolbar class="ion-no-padding"
+    style="--background: linear-gradient(0deg, #14152C 0%, #14152cd0 50%, #14152c00 100%);">
+    <div style="width: 100%; display: flex; align-items: center; justify-content: center; padding: 15px;">
+      <ion-button (click)="updateProfile()" class="ion-no-padding primary_btn">
+        Update
+      </ion-button>
+    </div>
+  </ion-toolbar>
+</ion-footer>

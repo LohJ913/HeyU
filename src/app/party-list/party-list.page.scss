@@ -1,3 +1,17 @@
+.header_container {
+    width: 100%;
+    // display: flex;
+    // align-items: center;
+    // justify-content: flex-start;
+    padding: 20px 10px 10px 10px;
+
+    // ion-button {
+    //     ion-icon {
+    //         font-size: 36px;
+    //     }
+    // }
+}
+
 .request_btn {
     display: flex;
     align-items: center;
@@ -17,4 +31,25 @@
         color: #ffffff;
         margin: 0 0 0 5px;
     }
+}
+
+.selected_tab {
+    padding: 5px 10px;
+    background-color: #6860FF;
+    border-radius: 30px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #ffffff;
+    position: relative;
+    transition: background-color .1s;
+}
+
+.unselected_tab {
+    padding: 5px 10px;
+    background-color: #6860FF00;
+    border-radius: 30px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #B4B2E5;
+    position: relative;
 }

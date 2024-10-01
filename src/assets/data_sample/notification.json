@@ -1,0 +1,33 @@
+{
+    "chat_notification": {
+        "type": "cha/gift",
+        "byId": "girl002",
+        "byName": "Arisa",
+        "byPicture": "https://www.shutterstock.com/image-photo/fashion-concept-young-asian-woman-600nw-2070956018.jpg",
+        "navId": "girl002",
+        "navType": "chatroom",
+        "navPath": "charoom?id=user02",
+        "timestamp": "firestore timestamp",
+        "message": "I wanna love you <3"
+    },
+    "invite_notification": {
+        "type": "party",
+        "byId": "user01",
+        "byName": "Batman",
+        "navId": "party00001",
+        "navType": "party-detail",
+        "navExtra":"",
+        "navPath": "party-detail?id=party00001",
+        "timestamp": "firestore timestamp",
+        "message": "Rejected your application to join the room /or/ Accepted your application to join the room  /or/ applied to join your party room"
+    },
+    "system_notification": {
+        "type": "system",
+        "navId": "party00001",
+        "navType": "party-detail",
+        "navExtra":"",
+        "navPath": "party-detail?id=party00001",
+        "timestamp": "firestore timestamp",
+        "message": "Rejected your application to join the room /or/ Accepted your application to join the room  /or/ applied to join your party room"
+    }
+}

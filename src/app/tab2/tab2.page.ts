@@ -6,6 +6,7 @@ import { distinctUntilChanged, takeUntil } from 'rxjs/operators';
 import { Subject, Subscription } from 'rxjs';
 import { ReadService } from '../services/read.service';
 import { DataService } from '../services/data.service';
+import { ToolService } from '../services/tool.service';
 
 @Component({
   selector: 'app-tab2',
@@ -14,12 +15,12 @@ import { DataService } from '../services/data.service';
 })
 export class Tab2Page implements OnInit, OnDestroy {
 
-
   constructor(
     public navCtrl: NavController,
     private datePipe: DatePipe,
     private readService: ReadService,
     private dataService: DataService,
+    public tool: ToolService,
   ) { }
 
   userSubscribe: Subscription;
@@ -55,7 +56,7 @@ export class Tab2Page implements OnInit, OnDestroy {
         console.log(chats)
         this.filterChats();  // Or any other post-processing logic
       });
-    this.readService.setupListener(this.uid);
+    this.readService.setupChatListener(this.uid);
 
   }
 

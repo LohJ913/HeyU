@@ -34,17 +34,25 @@
           </div>
 
 
-          <ion-button (click)="goLobby()" class="ion-no-padding"
-            style="width: 97px; min-height: 31px; font-size: 14px; font-weight: 600; --color: #ffffff; --background: #6860FF;">
-            Lobby
-            <ion-icon slot="end" src="assets/svg/lobby.svg"></ion-icon>
-          </ion-button>
+          <div style="display: flex; flex-direction: column; align-items: end;">
+            <ion-button (click)="goLobby()" class="ion-no-padding"
+              style="width: 97px; min-height: 31px; font-size: 14px; font-weight: 600; --color: #ffffff; --background: #6860FF;">
+              Lobby
+              <ion-icon slot="end" src="assets/svg/lobby.svg"></ion-icon>
+            </ion-button>
+
+            <div *ngIf="isCheckedIn"
+              style="font-size: 10px; font-weight: 400; color: #66ff66; display: flex; align-items: center; padding: 3px 5px;">
+              <div style="width: 3px; height: 3px; background-color: #66ff66; border-radius: 100%;"></div>
+              <div style="margin-left: 5px;">{{currentUser['visitName']}}</div>
+            </div>
+          </div>
         </div>
       </ion-toolbar>
     </ion-header>
 
     <!-- CHECK IN -->
-    <!-- <div class="checkin_container">
+    <div *ngIf="tool.lengthof(outlets) && showCheckinPrompt == true" class="checkin_container">
       <div class="checkin_box">
         <div style="position: absolute; top: -10px; right: 20px;">
           <div class="arrow_up"></div>
@@ -52,40 +60,63 @@
 
         <div class="checkin_detail_container">
           <div class="checkin_detail_left">
-            <div style="font-size: 13px; font-weight: 500; color: #6860FF; margin-bottom: 3px;">You're nearby</div>
+            <div style="font-size: 13px; font-weight: 500; color: #6860FF; margin-bottom: 3px;">You're nearby&nbsp;<span
+                style="font-size: 11px;" *ngIf="tool.lengthof(outlets)">{{'(' + (outlets[0].distance | number:
+                '1.1-1')+'km)'}}</span></div>
             <div style="width: 100%; display: flex; align-items: center;">
               <ion-icon style="color: #ffffff; font-size: 14px;" src="assets/icon/location.svg"></ion-icon>
               <div
                 style="width: calc(100% - 14px); font-size: 14px; font-weight: 600; color: #ffffff; margin-left: 5px; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden;">
-                Tang Ping 躺平 </div>
+                {{outlets?.[0]?.['name'] || 'The Unknown'}}</div>
             </div>
           </div>
 
-          <div class="checkin_button">
+          <div (click)="checkinOutlet()" class="checkin_button">
             <div style="font-size:12px; font-weight: 500; color: #ffffff">Check-in</div>
-          </div>
-        </div>
-      </div>
-    </div> -->
-
-    <!-- WALLET BALANCE -->
-    <div (click)="goTopUp()"
-      style="width: 100%; display: flex; align-items: center; justify-content: center; padding: 0 20px; margin-bottom: 20px;">
-      <div class="wallet">
-        <div>
-          <h6>Balance</h6>
-
-          <div class="balance_container">
-            <ion-icon src="assets/svg/hey_coin.svg"></ion-icon>
-            <h3>{{(currentUser['credits'] || 0) | number: '1.0-0'}}</h3>
           </div>
         </div>
       </div>
     </div>
 
-    <div style="width: 100%; display: flex; flex-wrap: wrap; gap: 20px; padding: 0 20px; margin-bottom: 30px;">
+    <!-- WALLET BALANCE -->
+    <div
+      style="width: 100%; display: grid; grid-template-columns: 1fr auto; grid-template-rows: 1fr; gap: 10px; padding: 0 15px; margin-bottom: 20px;">
+      <div style="background-color: #bb7420; border-radius: 20px;">
 
-      <div (click)="tool.navTo('party-list')" style="width: calc((100% / 4) - 20px); display: flex; flex-direction: column; align-items: center;">
+        <div (click)="goTopUp()" class="wallet">
+          <div>
+            <h6>Balance</h6>
+
+            <div class="balance_container">
+              <ion-icon src="assets/svg/hey_coin.svg"></ion-icon>
+              <h3>{{(currentUser['credits'] || 0) | number: '1.0-0'}}</h3>
+            </div>
+          </div>
+        </div>
+        <div (click)="goEarning()" *ngIf="tool.lengthof(currentUser) && currentUser['verified'] == true"
+          style="width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 10px 15px;">
+          <div style="font-size: 13px; font-weight: 500; color: #ffffff;">Earning - <b>8,600</b></div>
+          <ion-icon style="font-size: 14px; color: #ffffff;" name="chevron-forward-outline"></ion-icon>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-rows: 1fr 1fr; gap: 10px;">
+        <div (click)="tool.navTo('party-list')"
+          style="width: 100%; border-radius: 10px; background: linear-gradient(180deg, #506FFF 0%, #7A8EFF 100%); display: flex; align-items: center; justify-content: space-between; padding: 10px;">
+          <div style="font-size: 13px; font-weight: bold; color: #ffffff;">Party Room</div>
+        </div>
+
+        <div (click)="tool.navTo('qr-scan')"
+          style="width: 100%; border-radius: 10px; background: linear-gradient(180deg, #E32BD5 0%, #F957C4 100%); display: flex; align-items: center; justify-content: space-between; padding: 10px;">
+          <div style="font-size: 13px; font-weight: bold; color: #ffffff;">QR Scan</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- <div style="width: 100%; display: flex; flex-wrap: wrap; gap: 20px; padding: 0 20px; margin-bottom: 30px;">
+
+      <div (click)="tool.navTo('party-list')"
+        style="width: calc((100% / 4) - 20px); display: flex; flex-direction: column; align-items: center;">
         <div style="width: 100%; height: 60px; background-color: #6E5FF390; border-radius: 20px; margin-bottom: 5px;">
 
         </div>
@@ -93,14 +124,15 @@
         <h6 style="font-size: 11px; font-weight: normal; color: #ffffff; margin: 0;">My Party</h6>
       </div>
 
-      <div (click)="tool.navTo('party-list')" style="width: calc((100% / 4) - 20px); display: flex; flex-direction: column; align-items: center;">
+      <div (click)="tool.navTo('party-list')"
+        style="width: calc((100% / 4) - 20px); display: flex; flex-direction: column; align-items: center;">
         <div style="width: 100%; height: 60px; background-color: #6E5FF390; border-radius: 20px; margin-bottom: 5px;">
 
         </div>
 
         <h6 style="font-size: 11px; font-weight: normal; color: #ffffff; margin: 0;">Party List</h6>
       </div>
-    </div>
+    </div> -->
 
     <!-- TOP HOST -->
     <div class="cat">
@@ -121,15 +153,37 @@
 
           <div class="info_container">
             <div class="inner_layer">
+
+              <div *ngIf="item?.['tag'] == 'Trending'"
+                style="min-width: 76px; padding: 4px 5px; font-size: 12px; font-weight: 700; color: #ffffff; text-align: center; border-radius: 10px 0px 10px 0px; position: absolute; top: 0; left: 0; background: linear-gradient(90deg, #C524E8 0%, #FF9521 100%);">
+                Trending
+              </div>
+
+              <div *ngIf="item?.['tag'] == 'Popular'"
+                style="min-width: 76px; padding: 4px 5px; font-size: 12px; font-weight: 700; color: #ffffff; text-align: center; border-radius: 10px 0px 10px 0px; position: absolute; top: 0; left: 0; background: linear-gradient(90deg, #7C24E8 0%, #EE6BF7 100%);">
+                Popular
+              </div>
+
+              <div *ngIf="!item['tag'] || (item?.['verifiedDate'] + 86400000 * 7 > todate )"
+                style="min-width: 76px; padding: 4px 5px; font-size: 12px; font-weight: 700; color: #ffffff; text-align: center; border-radius: 10px 0px 10px 0px; position: absolute; top: 0; left: 0; background: linear-gradient(90deg, #3C51F8 0%, #6E5FF3 100%);">
+                New
+              </div>
+
               <div style="width: 100%; display: flex; align-items: center; justify-content: flex-end;">
-                <img src="assets/material/country/JP.png" alt="">
+                <!-- <img src="assets/material/country/JP.png" alt=""> -->
+                <!-- {{item?.['country']?.['flag']}} -->
+                <div><span [ngClass]="'fi fi-' + item?.['country']?.['lower_code']"></span></div>
               </div>
 
               <div class="bottomer">
                 <div class="title">{{item['name']}}</div>
-                <div class="sub_title"><span style="color: #6860FF;">$&nbsp;</span>{{200}}<span
-                    style="font-size: 10px; font-weight: 500;">&nbsp;/&nbsp;hr</span>
+                <div class="sub_title">
+                  <div style="color: #6860FF; font-size: 14px; margin-top: 3px;"><ion-icon [name]="item['gender']"></ion-icon></div>
+                  <div style="font-weight: 500;">&nbsp;{{item['age']}}</div>
                 </div>
+                <!-- <div class="sub_title"><span style="color: #6860FF;">$&nbsp;</span>{{200}}<span
+                    style="font-size: 10px; font-weight: 500;">&nbsp;/&nbsp;hr</span>
+                </div> -->
               </div>
 
             </div>
@@ -157,30 +211,36 @@
           <div class="info_container">
             <div class="inner_layer">
 
-              <div *ngIf="i == 0"
+              <div *ngIf="item?.tag == 'Trending'"
                 style="min-width: 76px; padding: 4px 5px; font-size: 12px; font-weight: 700; color: #ffffff; text-align: center; border-radius: 10px 0px 10px 0px; position: absolute; top: 0; left: 0; background: linear-gradient(90deg, #C524E8 0%, #FF9521 100%);">
                 Trending
               </div>
 
-              <div *ngIf="i == 1"
+              <div *ngIf="item?.tag == 'Popular'"
                 style="min-width: 76px; padding: 4px 5px; font-size: 12px; font-weight: 700; color: #ffffff; text-align: center; border-radius: 10px 0px 10px 0px; position: absolute; top: 0; left: 0; background: linear-gradient(90deg, #7C24E8 0%, #EE6BF7 100%);">
                 Popular
               </div>
 
-              <div *ngIf="i == 2"
+              <div *ngIf="!item['tag'] || (item.verifiedDate + 86400000 * 7 > todate )"
                 style="min-width: 76px; padding: 4px 5px; font-size: 12px; font-weight: 700; color: #ffffff; text-align: center; border-radius: 10px 0px 10px 0px; position: absolute; top: 0; left: 0; background: linear-gradient(90deg, #3C51F8 0%, #6E5FF3 100%);">
                 New
               </div>
 
               <div style="width: 100%; display: flex; align-items: center; justify-content: flex-end;">
-                <img src="assets/material/country/JP.png" alt="">
+                <!-- <img src="assets/material/country/JP.png" alt=""> -->
+                <!-- <div style="font-size: 25px;">{{item?.['country']?.['flag']}}</div> -->
+                <div><span [ngClass]="'fi fi-' + item?.['country']?.['lower_code']"></span></div>
               </div>
 
               <div class="bottomer">
-                <div class="title">{{item.name || ''}}</div>
-                <div class="sub_title"><span style="color: #6860FF;">$&nbsp;</span>{{200}}<span
-                    style="font-size: 10px;">&nbsp;/&nbsp;hr</span>
+                <div class="title">{{item['name']}}</div>
+                <div class="sub_title">
+                  <div style="color: #6860FF; font-size: 14px; margin-top: 3px;"><ion-icon [name]="item['gender']"></ion-icon></div>
+                  <div style="font-weight: 500;">&nbsp;{{item['age']}}</div>
                 </div>
+                <!-- <div class="sub_title"><span style="color: #6860FF;">$&nbsp;</span>{{200}}<span
+                    style="font-size: 10px;">&nbsp;/&nbsp;hr</span>
+                </div> -->
               </div>
             </div>
           </div>

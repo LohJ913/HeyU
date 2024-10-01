@@ -4,6 +4,7 @@ import firebase from 'firebase';
 import { ToolService } from './tool.service';
 import { WriteService } from './write.service';
 import { Observable } from 'rxjs';
+import { DexieService } from './dexie.service';
 
 @Injectable({
   providedIn: 'root'
@@ -13,52 +14,104 @@ export class ReadService {
   constructor(
     private toolService: ToolService,
     private writeService: WriteService,
+    private dexieService: DexieService,
   ) { }
 
-  firestore = firebase.firestore()
+
   private chats: any = []
   private chatsSubject = new BehaviorSubject<any[]>([]);
   public chats$ = this.chatsSubject.asObservable();
 
   // chats
-  setupListener(uid: string) {
-    this.firestore.collection('users').doc(uid).collection('chats')
-      .orderBy('lastMessageDate', 'desc')
-      .onSnapshot((snapshot) => {
+  setupChatListener(uid: string) {
+    const chatsRef = firebase.firestore().collection('users').doc(uid).collection('chats').orderBy('lastMessageDate', 'desc');
 
-        snapshot.docChanges().forEach(async (change) => {
+    let initialFetchComplete = false;  // Flag to check if initial fetch is complete
+
+    // Step 1: Set up a real-time listener but do not emit until the initial fetch is done
+    const unsubscribe = chatsRef.onSnapshot(async (snapshot) => {
+      if (initialFetchComplete) {
+        const changes: any[] = [];
+
+        for (const change of snapshot.docChanges()) {
+
+          let chatData = change.doc.data();
+          console.log(chatData.lastMessageBy, chatData.lastDeliveryDate)
+          chatData['lastTime'] = chatData['lastMessageDate']
+            ? await this.toolService.makeDateNicer(chatData['lastMessageDate'].toMillis())
+            : '';
+
           if (change.type === 'added') {
-            console.log('New chat added: ', change.doc.data());
-            let newchat = change.doc.data()
-            newchat['lastTime'] = newchat['lastMessageDate'] ? await this.toolService.makeDateNicer(newchat['lastMessageDate'].toMillis()) : ''
-            this.chats.push(newchat)
-            // this.filterChats()
-            console.log(this.chats)
-            this.chatsSubject.next([...this.chats]);  // Emit the updated chats array to subscribers
-
+            changes.push({ type: 'added', chat: chatData });
           }
           if (change.type === 'modified') {
-            console.log('Chat modified: ', change.doc.data());
-            let updatedchat = change.doc.data()
-            updatedchat['lastTime'] = updatedchat['lastMessageDate'] ? await this.toolService.makeDateNicer(updatedchat['lastMessageDate'].toMillis()) : ''
-            this.chats[this.chats.findIndex((a: any) => (a['uid'] == updatedchat.uid))] = updatedchat
-            // this.filterChats()
-            this.chatsSubject.next([...this.chats]);  // Emit the updated chats array to subscribers
-
+            changes.push({ type: 'modified', chat: chatData });
           }
           if (change.type === 'removed') {
-            console.log('Chat removed: ', change.doc.data());
-            // this.chatsSubject.next([...this.chats]);  // Emit the updated chats array to subscribers
+            changes.push({ type: 'removed', chat: chatData });
           }
-          if (change.doc.data().lastMessageBy !== uid && !change.doc.data().delivered) {
-            this.writeService.updateDelivered([uid, change.doc.id], (change.doc.data().lastDeliveryDate) || null);
+
+          // Handle undelivered messages
+          console.log(chatData.lastMessageBy, chatData.delivered)
+          if (chatData.lastMessageBy !== uid && !chatData.delivered) {
+            this.writeService.updateDelivered([uid, change.doc.id], chatData.lastDeliveryDate || null);
           }
-        });
-      });
-    console.log(this.chats)
-    console.log(this.chats$)
+        }
+
+        // Emit only the changes after the initial fetch
+        if (changes.length > 0) {
+          this.updateLocalChats(changes);
+        }
+      }
+    }, error => {
+      console.error('Error listening to chats:', error);
+    });
+
+    // Step 2: Fetch existing chats first
+    chatsRef.get().then(async snapshot => {
+      const chats = await Promise.all(snapshot.docs.map(async doc => {
+        let chatData = doc.data();
+        chatData['lastTime'] = chatData['lastMessageDate']
+          ? await this.toolService.makeDateNicer(chatData['lastMessageDate'].toMillis())
+          : '';
+        return chatData;
+      }));
+
+      // Update the chats list with the initial fetch data
+      this.chats = chats;
+      this.chatsSubject.next([...this.chats]);  // Emit the fetched chats
+      initialFetchComplete = true;  // Now real-time listener can work
+    }).catch(error => {
+      console.error('Error fetching chats:', error);
+    });
+
+    // Step 3: Cleanup on unsubscription
+    return () => unsubscribe();
   }
 
+  // This function updates the local chat list with real-time changes
+  private updateLocalChats(changes: { type: string, chat: any }[]) {
+    changes.forEach(change => {
+      if (change.type === 'added') {
+        this.chats.push(change.chat);
+      }
+      if (change.type === 'modified') {
+        const index = this.chats.findIndex(c => c.uid === change.chat.uid);
+        if (index > -1) {
+          this.chats[index] = change.chat;
+        }
+      }
+      if (change.type === 'removed') {
+        const index = this.chats.findIndex(c => c.uid === change.chat.uid);
+        if (index > -1) {
+          this.chats.splice(index, 1);
+        }
+      }
+    });
+
+    // Emit the updated chats array
+    this.chatsSubject.next([...this.chats]);
+  }
 
   private messagesSubject = new BehaviorSubject<any[]>([]);
   public messages$ = this.messagesSubject.asObservable();
@@ -80,7 +133,7 @@ export class ReadService {
   }
 
   // Get old messages and set up a listener for the new chatroom
-  getChats() {
+  getChats(friend_id: string, uid: string) {
     const messagesRef = firebase.firestore()
       .collection('chatrooms')
       .doc(this.conversationId)
@@ -93,7 +146,7 @@ export class ReadService {
     oldMessagesQuery.get().then(async (querySnapshot) => {
       if (querySnapshot.empty) {
         console.log('No messages found.');
-        this.listenForNewMessages(null);
+        this.listenForNewMessages(uid, friend_id, null);
         return;
       } else {
         const oldMessages = querySnapshot.docs.reverse().map(doc => ({
@@ -103,15 +156,18 @@ export class ReadService {
         }));
         this.messages = oldMessages;
         this.messagesSubject.next(this.messages);  // Emit old messages to subscribers
-        this.listenForNewMessages(oldMessages[oldMessages.length - 1]['timestamp']);
+        this.listenForNewMessages(uid, friend_id, oldMessages[oldMessages.length - 1]['timestamp']);
+        this.writeService.markMessagesAsRead(this.conversationId, uid, friend_id)
       }
     }).catch((error) => {
       console.error('Error fetching old messages:', error);
     });
   }
 
+
+
   // Listen for new messages and store the unsubscribe function for the current conversation
-  listenForNewMessages(lastTimestamp: any) {
+  listenForNewMessages(uid, friend_id, lastTimestamp: any) {
     const messagesRef = firebase.firestore()
       .collection('chatrooms')
       .doc(this.conversationId)
@@ -121,7 +177,7 @@ export class ReadService {
 
     if (lastTimestamp) {
       newMessagesQuery = messagesRef
-        .orderBy('timestamp')
+        .orderBy('timestamp', 'asc')
         .startAfter(lastTimestamp);
     } else {
       newMessagesQuery = messagesRef.orderBy('timestamp');
@@ -134,15 +190,25 @@ export class ReadService {
           const newMessage = { id: change.doc.id, ...change.doc.data() };
           newMessage['date'] = newMessage?.['timestamp'] ? newMessage['timestamp'].toMillis() : null;
           this.messages.push(newMessage);
+          console.log(newMessage)
           this.messagesSubject.next(this.messages);  // Emit new messages
+          if (newMessage['senderId'] != uid) this.writeService.markMessagesAsRead(this.conversationId, uid, friend_id)
+          newMessage['conversationId'] = this.conversationId
+          this.dexieService.putMessage(newMessage)
         }
         if (change.type === 'modified') {
           const modMessage = { id: change.doc.id, ...change.doc.data() };
           modMessage['date'] = modMessage?.['timestamp'].toMillis();
+          console.log(change.doc.data())
+          modMessage['conversationId'] = this.conversationId
+          this.dexieService.putMessage(modMessage)
+
           const index = this.messages.findIndex(msg => msg.id === modMessage.id);
           if (index !== -1) {
             this.messages[index] = modMessage;
             this.messagesSubject.next(this.messages);  // Emit modified messages
+            modMessage['conversationId'] = this.conversationId
+            this.dexieService.putMessage(modMessage)
           }
         }
       });
@@ -152,6 +218,13 @@ export class ReadService {
 
     // Store the unsubscribe function in the map
     this.unsubscribeMap.set(this.conversationId, unsubscribe);
+  }
+
+  unsubscribeAll() {
+    this.unsubscribeMap.forEach((unsubscribe) => unsubscribe());  // Unsubscribe all listeners
+    this.unsubscribeMap.clear();  // Clear the map
+    this.messages = [];  // Clear messages globally
+    this.messagesSubject.next(this.messages);  // Clear observable data
   }
 
   // Unsubscribe from a specific conversation listener, not affecting others
@@ -164,16 +237,9 @@ export class ReadService {
     }
   }
 
-  // Manually unsubscribe all listeners if needed (optional)
-  unsubscribeAll() {
-    this.unsubscribeMap.forEach((unsubscribe) => unsubscribe());  // Unsubscribe all listeners
-    this.unsubscribeMap.clear();  // Clear the map
-    this.messages = [];  // Clear messages globally
-    this.messagesSubject.next(this.messages);  // Clear observable data
-  }
 
   getUserProfileOnce(userId: string): Promise<any> {
-    const profileRef = this.firestore.collection('profiles').doc(userId);
+    const profileRef = firebase.firestore().collection('profiles').doc(userId);
 
     return profileRef.get().then((doc) => {
       if (doc.exists) {
@@ -186,7 +252,7 @@ export class ReadService {
 
   getUserProfileWithListener(userId: string): Observable<any> {
     return new Observable((observer) => {
-      const profileRef = this.firestore.collection('profiles').doc(userId);
+      const profileRef = firebase.firestore().collection('profiles').doc(userId);
 
       // Firestore real-time listener
       const unsubscribe = profileRef.onSnapshot((doc) => {
@@ -204,14 +270,20 @@ export class ReadService {
     });
   }
 
-  getHotGirls(): Observable<any[]> {
+  getHotPeople(gender?: string): Observable<any[]> {
     return new Observable(observer => {
-      this.firestore.collection('profiles')
-        .where('gender', '==', 'female')
-        .where('verified', '==', true)
-        .get()
+
+      let queryRef = firebase.firestore().collection('profiles').where('verified', '==', true);
+
+      // If gender is provided, add it as a query filter
+      if (gender) {
+        queryRef = queryRef.where('gender', '==', gender);
+      }
+      queryRef.get()
         .then(snapshot => {
-          const users: any[] = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          const users: any[] = snapshot.docs.map(doc => ({ id: doc.id, age: doc['dob'] ? this.toolService.calculateAge(doc['dob']) : Math.floor(Math.random() * (25 - 18 + 1)) + 18, ...doc.data() }));
+          console.log(users);
+
           observer.next(users);
           observer.complete();
         })
@@ -224,24 +296,65 @@ export class ReadService {
 
   getOutlets() {
     return new Observable(observer => {
-      this.firestore.collection('outlets')
-        .where('gender', '==', 'female')
-        .where('verified', '==', true)
-        .get()
+      firebase.firestore().collection('outlets').get()
         .then(snapshot => {
-          const users: any[] = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-          observer.next(users);
+          const outlets: any[] = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          console.log(outlets)
+          observer.next(outlets);
           observer.complete();
         })
         .catch(error => {
-          console.error('Error fetching profiles:', error);
+          console.error('Error fetching outlets:', error);
           observer.error(error);
         });
     });
   }
 
+  getNearbyOutlets(lat: number, lon: number) {
+    return new Observable(observer => {
+      firebase.firestore().collection('outlets')
+        // .where("latitude", "<=", lat + 2)
+        // .where("latitude", ">=", lat - 2)
+        .get()
+        .then(snapshot => {
+          // Filter longitude manually
+          const outlets: any[] = snapshot.docs
+            .map(doc => ({ id: doc.id, ...doc.data() }))
+            .filter((outlet: any) => outlet.longitude <= lon + 2 && outlet.longitude >= lon - 2);
+
+          console.log(outlets);
+          observer.next(outlets);
+          observer.complete();
+        })
+        .catch(error => {
+          console.error('Error fetching outlets:', error);
+          observer.error(error);
+        });
+    });
+  }
+
+  getOutletUsers() {
+    return new Observable(observer => {
+      firebase.firestore().collection('checkins')
+        .get()
+        .then(snapshot => {
+          // Filter longitude manually
+          const checkins: any[] = snapshot.docs
+            .map(doc => ({ id: doc.id, ...doc.data() }))
+          console.log(checkins);
+          observer.next(checkins);
+          observer.complete();
+        })
+        .catch(error => {
+          console.error('Error fetching users:', error);
+          observer.error(error);
+        });
+    });
+  }
+
+
   getProfilefromUsername(username: string): Promise<any[]> {
-    const profileRef = this.firestore
+    const profileRef = firebase.firestore()
       .collection('profiles')
       .where('username', '==', username);
 
@@ -258,7 +371,7 @@ export class ReadService {
   }
 
   getMyRooms(uid: string) {
-    const roomsRef = this.firestore
+    const roomsRef = firebase.firestore()
       .collection('rooms')
       .where('users', 'array-contains', uid)
       .where('date', ">=", new Date());
@@ -279,7 +392,7 @@ export class ReadService {
   subMyHostings(uid: string): Observable<any[]> {
     return new Observable(observer => {
       // Firestore real-time listener using onSnapshot()
-      const unsubscribe = this.firestore.collection('users').doc(uid).collection('rooms')
+      const unsubscribe = firebase.firestore().collection('users').doc(uid).collection('rooms')
         .where('date', ">=", new Date())
         .onSnapshot(snapshot => {
           const rooms: any[] = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -299,9 +412,9 @@ export class ReadService {
 
   getPartyList() {
     // for ambasador
-    const roomsRef = this.firestore
+    const roomsRef = firebase.firestore()
       .collection('rooms')
-      .where('time_start', ">=", new Date())
+      .where('datetime', ">=", this.toolService.dateTransform(new Date(),'yyyyMMdd_hhmm'))
 
     return roomsRef
       .get()
@@ -316,7 +429,7 @@ export class ReadService {
   }
 
   getRoomInfo(roomId: string): Promise<any> {
-    return this.firestore.collection('rooms').doc(roomId).get().then((doc) => {
+    return firebase.firestore().collection('rooms').doc(roomId).get().then((doc) => {
       if (doc.exists) {
         return doc.data();
       } else {
@@ -324,6 +437,84 @@ export class ReadService {
       }
     });
   }
+
+  private notificationsSubject = new BehaviorSubject<{ type: string, notification: any }[]>([]);
+  notifications$ = this.notificationsSubject.asObservable();
+
+  listenNotifications(uid: string): Observable<{ type: string, notification: any }[]> {
+    return new Observable(observer => {
+      const notificationsRef = firebase.firestore().collection('users').doc(uid).collection('notifications');
+
+      console.log(uid);
+
+      let initialFetchComplete = false;
+
+      // Step 1: Listen for real-time updates right away but don't emit anything until initial fetch is done
+      const unsubscribe = notificationsRef.onSnapshot(snapshot => {
+        if (initialFetchComplete) {
+          const changes: { type: string, notification: any }[] = [];
+
+          snapshot.docChanges().forEach(change => {
+            const notification = { id: change.doc.id, ...change.doc.data() };
+            if (change.type === 'added') {
+              changes.push({ type: 'added', notification });
+            }
+            if (change.type === 'modified') {
+              changes.push({ type: 'modified', notification });
+            }
+            if (change.type === 'removed') {
+              changes.push({ type: 'removed', notification });
+            }
+          });
+
+          // Emit only the changes after the initial fetch
+          if (changes.length > 0) {
+            observer.next(changes);
+            this.updateLocalNotifications(changes);  // Update local notifications here
+          }
+        }
+      }, error => {
+        console.error('Error listening to notifications:', error);
+        observer.error(error);
+      });
+
+      // Step 2: Fetch existing notifications first
+      notificationsRef.get().then(snapshot => {
+        const notifications = snapshot.docs.map(doc => ({
+          type: 'existing',
+          notification: { id: doc.id, ...doc.data() }
+        }));
+
+        // Emit the fetched notifications as an array
+        observer.next(notifications);
+        this.updateLocalNotifications(notifications);  // Update local notifications with the initial fetch
+
+        // After initial fetch, set the flag to true
+        initialFetchComplete = true;
+      }).catch(error => {
+        console.error('Error fetching notifications:', error);
+        observer.error(error);
+      });
+
+      // Cleanup on unsubscription
+      return () => {
+        unsubscribe(); // Unsubscribe from the real-time listener
+      };
+    });
+  }
+
+  private updateLocalNotifications(notifications: { type: string, notification: any }[]) {
+    const currentNotifications = this.notificationsSubject.value;
+
+    // Filter out duplicates by checking notification IDs
+    const uniqueNotifications = notifications.filter(newNotification =>
+      !currentNotifications.some(existingNotification => existingNotification.notification.id === newNotification.notification.id)
+    );
+
+    const updatedNotifications = [...currentNotifications, ...uniqueNotifications];  // Append new unique notifications
+    this.notificationsSubject.next(updatedNotifications);  // Update the BehaviorSubject
+  }
+
 
 }
 

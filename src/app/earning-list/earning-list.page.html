@@ -1,0 +1,49 @@
+<ion-content [scrollEvents]="true" (ionScroll)="logScrolling($event)" [fullscreen]="true" style="--background: url(/assets/background/home_bg.jpg) 0 0 / cover no-repeat fixed;">
+  <ion-header class="ion-no-border" style="position: sticky; top: 0;">
+    <ion-toolbar id="header" class="ion-no-padding" style="--background: transparent;">
+      <div style="width: 100%;">
+        <ion-button style="font-size: 30px;" (click)="back()" fill="clear">
+          <ion-icon slot="icon-only" color="white" name="chevron-back"></ion-icon>
+        </ion-button>
+
+        <div style="width: 100%; padding: 0 20px 20px 20px">
+          <div class="wallet">
+            <div>
+              <h6>Earning</h6>
+
+              <div class="balance_container">
+                <ion-icon src="assets/svg/hey_coin.svg"></ion-icon>
+                <h3>{{ 1000 | number: '1.0-0'}}</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-list>
+    <ion-item *ngFor="let item of transactionList" lines="none">
+      <div style="width: 100%; display: flex; align-items: center;">
+        <div
+          style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; background-color: #28255E; border-radius: 10px;">
+          <ion-icon style="font-size: 20px;" [name]="item.amount > 0 ? 'arrow-up' : 'arrow-down'"></ion-icon>
+        </div>
+
+        <div class="transac_detail">
+          <div>
+            <h3>{{item.desc}}</h3>
+            <h6>
+              {{tool.dateShow(item.date)}}
+            </h6>
+          </div>
+
+          <div>
+            <h1 [ngClass]="item.amount > 0 ? 'positive' : 'negative'">{{item.amount |
+              number: '1.0-0'}}</h1>
+          </div>
+        </div>
+      </div>
+    </ion-item>
+  </ion-list>
+</ion-content>

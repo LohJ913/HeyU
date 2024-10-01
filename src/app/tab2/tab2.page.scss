@@ -11,12 +11,15 @@ ion-input {
     display: flex;
     flex-direction: column;
     align-items: center;
+    position: relative;
 
     .noti_btn_1 {
         width: 56px;
         height: 56px;
         --border-radius: 100%;
         --background: linear-gradient(90deg, #D3D7F7 0%, #D2E5FC 100%);
+        --background-activated: linear-gradient(90deg, #D3D7F7 0%, #D2E5FC 100%);
+        --background-focused: linear-gradient(90deg, #D3D7F7 0%, #D2E5FC 100%);
     }
 
     .noti_btn_2 {
@@ -24,6 +27,8 @@ ion-input {
         height: 56px;
         --border-radius: 100%;
         --background: linear-gradient(90deg, #F8DCE5 0%, #F7D9F6 100%);
+        --background-activated: linear-gradient(90deg, #F8DCE5 0%, #F7D9F6 100%);
+        --background-focused: linear-gradient(90deg, #F8DCE5 0%, #F7D9F6 100%);
     }
 
     .noti_btn_3 {
@@ -31,6 +36,8 @@ ion-input {
         height: 56px;
         --border-radius: 100%;
         --background: linear-gradient(90deg, #A9E7FC 0%, #BFF2F6 100%);
+        --background-activated: linear-gradient(90deg, #A9E7FC 0%, #BFF2F6 100%);
+        --background-focused: linear-gradient(90deg, #A9E7FC 0%, #BFF2F6 100%);
     }
 
     .noti_btn_4 {
@@ -38,6 +45,8 @@ ion-input {
         height: 56px;
         --border-radius: 100%;
         --background: linear-gradient(0deg, #E6D9FB 0%, #F5DEF3 100%);
+        --background-activated: linear-gradient(0deg, #E6D9FB 0%, #F5DEF3 100%);
+        --background-focused: linear-gradient(0deg, #E6D9FB 0%, #F5DEF3 100%);
     }
 
     h6 {

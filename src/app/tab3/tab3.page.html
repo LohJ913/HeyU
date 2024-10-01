@@ -26,16 +26,25 @@
     <!-- WALLET BALANCE -->
     <div
       style="width: 100%; display: flex; align-items: center; justify-content: center; padding: 0 20px; margin-bottom: 30px; margin-top: 10px;">
-      <div class="wallet">
-        <div>
-          <h6>Balance</h6>
 
-          <div class="balance_container">
-            <ion-icon src="assets/svg/hey_coin.svg"></ion-icon>
-            <h3>{{(currentUser['credits'] || 0) | number: '1.0-0'}}</h3>
+      <div style="width: 100%; background-color: #bb7420; border-radius: 20px;">
+        <div class="wallet">
+          <div>
+            <h6>Balance</h6>
+
+            <div class="balance_container">
+              <ion-icon src="assets/svg/hey_coin.svg"></ion-icon>
+              <h3>{{(currentUser['credits'] || 0) | number: '1.0-0'}}</h3>
+            </div>
           </div>
         </div>
+        <div *ngIf="tool.lengthof(currentUser) && currentUser['verified'] == true"
+          style="width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 10px 15px;">
+          <div style="font-size: 13px; font-weight: 500; color: #ffffff;">Earning - <b>8,600</b></div>
+          <ion-icon style="font-size: 14px; color: #ffffff;" name="chevron-forward-outline"></ion-icon>
+        </div>
       </div>
+
     </div>
 
     <!-- SETTINGS -->
@@ -43,7 +52,7 @@
 
       <div style="font-size: 18px; font-weight: bold; color: #ffffff; margin-bottom: 10px;">Others</div>
 
-      <div class="setting_container">
+      <div (click)="toProfile()" class="setting_container">
         <div class="setting_left">
           <ion-icon slot="start" src="assets/icon/profile.svg"></ion-icon>
           <div class="setting_text">Edit Profile</div>
@@ -51,29 +60,32 @@
         <ion-icon style="color: #ffffff" name="chevron-forward-outline"></ion-icon>
       </div>
 
-      <div class="setting_container">
+      <!-- <div (click)="toFavourite()" class="setting_container">
         <div class="setting_left">
           <ion-icon slot="start" src="assets/icon/favourite.svg"></ion-icon>
           <div class="setting_text">Favourite</div>
         </div>
         <ion-icon style="color: #ffffff" name="chevron-forward-outline"></ion-icon>
-      </div>
+      </div> -->
 
       <div class="setting_container">
         <div class="setting_left">
           <ion-icon slot="start" src="assets/icon/language.svg"></ion-icon>
           <div class="setting_text">Language</div>
         </div>
-        <ion-icon style="color: #ffffff" name="chevron-forward-outline"></ion-icon>
+        <div style="display: flex; align-items: center; justify-content: flex-end;">
+          <div style="font-size: 14px; font-weight: 500; color: #7673A8; margin-right: 10px;">English</div>
+          <ion-icon style="color: #ffffff" name="chevron-forward-outline"></ion-icon>
+        </div>
       </div>
 
-      <div class="setting_container">
+      <!-- <div class="setting_container">
         <div class="setting_left">
           <ion-icon slot="start" src="assets/icon/card.svg"></ion-icon>
           <div class="setting_text">My Cards</div>
         </div>
         <ion-icon style="color: #ffffff" name="chevron-forward-outline"></ion-icon>
-      </div>
+      </div> -->
 
       <div class="setting_container">
         <div class="setting_left">
@@ -83,7 +95,7 @@
         <ion-icon style="color: #ffffff" name="chevron-forward-outline"></ion-icon>
       </div>
 
-      <div (click)="bindAccount()" class="setting_container">
+      <div (click)="settingsOepn = true" class="setting_container">
         <div class="setting_left">
           <ion-icon slot="start" src="assets/icon/settings.svg"></ion-icon>
           <div class="setting_text">Settings</div>
@@ -109,3 +121,66 @@
     </div>
   </ion-toolbar>
 </ion-footer>
+
+<ion-modal style="--background: inherit; --backdrop-opacity: 0.7" #modal3 [isOpen]="settingsOepn"
+  (willDismiss)="settingsOepn = false">
+  <ng-template>
+    <ion-content [scrollY]="false" style="--background: inherit">
+      <div style="width: 100vw; height: 100vh; display: flex; flex-direction: column; justify-content: flex-end;">
+        <div (click)="settingsOepn = false" style="width: 100%; height: calc(100vh - 411px);">
+        </div>
+
+        <div
+          style="width: 100%; height: 400px; background-color: #382D62; border-radius: 15px 15px 0 0; padding: 20px 15px;">
+          <div style="font-size: 20px; font-weight: bold; color: #ffffff; margin-bottom: 15px;">Settings</div>
+
+          <div
+            style="width: 100%; display: flex; align-items: center; justify-content: space-between; padding-bottom: 15px; border-bottom: 1px solid #615E98;">
+            <div style="display: flex; align-items: center; justify-content: flex-start;">
+              <ion-icon slot="start" src="assets/profile/noti.svg"></ion-icon>
+              <div style="font-size: 16px; font-weight: 500; color: #ffffff;; margin-left: 10px;">Notfications</div>
+            </div>
+            <ion-toggle style="--track-background: #090913; --track-background-checked: #6860FF;"></ion-toggle>
+          </div>
+
+          <div *ngIf="currentUser['guest'] == true" (click)="bindAccount()"
+            style="width: 100%; display: flex; align-items: center; justify-content: space-between; padding-bottom: 15px; padding-top: 15px; border-bottom: 1px solid #615E98;">
+            <div style="display: flex; align-items: center; justify-content: flex-start;">
+              <ion-icon slot="start" name="link"></ion-icon>
+              <div style="font-size: 16px; font-weight: 500; color: #ffffff;; margin-left: 10px;">Link this account
+              </div>
+            </div>
+            <ion-icon style="color: #ffffff;" name="chevron-forward"></ion-icon>
+          </div>
+
+          <!-- <div
+            style="width: 100%; display: flex; align-items: center; justify-content: space-between; padding-bottom: 15px; padding-top: 15px; border-bottom: 1px solid #615E98;">
+            <div style="display: flex; align-items: center; justify-content: flex-start;">
+              <ion-icon slot="start" src="assets/profile/blocked.svg"></ion-icon>
+              <div style="font-size: 16px; font-weight: 500; color: #ffffff;; margin-left: 10px;">Blocked Users</div>
+            </div>
+            <ion-icon style="color: #ffffff;" name="chevron-forward"></ion-icon>
+          </div> -->
+
+          <div
+            style="width: 100%; display: flex; align-items: center; justify-content: space-between; padding-bottom: 15px; padding-top: 15px; border-bottom: 1px solid #615E98;">
+            <div style="display: flex; align-items: center; justify-content: flex-start;">
+              <ion-icon slot="start" src="assets/profile/delete.svg"></ion-icon>
+              <div style="font-size: 16px; font-weight: 500; color: #ffffff;; margin-left: 10px;">Delete Account</div>
+            </div>
+
+            <ion-icon style="color: #ffffff;" name="chevron-forward"></ion-icon>
+          </div>
+        </div>
+      </div>
+
+    </ion-content>
+
+    <ion-footer class="ion-no-border">
+      <ion-toolbar class="ion-no-padding" style="--background: #382D62; padding: 15px;">
+        <ion-button (click)="settingsOepn = false" class="ion-no-padding primary_btn">
+          Close</ion-button>
+      </ion-toolbar>
+    </ion-footer>
+  </ng-template>
+</ion-modal>

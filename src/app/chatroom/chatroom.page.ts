@@ -8,6 +8,7 @@ import { ToolService } from '../services/tool.service';
 import Swiper from 'swiper';
 import { Subscription, distinctUntilChanged } from 'rxjs';
 import { DataService } from '../services/data.service';
+import { DexieService } from '../services/dexie.service';
 
 @Component({
   selector: 'app-chatroom',
@@ -27,6 +28,8 @@ export class ChatroomPage implements OnInit, OnDestroy {
     private writeService: WriteService,
     public tool: ToolService,
     private dataService: DataService,
+    private dexieService: DexieService
+
   ) { }
 
   sendGift: boolean = false
@@ -108,7 +111,6 @@ export class ChatroomPage implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.userSubscribe = this.dataService.userInfo.pipe(distinctUntilChanged()).subscribe(async (info) => {
-      console.log(info);
       this.currentUser = info;
     });
     this.arrayGift = this.tool.groupArray(this.gifts, 4)
@@ -119,7 +121,7 @@ export class ChatroomPage implements OnInit, OnDestroy {
         this.readService.setConversationId(this.conversationId);
 
         // Fetch old messages and listen for new ones
-        this.readService.getChats();
+        this.readService.getChats(this.fid, this.uid);
 
         // Subscribe to messages observable
         this.messagesSub = this.readService.messages$.subscribe((messages) => {
@@ -134,6 +136,8 @@ export class ChatroomPage implements OnInit, OnDestroy {
       .subscribe({
         next: (profileData) => {
           this.friendProfile = profileData;
+          this.friendProfile['age'] = this.tool.calculateAge(this.friendProfile['dob'])
+
           console.log('Profile updated:', this.friendProfile);
         },
         error: (error) => {
@@ -172,7 +176,7 @@ export class ChatroomPage implements OnInit, OnDestroy {
   async sendingGift() {
     let giftInfo: any = {};
     giftInfo = this.selectedGift;
-  
+
     const res = await this.writeService.sendGift(
       giftInfo,
       this.conversationId,
@@ -181,14 +185,14 @@ export class ChatroomPage implements OnInit, OnDestroy {
       this.currentUser,
       this.friendProfile
     );
-  
+
     if (res.success) {
       console.log(res)
       console.log('Message sent successfully.');
       console.log(giftInfo);
+      this.tool.showToast('Gift sent!', 'success', 'bottom')
       this.scrollToBottomOnInit();
     } else {
-      
       console.error('Error sending message:', res.message);
     }
   }
@@ -196,7 +200,7 @@ export class ChatroomPage implements OnInit, OnDestroy {
   async sendMessage(ev) {
 
     console.log(this.messageText);
-
+    if (!ev) return
     // if (ev.keyCode === 13) { // keyCode for the Enter key is 13
     this.writeService.sendMessage(
       this.messageText,
@@ -214,16 +218,6 @@ export class ChatroomPage implements OnInit, OnDestroy {
         console.error('Error sending message:', error);
       });
     // }
-  }
-
-  markMessagesAsRead(conversationId: string, userId: string, friendId: string): void {
-    this.writeService.markMessagesAsRead(conversationId, userId, friendId)
-      .then(() => {
-        console.log('Messages marked as read and chat summary updated.');
-      })
-      .catch((error) => {
-        console.error('Error in marking messages as read:', error);
-      });
   }
 
   scrollToBottomOnInit() {

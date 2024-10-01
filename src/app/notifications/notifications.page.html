@@ -1,0 +1,68 @@
+<ion-content [fullscreen]="true" style="--background: #080812;">
+  <ion-header class="ion-no-border" style="position: sticky; top: 0;">
+    <ion-toolbar class="ion-no-padding"
+      style="--background: linear-gradient(180deg, rgba(8,8,18,1) 0%, rgba(8,8,18,0.5) 50%, rgba(8,8,18,0) 100%);">
+      <div class="header_container">
+        <ion-button (click)="back()" fill="clear">
+          <ion-icon slot="icon-only" color="white" name="chevron-back"></ion-icon>
+        </ion-button>
+
+        <div style="width: 100%; padding: 0 20px;">
+          <div style="font-size: 32px; font-weight: 800; color: #ffffff; margin-bottom: 3px;">Notification</div>
+        </div>
+      </div>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-list>
+    <ion-item *ngFor="let item of [0,1,2,3,4,5,6,7,8,9,10]" lines="none" style="padding: 10px 0;">
+      <div style="width: 100%;">
+        <div style="width: 100%; display: flex; align-items: center;">
+          <div class="general_btn">
+            <ion-button class="ion-no-padding noti_btn_1">
+              <ion-icon style="font-size: 12px;" src="assets/svg/chat_noti_btn/official.svg"></ion-icon>
+            </ion-button>
+          </div>
+          <div style="width: calc(100% - 46px); margin-left: 10px;">
+            <h3 style="font-size: 14px; font-weight: 700; color: #ffffff; margin: 0 0 3px 0;">Customer Support</h3>
+            <h6
+              style="font-size: 12px; font-weight: normal; color: #B4B2E5; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+              Hi! I'm HeyBot! How can I help?Hi! I'm HeyBot! How can I help? Hi! I'm HeyBot! How can I help?
+            </h6>
+          </div>
+        </div>
+        <div style="width: 100%; display: flex; align-items: center; justify-content: flex-end;">
+          <h6 style="font-size: 8px; font-weight: normal; color: #B4B2E5; margin: 0;">
+            {{1727641853000 | date: 'dd MMM yyyy, hh:mm a'}}</h6>
+        </div>
+      </div>
+    </ion-item>
+
+    <!-- <ion-item>
+      <div class="general_btn">
+        <ion-button class="ion-no-padding noti_btn_2">
+          <ion-icon style="font-size: 12px;" src="assets/svg/chat_noti_btn/relation.svg"></ion-icon>
+        </ion-button>
+      </div>
+      <ion-label>Item Avatar</ion-label>
+    </ion-item>
+
+    <ion-item>
+      <div class="general_btn">
+        <ion-button class="ion-no-padding noti_btn_3">
+          <ion-icon style="font-size: 12px;" src="assets/svg/chat_noti_btn/system.svg"></ion-icon>
+        </ion-button>
+      </div>
+      <ion-label>Item Avatar</ion-label>
+    </ion-item>
+
+    <ion-item>
+      <div class="general_btn">
+        <ion-button class="ion-no-padding noti_btn_4">
+          <ion-icon style="font-size: 12px;" src="assets/svg/chat_noti_btn/suggestion.svg"></ion-icon>
+        </ion-button>
+      </div>
+      <ion-label>Item Avatar</ion-label>
+    </ion-item> -->
+  </ion-list>
+</ion-content>

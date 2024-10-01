@@ -8,8 +8,17 @@ import { Component, OnInit } from '@angular/core';
 export class TopupModalPage implements OnInit {
 
   constructor() { }
+  selectedPackage = 1
 
   ngOnInit() {
   }
 
+  selectPackage(pack) {
+    this.selectedPackage = pack
+
+  }
+
+  topUp() {
+
+  }
 }

@@ -1,7 +1,7 @@
 .header_container {
     width: 100%;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: space-between;
     padding: 20px;
 
@@ -25,13 +25,14 @@
 
 .wallet {
     width: 100%;
-    height: 80px;
+    height: 90px;
     display: flex;
     align-items: center;
     border-radius: 20px;
     background: rgb(255, 151, 29);
     background: url(/assets/material/wallet_bg.jpg) center center / cover no-repeat fixed;
     padding: 10px 20px;
+    position: relative;
 
     h6 {
         font-size: 14px;
@@ -151,6 +152,9 @@
                 font-size: 16px;
                 font-weight: 700;
                 color: #ffffff;
+                display: flex;
+                align-items: center;
+                gap: 3px;
             }
         }
     }

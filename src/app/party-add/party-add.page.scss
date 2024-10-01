@@ -13,3 +13,54 @@
     font-weight: 500;
     margin-left: 8px;
 }
+
+.each_basic {
+    width: calc((100% / 2) - 5px);
+    height: 45px;
+    background-color: #090913;
+    border-radius: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 15px;
+}
+
+ion-select::part(icon) {
+    display: none !important;
+}
+
+ion-range {
+    --bar-background: #CBD7E2;
+    --bar-background-active: #6860FF;
+    --bar-height: 3px;
+    --bar-border-radius: 3px;
+    --knob-background: #6860FF;
+    --knob-size: 15px;
+    --pin-background: #f0f0f0;
+    --pin-color: #000000;
+}
+
+ion-range::part(pin) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #e1dfff;
+    color: #6860ff;
+    font-size: 12px;
+    font-weight: 700;
+    border-radius: 5px;
+    transform: scale(1);
+
+    bottom: -25px;
+
+    min-width: 45px;
+    width: fit-content;
+    padding: 0 10px;
+    height: 25px;
+    // transition: transform 120ms ease, background 120ms ease;
+}
+
+ion-range::part(pin)::before {
+    content: none;
+}

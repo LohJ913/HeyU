@@ -77,6 +77,30 @@ const routes: Routes = [
   {
     path: 'topup-modal',
     loadChildren: () => import('./topup-modal/topup-modal.module').then( m => m.TopupModalPageModule)
+  },
+  {
+    path: 'profile-edit',
+    loadChildren: () => import('./profile-edit/profile-edit.module').then( m => m.ProfileEditPageModule)
+  },
+  {
+    path: 'profile-tags',
+    loadChildren: () => import('./profile-tags/profile-tags.module').then( m => m.ProfileTagsPageModule)
+  },
+  {
+    path: 'favourite-list',
+    loadChildren: () => import('./favourite-list/favourite-list.module').then( m => m.FavouriteListPageModule)
+  },
+  {
+    path: 'country-list',
+    loadChildren: () => import('./country-list/country-list.module').then( m => m.CountryListPageModule)
+  },
+  {
+    path: 'notifications',
+    loadChildren: () => import('./notifications/notifications.module').then( m => m.NotificationsPageModule)
+  },
+  {
+    path: 'earning-list',
+    loadChildren: () => import('./earning-list/earning-list.module').then( m => m.EarningListPageModule)
   }
 ];
 @NgModule({

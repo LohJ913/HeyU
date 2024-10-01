@@ -13,7 +13,6 @@ export class WriteService {
 
   ) { }
 
-  firestore = firebase.firestore()
   uid = localStorage.getItem('heyu_uid') || ''
 
   getUid() {
@@ -28,60 +27,64 @@ export class WriteService {
   // ~ chats ~
 
 
-  updateDelivered(participants, timestamp) {
-    const batch = this.firestore.batch();
+  updateDelivered(participants: string[], timestamp: any) {
+    const batch = firebase.firestore().batch();
 
     const uid = this.getUid();  // Get uid dynamically each time
     if (!uid) return;  // Return if uid is not available
-
-    const chatRef = this.firestore.collection('users').doc(uid).collection('chats').doc();
-    batch.update(chatRef, { delivered: true });
-
-    const conversationId = participants.sort().join('_');
-    const messagesRef = this.firestore.collection('chatrooms').doc(conversationId).collection('messages')
+    console.log(timestamp)
+    const conversationId = participants.sort().join('_');  // Sort participants
+    const messagesRef = firebase.firestore().collection('chatrooms').doc(conversationId).collection('messages')
       .where('delivered', '==', false)
-      .where('lastDeliveryDate', '<=', timestamp)
-      .where('senderId', '!=', uid);
+    // .where('lastDeliveryDate', '<=', timestamp);
 
+    // Update the `delivered` status for the chat and messages
     messagesRef.get().then((querySnapshot) => {
-      querySnapshot.forEach((doc) => {
+      const filteredMessages = querySnapshot.docs.filter(doc => doc.data().senderId !== uid);
+      filteredMessages.forEach((doc) => {
         batch.update(doc.ref, { delivered: true, lastDeliveryDate: firebase.firestore.FieldValue.serverTimestamp() });
       });
-      // Commit the batch write if there are changes
-      if (!querySnapshot.empty) {
-        batch.commit()
-          .then(() => {
-            console.log('Delivered status updated for chat and messages.');
-          })
-          .catch((error) => {
-            console.error('Error updating delivered status: ', error);
-          });
+
+      if (filteredMessages.length > 0) {
+        batch.commit().then(() => {
+          console.log('Delivered status updated for chat and messages.');
+        });
       }
     }).catch((error) => {
       console.error('Error retrieving messages for update: ', error);
     });
   }
 
+
   markMessagesAsRead(conversationId: string, userId: string, friendId: string): Promise<void> {
-    const messagesRef = this.firestore
+    // console.log('User ID:', userId);
+    // console.log('Conversation ID:', conversationId);
+    const messagesRef = firebase.firestore()
       .collection('chatrooms')
       .doc(conversationId)
       .collection('messages')
-      .where('senderId', '==', userId)
+      .where('senderId', '==', friendId)
       .where('isRead', '==', false);
 
     return messagesRef.get().then((querySnapshot) => {
-      const batch = this.firestore.batch();
-      let unreadCount = 0;
+      const batch = firebase.firestore().batch();
+
+      // console.log(`Found ${querySnapshot.size} unread messages.`);  // Log number of unread messages
 
       querySnapshot.forEach((doc) => {
-        unreadCount++;
+        console.log('Marking message as read:', doc.id);  // Log each message being updated
         batch.update(doc.ref, { isRead: true });
       });
 
+      // If there are no messages to update, log this fact
+      if (querySnapshot.size === 0) {
+        console.log('No messages to mark as read.');
+        return Promise.resolve(); // No messages to update, resolve immediately
+      }
+
       return batch.commit().then(() => {
-        console.log('Messages marked as read');
-        // Update chat summary (reset unreadCount)
+        // console.log('Messages marked as read');
+        // Update chat summary (reset unread count)
         return this.updateChatSummary(userId, friendId, {
           unreadCount: 0,
           delivered: true,
@@ -94,9 +97,11 @@ export class WriteService {
     });
   }
 
+
+
   // Function to update the chat summary
   updateChatSummary(userId: string, friendId: string, statusUpdate: any): Promise<void> {
-    const chatSummaryRef = this.firestore
+    const chatSummaryRef = firebase.firestore()
       .collection('users')
       .doc(friendId)
       .collection('chats')
@@ -114,7 +119,6 @@ export class WriteService {
 
   async sendMessage(message: string, conversationId: string, friend_id: string, uid: string, user_profile: any, friend_profile: any): Promise<void> {
     return new Promise(async (resolve, reject) => {
-      console.log(message, conversationId, friend_id, uid, user_profile, friend_profile)
       if (message.trim()) {
         const firestore = firebase.firestore();
         const batch = firestore.batch();
@@ -242,6 +246,8 @@ export class WriteService {
           timestamp: firebase.firestore.FieldValue.serverTimestamp(),
           localTimestamp: new Date().getTime(),
           isDelivered: false,
+          isRead: false,
+          isDeleted: false,
         };
 
         // Perform operations inside transaction
@@ -315,7 +321,7 @@ export class WriteService {
   }
 
   updateProfile(uid: string, profileData: any): Promise<void> {
-    return this.firestore.collection('profiles').doc(uid).update(profileData)
+    return firebase.firestore().collection('profiles').doc(uid).update(profileData)
       .then(() => {
         console.log('Profile updated successfully.');
       })
@@ -348,7 +354,7 @@ export class WriteService {
 
   async topUpCredits(uid: string, topupPackage: { amount: number, bonus: string, gem: number }, method: string): Promise<void> {
     console.log(uid, topupPackage)
-    const firestore = this.firestore;
+    const firestore = firebase.firestore();
     const userRef = firestore.collection('profiles').doc(uid);
     const transactionsRef = firestore.collection('transactions').doc(); // Auto-generate transaction ID
 
@@ -386,13 +392,13 @@ export class WriteService {
   }
 
   async createRoom(uid: string, roomData: any): Promise<{ success: boolean; roomId?: string; transactionId?: string; newCredits?: number; message?: string }> {
-    const roomRef = this.firestore.collection('rooms').doc(); // Create a new room document
-    const transactionRef = this.firestore.collection('transactions').doc(); // Create a new transaction document
-    const userRef = this.firestore.collection('profiles').doc(uid); // Reference to the user's profile (where credits are stored)
+    const roomRef = firebase.firestore().collection('rooms').doc(); // Create a new room document
+    const transactionRef = firebase.firestore().collection('transactions').doc(); // Create a new transaction document
+    const userRef = firebase.firestore().collection('profiles').doc(uid); // Reference to the user's profile (where credits are stored)
 
     console.log(uid, roomData);
     try {
-      const result = await this.firestore.runTransaction(async (transaction) => {
+      const result = await firebase.firestore().runTransaction(async (transaction) => {
         const userDoc = await transaction.get(userRef);
 
         if (!userDoc.exists) {
@@ -416,6 +422,7 @@ export class WriteService {
           timestamp: firebase.firestore.FieldValue.serverTimestamp(),
           byName: roomData['byName'] || '',
           byUid: uid || '',
+          byPicture: roomData['byPicture'] || '',
           status: "pending",
           deposit: roomData['deposit'],
           fee: roomData['fee'] || 0,
@@ -450,7 +457,7 @@ export class WriteService {
         });
 
         // Add room reference under user's rooms
-        const userRoomsRef = this.firestore.collection('users').doc(uid).collection('rooms').doc(roomRef.id);
+        const userRoomsRef = firebase.firestore().collection('users').doc(uid).collection('rooms').doc(roomRef.id);
         transaction.set(userRoomsRef, {
           timestamp: firebase.firestore.FieldValue.serverTimestamp(),
           byName: roomData['byName'] || '',
@@ -477,7 +484,7 @@ export class WriteService {
         // type = party gift transfer topup
 
         // Add transaction reference under user's transactions
-        const userTransRef = this.firestore.collection('users').doc(uid).collection('transactions').doc(transactionRef.id);
+        const userTransRef = firebase.firestore().collection('users').doc(uid).collection('transactions').doc(transactionRef.id);
         transaction.set(userTransRef, {
           transactionId: transactionRef.id,
           event_id: roomRef.id,
@@ -502,10 +509,10 @@ export class WriteService {
   }
 
   requestJoinParty(roomId: string, hostId: string, uid: string, profile: { name: string; picture: string; rate: number, uid: string }): Promise<any> {
-    const roomRef = this.firestore.collection('rooms').doc(roomId);
-    const userRef = this.firestore.collection('users').doc(hostId); // Reference to user's document
+    const roomRef = firebase.firestore().collection('rooms').doc(roomId);
+    const userRef = firebase.firestore().collection('users').doc(hostId); // Reference to user's document
 
-    const batch = this.firestore.batch(); // Initialize batch
+    const batch = firebase.firestore().batch(); // Initialize batch
 
     // Step 1: Update the room (add user to the room and profile to applicants)
     batch.update(roomRef, {
@@ -533,12 +540,12 @@ export class WriteService {
   }
 
   async acceptUserToParty(roomId: string, hostId: string, profile: { name: string; picture: string; rate: number, uid: string }): Promise<any> {
-    const roomRef = this.firestore.collection('rooms').doc(roomId);
-    const hostRef = this.firestore.collection('users').doc(hostId); // Host's user document
+    const roomRef = firebase.firestore().collection('rooms').doc(roomId);
+    const hostRef = firebase.firestore().collection('users').doc(hostId); // Host's user document
 
     try {
       // Run Firestore transaction
-      const result = await this.firestore.runTransaction(async (transaction) => {
+      const result = await firebase.firestore().runTransaction(async (transaction) => {
         const roomDoc = await transaction.get(roomRef);
 
         // Check if the user exists and has sufficient credits
@@ -581,11 +588,11 @@ export class WriteService {
   }
 
   async rejectUserFromParty(roomId: string, hostId: string, profile: { name: string; picture: string; rate: number, uid: string }): Promise<any> {
-    const roomRef = this.firestore.collection('rooms').doc(roomId);
-    const hostRef = this.firestore.collection('users').doc(hostId).collection('rooms').doc(roomId);
+    const roomRef = firebase.firestore().collection('rooms').doc(roomId);
+    const hostRef = firebase.firestore().collection('users').doc(hostId).collection('rooms').doc(roomId);
 
     // Create a Firestore batch
-    const batch = this.firestore.batch();
+    const batch = firebase.firestore().batch();
 
     // Step 1: Update the room (remove user from applicants)
     batch.update(roomRef, {
@@ -608,6 +615,47 @@ export class WriteService {
       console.error('Batch update failed:', error);
       return { success: false, message: error.message };
     }
+  }
+
+
+  async guestCheckin(uid: string, outlet: { name: string; id: string }, profile: { name: string; picture: string; uid: string }, old_outlet): Promise<any> {
+    console.log(uid, outlet, old_outlet)
+    const firestore = firebase.firestore();
+    const batch = firestore.batch();
+
+    const checkinRef = firestore.collection('checkins').doc(outlet.id);
+    const locationRef = firestore.collection('profiles').doc(uid);
+
+    // Check if the documents exist
+    if (outlet.id != old_outlet && old_outlet) firestore.collection('checkins').doc(old_outlet).set({ guest: firebase.firestore.FieldValue.arrayRemove(profile), users: firebase.firestore.FieldValue.arrayRemove(uid) }, { merge: true });
+    checkinRef.set({ guest: firebase.firestore.FieldValue.arrayUnion(profile), users: firebase.firestore.FieldValue.arrayUnion(uid) }, { merge: true });
+
+    // Prepare the location update in the batch
+    batch.set(locationRef, {
+      visitTime: firebase.firestore.FieldValue.serverTimestamp(), // Correctly use serverTimestamp
+      visitId: outlet.id,
+      visitName: outlet.name
+    }, { merge: true }); // Merge the new data with existing data
+
+    // Commit the batch
+    return batch.commit()
+      .then(() => {
+        console.log('Batch commit successful');
+        return { success: true, message: 'Successfully checked in as guest' };
+      })
+      .catch((error) => {
+        console.error('Error updating room check-in and user profile:', error);
+        throw error; // Optionally re-throw the error if needed
+      });
+  }
+
+
+  scarAmbassadorQR(partyId: string, uid: string) {
+    // set job
+    // set transaction
+    // set room
+    // set girl
+    // set user
   }
 
 }

@@ -93,15 +93,18 @@ export class LoginPage implements OnInit {
       this.tool.showLoading('Please wait...')
 
       let signUpInfo = {
-        email: this.loginUser['username'] + '@heyu.com',
+        email: (this.loginUser['username']).toLowerCase() + '@heyu.com',
         password: this.loginUser['password']
       }
-
-      firebase.auth().signInWithEmailAndPassword(signUpInfo['email'], signUpInfo['password']).then(async () => {
+      console.log(signUpInfo)
+      firebase.auth().signInWithEmailAndPassword(signUpInfo['email'], signUpInfo['password']).then(async (data) => {
+        console.log(data)
         await this.tool.dismissLoading()
         this.navCtrl.navigateRoot('tabs/tab1', { animated: true, animationDirection: 'forward' })
-      }, async error => {
+      }).catch(async (error) => {
+        console.error(error)
         await this.tool.dismissLoading()
+        this.tool.swal('error', 'Failed to login', "Invalid login credentials", 3000)
       })
 
 
@@ -137,7 +140,7 @@ export class LoginPage implements OnInit {
     firebase.auth().signInAnonymously().then(async (ano) => {
       let obj = {
         name: this.getRandomName(),
-        gender: this.interested == 'female' ? 'male' : 'female',
+        // gender: this.interested == 'female' ? 'male' : 'female',
         interested: this.interested,
         id: ano.user.uid,
         guest: true,

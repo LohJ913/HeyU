@@ -3,10 +3,18 @@
   <ion-header class="ion-no-border">
     <ion-toolbar class="ion-no-padding" style="--background: transparent;">
       <div style="width: 100%; padding: 20px;">
-        <div style="width: fit-content; position: relative; margin-bottom: 20px;">
+        <div
+          style="width: 100%; display: flex; align-items: center; justify-content: space-between; position: relative; margin-bottom: 20px;">
           <h1 style="font-size: 22px; font-weight: bold; color: #ffffff; margin: 0; position: relative;">Chat
             <ion-icon style="position: absolute; top: -8px; right: -10px;" src="assets/svg/heyu.svg"></ion-icon>
           </h1>
+
+          <div (click)="tool.navTo('notifications')" style="position: relative; padding: 2px;">
+            <div
+              style="width: 8px; height: 8px; background-color: #ff3333; border-radius: 100%; position: absolute; top: 0; right: 0; z-index: 1000;">
+            </div>
+            <ion-icon style="font-size: 18px;" src="assets/profile/noti.svg"></ion-icon>
+          </div>
         </div>
 
         <ion-input placeholder="Search" clearInput="true">
@@ -20,6 +28,7 @@
   <div style="width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 0 20px;">
 
     <div class="general_btn">
+      <ion-badge style="font-size: 10px; font-weight: 700; --background: #E25E6C; --color: #ffffff; border: 1px solid #ffffff; position: absolute; top: 0; right: -5px; z-index: 1000;">7</ion-badge>
       <ion-button class="noti_btn_1">
         <ion-icon src="assets/svg/chat_noti_btn/official.svg"></ion-icon>
       </ion-button>
@@ -28,6 +37,8 @@
     </div>
 
     <div class="general_btn">
+      <ion-badge style="font-size: 10px; font-weight: 700; --background: #E25E6C; --color: #ffffff; border: 1px solid #ffffff; position: absolute; top: 0; right: -5px; z-index: 1000;">7</ion-badge>
+
       <ion-button class="noti_btn_2">
         <ion-icon src="assets/svg/chat_noti_btn/relation.svg"></ion-icon>
       </ion-button>
@@ -36,6 +47,8 @@
     </div>
 
     <div class="general_btn">
+      <ion-badge style="font-size: 10px; font-weight: 700; --background: #E25E6C; --color: #ffffff; border: 1px solid #ffffff; position: absolute; top: 0; right: -5px; z-index: 1000;">7</ion-badge>
+
       <ion-button class="noti_btn_3">
         <ion-icon src="assets/svg/chat_noti_btn/system.svg"></ion-icon>
       </ion-button>
@@ -44,6 +57,8 @@
     </div>
 
     <div class="general_btn">
+      <ion-badge style="font-size: 10px; font-weight: 700; --background: #E25E6C; --color: #ffffff; border: 1px solid #ffffff; position: absolute; top: 0; right: -5px; z-index: 1000;">7</ion-badge>
+
       <ion-button class="noti_btn_4">
         <ion-icon src="assets/svg/chat_noti_btn/suggestion.svg"></ion-icon>
       </ion-button>
@@ -71,30 +86,39 @@
     </ion-item>
 
     <!-- OTHERS CHAT -->
-    <ion-item (click)="chatDetail(item)" *ngFor="let item of filteredChat; let i = index"  lines="none"
+    <ion-item (click)="chatDetail(item)" *ngFor="let item of filteredChat; let i = index" lines="none"
       style="--background: transparent !important; margin-bottom: 20px;">
       <div style="width: 100%; display: flex; align-items: center; justify-content: space-between;">
         <div
           style="width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; border-radius: 100%; background: #212238;">
           <ion-avatar style="width: 56px; height: 56px;">
-            <img alt="Other User Chat Profile Pic"
-              src="{{item.picture}}" />
+            <img alt="Other User Chat Profile Pic" src="{{item.picture}}" />
           </ion-avatar>
         </div>
 
         <div style="width: calc(100% - 66px);">
           <div
             style="width: 100%; display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
-            <h3 style="font-size: 16px; font-weight: 700; color: #ffffff; margin: 0; white-space: nowrap; text-overflow: ellipsis; overflow: hidden;">{{item.name}}</h3>
+            <h3
+              style="font-size: 16px; font-weight: 700; color: #ffffff; margin: 0; white-space: nowrap; text-overflow: ellipsis; overflow: hidden;">
+              {{item.name}}</h3>
             <h6 style="font-size: 12px; font-weight: normal; color: #B4B2E5; margin: 0;">{{item.lastTime}}
             </h6>
           </div>
-          <h6 style="font-size: 12px; font-weight: normal; color: #B4B2E5; margin: 0;  display: flex; align-items: center; justify-content: space-between;">
+          <h6
+            style="font-size: 12px; font-weight: normal; color: #B4B2E5; margin: 0;  display: flex; align-items: center; justify-content: space-between;">
             <div style="width: calc(100% - 22px); display: flex;align-items: center;">
-              <div *ngIf="item.lastMessageBy == uid" style="margin-top: 1px; width: 16px;"><ion-icon [ngStyle]="{'color': !item.delivered ? '#D3D7F7' : item.unreadCount ? '#D3D7F7' : '#E6D9FB'}" [name]="!item.delivered ? 'checkmark-outline' : item.unreadCount ? 'checkmark-done-outline' : 'checkmark-done-outline' " style="font-size: 13px;margin-top: 1px; margin-right: 3px;"></ion-icon></div>
-              <span style="width: calc(100% - 16px); white-space: nowrap; text-overflow: ellipsis; overflow: hidden;">{{item.lastMessage || ''}}</span>
+              <div *ngIf="item.lastMessageBy == uid" style="margin-top: 1px; width: 16px;"><ion-icon
+                  [ngStyle]="{'color': !item.delivered ? '#D3D7F7' : item.unreadCount ? '#D3D7F7' : '#E6D9FB'}"
+                  [name]="!item.delivered ? 'checkmark-outline' : item.unreadCount ? 'checkmark-done-outline' : 'checkmark-done-outline' "
+                  style="font-size: 13px;margin-top: 1px; margin-right: 3px;"></ion-icon></div>
+              <span
+                style="width: calc(100% - 16px); white-space: nowrap; text-overflow: ellipsis; overflow: hidden;">{{item.lastMessage
+                || ''}}</span>
             </div>
-            <div *ngIf="item.lastMessageBy != uid && item.unreadCount" style="border-radius: 50%; min-width: 18px; height: 18px;margin-left: 4px;background: #6860FF;display: flex; align-items: center; justify-content: center;color:white; font-size: 10px;">{{item.unreadCount || 0}}</div>
+            <div *ngIf="item.lastMessageBy != uid && item.unreadCount"
+              style="border-radius: 50%; min-width: 18px; height: 18px;margin-left: 4px;background: #6860FF;display: flex; align-items: center; justify-content: center;color:white; font-size: 10px;">
+              {{item.unreadCount || 0}}</div>
           </h6>
         </div>
       </div>

@@ -5,7 +5,7 @@ import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { defineCustomElements } from '@ionic/pwa-elements/loader';
 import { base64StringToBlob, blobToDataURL } from 'blob-util';
 import { distinctUntilChanged } from 'rxjs/operators';
-import { DatePipe } from '@angular/common';
+import { DatePipe, DecimalPipe } from '@angular/common';
 import swal from 'sweetalert'
 
 @Injectable({
@@ -18,7 +18,8 @@ export class ToolService {
     public toastCtrl: ToastController,
     public loadingCtrl: LoadingController,
     private http: HttpClient,
-    private datePipe: DatePipe
+    private datePipe: DatePipe,
+    private decimalPipe: DecimalPipe,
   ) { }
 
   lengthof(x) {
@@ -158,6 +159,69 @@ export class ToolService {
     });
   }
 
+  async uploadMultiPhoto(uid, cap) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        // Check and request camera permissions
+        const permissions = await Camera.checkPermissions();
+        console.log(permissions);
+
+        defineCustomElements(window);
+
+        const val = await Camera.pickImages({
+          quality: 90
+        });
+
+        let images = [];
+        let tempPhotos = [];
+        images = val.photos;
+
+        for (let index = 0; index < images.length && index < cap; index++) {
+          const element = images[index];
+          const res = await fetch(element['webPath']);
+          const blob = await res.blob();
+          const dataURL = await blobToDataURL(blob);
+
+          await this.compressBase64Image(dataURL, 500, 500, 1).then(async (compressedRes) => {
+            const filesize = base64StringToBlob(compressedRes.replace(/^data:image\/\w+;base64,/, ""), 'image/png').size;
+
+            if (filesize < 10485768) { // Less than 10MB
+              const file = new File([blob], 'profile.png', { type: 'image/png' });
+
+              const formData = new FormData();
+              formData.append('file', file, file.name);
+              formData.append('userid', uid);
+              formData.append('folder', 'vsing');
+              formData.append('isFile', 'true');
+
+              tempPhotos.push(dataURL);
+            } else {
+              alert("Your Current Image is Too Large, " + this.getBlobSizeInMB(blob) + "MB! (Please choose a file lesser than 8MB)");
+            }
+          });
+        }
+
+        resolve(tempPhotos);
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+
+  // async checkCameraPermission() {
+  //   const status = await Permissions.query({ name: 'camera' });
+
+  //   if (status.state === 'granted') {
+  //     return true;
+  //   } else if (status.state === 'prompt') {
+  //     // Request permission
+  //     const requestStatus = await Permissions.request({ name: 'camera' });
+  //     return requestStatus.state === 'granted';
+  //   }
+
+  //   return false;
+  // }
+
   getBlobSizeInMB(blob: Blob): number {
     return blob.size / (1024 * 1024);
   }
@@ -227,6 +291,21 @@ export class ToolService {
     return display
   }
 
+  calculateAge(dob) {
+    const birthDate = new Date(dob);
+    const currentDate = new Date();
+
+    let age = currentDate.getFullYear() - birthDate.getFullYear();
+    const monthDiff = currentDate.getMonth() - birthDate.getMonth();
+    const dayDiff = currentDate.getDate() - birthDate.getDate();
+
+    // Adjust age if the birth date has not occurred yet this year
+    if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+      age--;
+    }
+
+    return age;
+  }
 
   calculateAgeFromString(dobString: string): number {
     // Split the date string into day, month, and year
@@ -305,8 +384,56 @@ export class ToolService {
     })
   }
 
+  swalButton(icon: string, title: string, text: string): Promise<boolean> {
+    return swal({
+      icon: icon,
+      title: title,
+      text: text,
+      buttons: ['Cancel', 'Yes, Confirm'],
+      dangerMode: true,
+    }).then((confirm) => {
+      console.log(confirm);
+      return confirm;  // Passes the confirmation result to the `.then()` chain
+    });
+  }
+
   dateTransform(x: any, format: string) {
     return this.datePipe.transform(x, format)
+  }
+
+  getDistanceBetweenPoints(lat1: number, lon1: number, lat2: number, lon2: number): number {
+    const R = 6371; // Radius of the Earth in kilometers
+
+    // Convert degrees to radians
+    const dLat = (lat2 - lat1) * (Math.PI / 180);
+    const dLon = (lon2 - lon1) * (Math.PI / 180);
+
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    // Distance in kilometers
+    return (R * c);
+  }
+
+
+  eightdater(x: Date) {
+    return this.datePipe.transform(x, 'yyyyMMdd')
+  }
+
+  parseDateString(dateString: string): Date {
+    // Extract year, month, day, hour, and minute from the string
+    const year = parseInt(dateString.substring(0, 4), 10);
+    const month = parseInt(dateString.substring(4, 6), 10) - 1; // Months are 0-indexed in JS Date
+    const day = parseInt(dateString.substring(6, 8), 10);
+    const hour = parseInt(dateString.substring(9, 11), 10);
+    const minute = parseInt(dateString.substring(11, 13), 10);
+
+    // Return a new Date object
+    return new Date(year, month, day, hour, minute);
   }
 
 }

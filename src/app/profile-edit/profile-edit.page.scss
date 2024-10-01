@@ -1,0 +1,48 @@
+.input_container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 20px;
+}
+
+.input_title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #7673A8;
+    margin-bottom: 8px;
+}
+
+.input_field {
+    width: 100%;
+    height: 50px;
+    background-color: #28255E;
+    padding: 0 15px;
+    border-radius: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+ion-input {
+    width: 100%;
+    font-size: 14px;
+    font-weight: 600;
+    color: #ffffff;
+    --placeholder-color: #7673A8;
+}
+
+ion-select::part(icon) {
+    display: none !important;
+}
+
+.each_basic {
+    width: 100%;
+    height: 50px;
+    background-color: #28255E;
+    border-radius: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 15px;
+}

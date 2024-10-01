@@ -72,6 +72,13 @@ export class ProfileUserPage implements OnInit {
       gem: 33300
     }
   ]
+
+  gender = {
+    "male": "Male",
+    "female": "Female",
+    "others": "Others"
+  }
+
   selectedGift: any = {};
   id: any;
   uid: any = localStorage.getItem('heyu_uid') || ''
@@ -99,7 +106,8 @@ export class ProfileUserPage implements OnInit {
       this.readService.getUserProfileOnce(this.id)
         .then((profileData) => {
           this.userProfile = profileData;
-          if (this.userProfile['dob']) this.userProfile['age'] = this.toolService.calculateAgeFromString(this.userProfile['dob'])
+          this.userProfile['age'] = this.userProfile['dob'] ? this.toolService.calculateAge(this.userProfile['dob']) : 18
+          // if (this.userProfile['dob']) this.userProfile['age'] = this.toolService.calculateAgeFromString(this.userProfile['dob'])
           console.log('Profile fetched:', this.userProfile);
         })
         .catch((error) => {

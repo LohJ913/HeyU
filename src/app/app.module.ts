@@ -7,7 +7,7 @@ import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { FormsModule } from '@angular/forms';
-import { DatePipe } from '@angular/common';
+import { DatePipe, DecimalPipe } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 
 
@@ -26,7 +26,7 @@ import { HttpClientModule } from '@angular/common/http';
     ),
     AppRoutingModule
   ],
-  providers: [DatePipe, { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
+  providers: [DatePipe, DecimalPipe, { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
   bootstrap: [AppComponent],
 })
 export class AppModule { }

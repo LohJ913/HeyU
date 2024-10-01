@@ -1,0 +1,18 @@
+<ion-header
+  style="background: #14152C; border-radius: 15px 15px 0 0 !important; --border-radius: 15px 15px 0 0 !important;">
+  <div style="width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 20px;">
+    <ion-input [(ngModel)]="keyword" (ionInput)="filterCountries()"
+      style="width: calc(100%); min-height: 40px; text-align: center; color: #ffffff; --placeholder-color: #7673A8; --padding-start: 30px;  background-color: #201D56; border-radius: 30px;"
+      [clearInput]="true" type="text" placeholder="Search"></ion-input>
+  </div>
+</ion-header>
+
+<ion-content style="--background: #14152C;">
+  <ion-list style="background-color: transparent;">
+    <ion-item *ngFor="let item of (filteredCountries)" (click)="selectCountry(item)"
+      style="--background: transparent; --border-color: #615E98;">
+      <ion-badge slot="start" style="--background: #28255E;">{{item.flag}}</ion-badge>
+      <ion-label style="font-size: 14px; font-weight: bold; color: #ffffff;">{{item.name}}</ion-label>
+    </ion-item>
+  </ion-list>
+</ion-content>

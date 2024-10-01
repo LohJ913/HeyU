@@ -7,10 +7,10 @@
           <ion-icon slot="icon-only" style="color: #252525;" name="chevron-back"></ion-icon>
         </ion-button>
 
-        <ion-button
+        <!-- <ion-button
           style=" --background: #ffffff10; --border-radius: 100%; border-radius: 100%; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);">
           <ion-icon slot="icon-only" style="color: #252525;" name="ellipsis-vertical"></ion-icon>
-        </ion-button>
+        </ion-button> -->
 
       </div>
     </ion-toolbar>
@@ -30,7 +30,9 @@
           <ion-icon style="font-size: 16px; color: #ffffff; margin-left: 5px;" name="heart-outline"></ion-icon>
         </div>
 
-        <div
+        <!-- TIMER -->
+        <!-- TEMPORILY DISABLED -->
+        <!-- <div
           style="width: 128px; padding: 10px 17px; background: linear-gradient(90deg, #6961FFaa 0%, #7570ccaa 100%); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); border-radius: 15px;">
 
           <div style="font-size: 13px; font-weight: 700; color: #ffffff; margin-bottom: 4px;">Available in</div>
@@ -55,7 +57,7 @@
               12
             </div>
           </div>
-        </div>
+        </div> -->
       </div>
 
       <div
@@ -71,50 +73,60 @@
           style="color: #6860FF;">$</span>&nbsp;200<span style="font-size: 12px; font-weight: normal;">/hr</span></h1>
     </div>
 
-    <p style="font-size: 14px; font-weight: normal; color: #ffffff; font-style: italic;">“ Cannot survive without
-      coffee, mostly busy but will make time for the right person</p>
+    <p style="font-size: 14px; font-weight: normal; color: #ffffff; font-style: italic;">“
+      {{userProfile['description']}} ”</p>
 
     <div>
       <h3 style="font-size: 16px; font-weight: 700; color: #6860FF;">My Basic</h3>
       <div style="width: 100%; display: flex; flex-wrap: wrap; gap: 10px;">
-        <div
+
+        <!-- HEIGHT -->
+        <div *ngIf="userProfile?.['height'] > 0"
           style="width: fit-content; height: 34px; display: flex; align-items: center; justify-content: center; background-color: #201D56; padding: 4px 10px; border-radius: 41px;">
-          <div style="font-size: 14px; font-weight: normal; color: #B2AEFF;">170 cm</div>
+          <div style="font-size: 14px; font-weight: normal; color: #B2AEFF;">{{userProfile?.['height']}} cm</div>
         </div>
 
-        <div
+        <!-- WEIGHT -->
+        <div *ngIf="userProfile?.['weight'] > 0"
           style="width: fit-content; height: 34px; display: flex; align-items: center; justify-content: center; background-color: #201D56; padding: 4px 10px; border-radius: 41px;">
-          <div style="font-size: 14px; font-weight: normal; color: #B2AEFF;">Female</div>
+          <div style="font-size: 14px; font-weight: normal; color: #B2AEFF;">{{userProfile?.['weight']}} kg</div>
         </div>
 
-        <div
+        <!-- GENDER -->
+        <div *ngIf="userProfile?.['gender']"
           style="width: fit-content; height: 34px; display: flex; align-items: center; justify-content: center; background-color: #201D56; padding: 4px 10px; border-radius: 41px;">
-          <div style="font-size: 14px; font-weight: normal; color: #B2AEFF;">Singapore</div>
+          <div style="font-size: 14px; font-weight: normal; color: #B2AEFF;">{{gender[userProfile?.['gender']]}}</div>
         </div>
 
-        <div
+        <!-- COUNTRY -->
+        <div *ngIf="toolService.lengthof(userProfile?.['country'])"
           style="width: fit-content; height: 34px; display: flex; align-items: center; justify-content: center; background-color: #201D56; padding: 4px 10px; border-radius: 41px;">
-          <div style="font-size: 14px; font-weight: normal; color: #B2AEFF;">Go karting</div>
+          <div style="font-size: 14px; font-weight: normal; color: #B2AEFF;">
+            <span
+              [ngClass]="'fi fi-' + userProfile?.['country']?.['lower_code']"></span>&nbsp;{{userProfile?.['country']?.['name']}}
+          </div>
         </div>
 
-        <div
+        <!-- INTEREST -->
+        <div *ngFor="let item of (userProfile?.['interests'] || [])"
           style="width: fit-content; height: 34px; display: flex; align-items: center; justify-content: center; background-color: #201D56; padding: 4px 10px; border-radius: 41px;">
-          <div style="font-size: 14px; font-weight: normal; color: #B2AEFF;">Beer</div>
+          <div style="font-size: 14px; font-weight: normal; color: #B2AEFF;">{{item.value}}</div>
         </div>
+
       </div>
     </div>
 
-    <div>
-      <h3 style="font-size: 16px; font-weight: 700; color: #6860FF;">My Photos</h3>
+    <div *ngIf="toolService.lengthof(userProfile['albums'])">
+      <div *ngFor="let item of userProfile['albums']">
+        <h3 style="font-size: 16px; font-weight: 700; color: #6860FF;">My Photos</h3>
 
-      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 5px;">
-        <ion-thumbnail *ngFor="let item of [0,1,2,3,4,5,6,7,8]" style="width: 100%; height: 115px; object-fit: cover; border-radius: 5px;">
-          <img
-            style="width: 100%; height: 100%; object-fit: cover; border-radius: 5px;"
-            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTnyFtAO26JwnBc_2r7CgPX5d4pHA-mi2XNKCObWCNzgtttGN7-8oAdCdA7NBp48t6mZeU&usqp=CAU"
-            alt="">
-        </ion-thumbnail>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 5px;">
+          <ion-thumbnail *ngFor="let url of item['photos']"
+            style="width: 100%; height: 115px; object-fit: cover; border-radius: 5px;">
+            <img style="width: 100%; height: 100%; object-fit: cover; border-radius: 5px;" src="{{url}}" alt="">
+          </ion-thumbnail>
 
+        </div>
       </div>
     </div>
   </div>
@@ -122,9 +134,27 @@
   <ion-footer class="ion-no-border" style="width: 100%; position: fixed; bottom: 0;">
     <ion-toolbar class="ion-no-padding"
       style="--background: linear-gradient(0deg, #14152C 0%, #14152cd0 50%, #14152c00 100%);">
-      <div style="width: 100%; display: flex; align-items: center; justify-content: center; padding: 15px;">
-        <ion-button (click)="openGift = true" class="ion-no-padding primary_btn">
-          Make friend
+      <div style="width: 100%; display: flex; align-items: center; justify-content: center; padding: 15px; gap: 5px;">
+        <ion-button (click)="openGift = true" class="ion-no-padding left_btn">
+          Gift
+        </ion-button>
+        <!-- <ion-button class="ion-no-padding mid_btn">
+          Invite
+        </ion-button> -->
+        <ion-button id="inviteTrigger" class="ion-no-padding right_btn">
+          Invite
+          <!-- <ion-popover trigger="inviteTrigger" [dismissOnSelect]="true">
+            <ng-template>
+              <ion-content class="ion-no-padding">
+                <ion-item [button]="true" style="--background: #25252599;">
+                  <ion-label style="font-size: 13px; color: #ffffff;">Private Invite</ion-label>
+                </ion-item>
+                <ion-item [button]="true" style="--background: #25252599;">
+                  <ion-label style="font-size: 13px; color: #ffffff;">Invite Party</ion-label>
+                </ion-item>
+              </ion-content>
+            </ng-template>
+          </ion-popover> -->
         </ion-button>
       </div>
     </ion-toolbar>
@@ -136,24 +166,29 @@
     <ion-content [scrollY]="false"
       style="--background: transparent; backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px);">
       <div
-        style="width: 100vw; height: calc(100vh - 410px); display: flex; flex-direction: column-reverse; padding: 15px;">
+        style="width: 100%; display: flex; align-items: center; justify-content: flex-end; padding: 20px 20px 0 20px;">
+        <ion-button (click)="openGift = false" class="ion-no-padding" color="white" fill="clear"
+          style="font-size: 25px; padding-top: 2px; padding-bottom: 2px; min-height: fit-content; margin: 0;">
+          <ion-icon name="close"></ion-icon>
+        </ion-button>
+      </div>
+      <div
+        style="width: 100vw; height: calc(100vh - 470px); display: flex; flex-direction: column-reverse; padding: 15px;">
         <div style="width: 100%; display: flex;">
           <div style="width: 65px; height: 65px; border-radius: 100%; border: 1px solid #6961FF;">
             <img style="width: 100%; height: 100%; border-radius: 100%; object-fit: cover;" alt="User Profile Pic"
-              src="https://img.freepik.com/premium-photo/asian-girls-education-happy-beautiful-asian-girl-is-smilling_911620-8519.jpg" />
+              src="{{userProfile['picture']}}" />
           </div>
 
           <div style="width: calc(100% - 75px); margin-left: 10px;">
             <div style="display: flex; align-items: center; margin-bottom: 10px;">
-              <img style="width: 18px; margin-right: 10px;" src="assets/material/country/JP.png" alt="">
-              <h3 style="font-size: 18px; font-weight: bold; color: #ffffff; margin: 0;">{{userProfile['name'] || ''}}
+              <h3 style="font-size: 18px; font-weight: bold; color: #ffffff; margin: 0;">
+                <span>{{userProfile?.['country']?.['flag']}}&nbsp;</span>{{userProfile['name'] || ''}}
               </h3>
             </div>
             <div style="background-color: #393580; border-radius: 0 15px 15px 15px; padding: 10px;">
-              <p style="font-size: 12px; font-weight: normal; color: #ffffff; font-style: italic; margin: 0;">“ Cannot
-                survive
-                without
-                coffee, mostly busy but will make time for the right person</p>
+              <p style="font-size: 12px; font-weight: normal; color: #ffffff; font-style: italic; margin: 0;">“
+                {{userProfile['description']}} ”</p>
             </div>
           </div>
         </div>
@@ -183,7 +218,8 @@
 
                 <div style="display: flex; align-items: center; justify-content: center;">
                   <ion-icon style="font-size: 12px;" src="assets/svg/hey_coin.svg"></ion-icon>
-                  <div style="font-size: 12px; font-weight: 500; color: #FFD24F; margin-left: 3px;">{{item['gem'] | number: '1.0-0'}}
+                  <div style="font-size: 12px; font-weight: 500; color: #FFD24F; margin-left: 3px;">{{item['gem'] |
+                    number: '1.0-0'}}
                   </div>
                 </div>
               </div>
@@ -196,6 +232,7 @@
             class="ion-no-padding primary_btn">
             Send
           </ion-button>
+
         </div>
       </div>
     </ion-content>
