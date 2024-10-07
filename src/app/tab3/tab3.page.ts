@@ -98,6 +98,13 @@ export class Tab3Page implements OnInit {
 
   toFavourite() {
     this.nav.navigateForward('favourite-list')
+  }
 
+  goTopUp() {
+    this.nav.navigateForward('topup');
+  }
+  
+  goEarning() {
+    this.nav.navigateForward('earning-list');
   }
 }

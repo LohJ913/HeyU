@@ -375,13 +375,17 @@ export class ToolService {
     swal.close()
   }
 
-  swal(icon: string, title: string, text: string, timer: number) {
-    swal({
+  swal(icon: string, title: string, text: string, timer?: number) {
+    const swalConfig: any = {
       icon: icon,
       title: title,
       text: text,
-      timer: timer,
-    })
+    };
+    if (timer) {
+      swalConfig.timer = timer;
+    }
+
+    swal(swalConfig);
   }
 
   swalButton(icon: string, title: string, text: string): Promise<boolean> {
@@ -435,5 +439,7 @@ export class ToolService {
     // Return a new Date object
     return new Date(year, month, day, hour, minute);
   }
+
+
 
 }

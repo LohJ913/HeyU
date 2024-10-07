@@ -95,13 +95,13 @@
         </div>
         <div (click)="goEarning()" *ngIf="tool.lengthof(currentUser) && currentUser['verified'] == true"
           style="width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 10px 15px;">
-          <div style="font-size: 13px; font-weight: 500; color: #ffffff;">Earning - <b>8,600</b></div>
+          <div style="font-size: 13px; font-weight: 500; color: #ffffff;">Earning - <b>{{(currentUser['points'] || 0) | number :'1.0-0'}}</b></div>
           <ion-icon style="font-size: 14px; color: #ffffff;" name="chevron-forward-outline"></ion-icon>
         </div>
       </div>
 
       <div style="display: grid; grid-template-rows: 1fr 1fr; gap: 10px;">
-        <div (click)="tool.navTo('party-list')"
+        <div (click)="goParty()"
           style="width: 100%; border-radius: 10px; background: linear-gradient(180deg, #506FFF 0%, #7A8EFF 100%); display: flex; align-items: center; justify-content: space-between; padding: 10px;">
           <div style="font-size: 13px; font-weight: bold; color: #ffffff;">Party Room</div>
         </div>

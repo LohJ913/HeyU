@@ -88,6 +88,10 @@ export class ProfileUserPage implements OnInit {
   messageText: any
   conversationId: any;
 
+  favorites = null
+  favoritesNo: any = ''
+  love = false;
+
   constructor(
     public router: IonRouterOutlet,
     public navCtrl: NavController,
@@ -99,21 +103,30 @@ export class ProfileUserPage implements OnInit {
   ) { }
 
   ngOnInit() {
+    console.log(this.uid)
     this.arrayGift = this.toolService.groupArray(this.gifts, 8)
     this.activatedRoute.queryParams.subscribe(a => {
       this.id = a['id']
       this.conversationId = [this.uid, this.id].sort().join('|');
-      this.readService.getUserProfileOnce(this.id)
-        .then((profileData) => {
-          this.userProfile = profileData;
+      this.uid = this.currentUser['id'] || this.uid
+      this.readService.getAmbassadorInfo(this.uid, this.id).then(res => {
+        console.log(res)
+        if (res['profile']) {
+          this.userProfile = res['profile'];
           this.userProfile['age'] = this.userProfile['dob'] ? this.toolService.calculateAge(this.userProfile['dob']) : 18
           // if (this.userProfile['dob']) this.userProfile['age'] = this.toolService.calculateAgeFromString(this.userProfile['dob'])
           console.log('Profile fetched:', this.userProfile);
-        })
+        }
+
+       this.favoritesNo =  this.formatNumber(this.favorites = this.toolService.lengthof(res['engagement']) ? res['engagement']?.['favorites'] || 0 : 0)
+        this.love = this.toolService.lengthof(res?.['userfavorite']) ? true : false
+
+      })
         .catch((error) => {
           console.error(error);
         });
     })
+
     this.userSubscribe = this.dataService.userInfo.pipe(distinctUntilChanged()).subscribe(async (info) => {
       this.currentUser = info
       // console.log(info)
@@ -133,22 +146,59 @@ export class ProfileUserPage implements OnInit {
     this.selectedGift = x
   }
 
-  sendGift() {
-    this.writeService.sendGift(
+  async sendGift() {
+    await this.writeService.sendGift(
       this.selectedGift,
       this.conversationId,
       this.id,
       this.uid,
       this.currentUser,
       this.userProfile
-    ).then(() => {
-      console.log('Message sent successfully.');
-      this.openGift = false;
-      setTimeout(() => {
-        this.navCtrl.navigateForward(`chatroom?id=${this.id}`)
-      }, 500);
+    ).then((res) => {
+      if (res.success) {
+        console.log(res);
+        console.log('Gift sent successfully.');
+        this.openGift = false;
+        this.toolService.showToast('Gift sent!', 'success', 'top');
+        setTimeout(() => {
+          this.navCtrl.navigateForward(`chatroom?id=${this.id}`);
+        }, 500);
+      } else {
+        console.log(res)
+        this.toolService.showToast(res.message || 'Error occurred!', 'danger', 'top'); // Show specific error message
+        console.error('Error sending message:', res.message);
+      }
     }).catch((error) => {
+      this.toolService.showToast('Error sending gift', 'danger', 'top');
       console.error('Error sending message:', error);
     });
+  }
+
+  formatNumber(num: number): string {
+    if (num === 0) return '0';
+    console.log(num)
+    const units = ['', 'k', 'm', 'b', 't']; // You can add more units as needed
+    const order = Math.floor(Math.log10(Math.abs(num)) / 3); // Determine the order of magnitude
+    const scaled = num / Math.pow(1000, order); // Scale the number
+
+    // Format the number to have a maximum of three digits
+    const formatted = scaled.toFixed(2).replace(/\.00$/, ''); // Keep 2 decimal places or remove if .00
+    return `${formatted}${units[order]}`;
+  }
+
+  favoriteUser() {
+
+    this.writeService.favoriteThisUser(this.uid, this.id, !this.love).then((res) => {
+      if (res.favorite == true) {
+        this.love = true;
+        this.favorites = (this.favorites || 0) + 1;
+      } else {
+        this.love = false;
+        this.favorites = Math.max(0, (this.favorites || 0) - 1);
+      }
+      this.favoritesNo = this.formatNumber(this.favorites);
+    })
+
+
   }
 }

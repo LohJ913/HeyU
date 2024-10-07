@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import firebase from 'firebase'
 import { ToolService } from './tool.service';
-import { timestamp } from 'rxjs';
+import { merge, Timestamp, timestamp } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -119,7 +119,7 @@ export class WriteService {
 
   async sendMessage(message: string, conversationId: string, friend_id: string, uid: string, user_profile: any, friend_profile: any): Promise<void> {
     return new Promise(async (resolve, reject) => {
-      if (message.trim()) {
+      if (message?.trim()) {
         const firestore = firebase.firestore();
         const batch = firestore.batch();
 
@@ -172,7 +172,7 @@ export class WriteService {
           picture: user_profile['picture'] || '',
           name: user_profile['name'] || '',
           uid: uid,
-          unreadCount: 0,
+          unreadCount: firebase.firestore.FieldValue.increment(1),
           delivered: false,
         }, { merge: true });
 
@@ -185,7 +185,7 @@ export class WriteService {
           picture: friend_profile['picture'] || '',
           name: friend_profile['name'] || '',
           uid: friend_id,
-          unreadCount: firebase.firestore.FieldValue.increment(1),
+          unreadCount: 0,
           delivered: false,
         }, { merge: true });
 
@@ -216,24 +216,25 @@ export class WriteService {
     const firestore = firebase.firestore();
 
     try {
-      const result = await firestore.runTransaction(async (transaction) => {
+      await firestore.runTransaction(async (transaction) => {
         const userRef = firestore.collection('profiles').doc(uid);
         const userDoc = await transaction.get(userRef);
         const userData = userDoc.data();
 
         if (!userData) {
-          throw new Error('User not found');
+          throw new Error('User not found'); // Throw error if user is not found
         }
 
         if (userData.credits < giftDetails.gem) {
-          throw new Error('Insufficient credits');
+          throw new Error('Insufficient credits'); // Throw error if insufficient credits
         }
 
         const conversationRef = firestore.collection('chatrooms').doc(conversationId);
         const messagesRef = conversationRef.collection('messages').doc(); // Auto-generate a unique ID
         const userChatRef = firestore.collection('users').doc(uid).collection('chats').doc(friend_id);
         const otherUserChatRef = firestore.collection('users').doc(friend_id).collection('chats').doc(uid);
-        const giftTransactionRef = firestore.collection('gift_transactions').doc();
+        const giftTransactionRef = firestore.collection('giftings').doc();
+        const receiverRef = firestore.collection('profiles').doc(friend_id);
 
         // Prepare new gift data
         const newGift = {
@@ -279,7 +280,7 @@ export class WriteService {
           picture: user_profile['picture'],
           name: user_profile['name'],
           uid: uid,
-          unreadCount: 0,
+          unreadCount: firebase.firestore.FieldValue.increment(1),
           delivered: false,
         }, { merge: true });
 
@@ -291,7 +292,7 @@ export class WriteService {
           picture: friend_profile['picture'] || '',
           name: friend_profile['name'] || '',
           uid: friend_id,
-          unreadCount: firebase.firestore.FieldValue.increment(1),
+          unreadCount: 0,
           delivered: false,
         }, { merge: true });
 
@@ -311,14 +312,17 @@ export class WriteService {
         transaction.update(userRef, {
           credits: firebase.firestore.FieldValue.increment(-giftDetails.gem)
         });
+
+        transaction.update(receiverRef, { points: firebase.firestore.FieldValue.increment(giftDetails.gem) });
       });
 
-      return { success: true };
+      return { success: true }; // Only returns this if the transaction succeeds
     } catch (error) {
       console.error('Error in transaction:', error);
-      return { success: false, message: error.message };
+      return { success: false, message: error.message }; // Return the error message
     }
   }
+
 
   updateProfile(uid: string, profileData: any): Promise<void> {
     return firebase.firestore().collection('profiles').doc(uid).update(profileData)
@@ -357,6 +361,7 @@ export class WriteService {
     const firestore = firebase.firestore();
     const userRef = firestore.collection('profiles').doc(uid);
     const transactionsRef = firestore.collection('transactions').doc(); // Auto-generate transaction ID
+    const userTransRef = firestore.collection('users').doc(uid).collection('transactions').doc(); // Auto-generate transaction ID
 
     const topUpAmount = topupPackage['gem']; // Total credits (amount + bonus)
     // Prepare transaction data
@@ -385,6 +390,8 @@ export class WriteService {
 
       // Record the transaction
       transaction.set(transactionsRef, transactionData);
+      transaction.set(userTransRef, transactionData);
+
     }).then(() => {
     }).catch((error) => {
       throw error; // Rethrow the error for further handling
@@ -424,30 +431,32 @@ export class WriteService {
           byUid: uid || '',
           byPicture: roomData['byPicture'] || '',
           status: "pending",
+          language: roomData['language'],
+          pax: roomData['pax'] || 0,
+          budgetPax: roomData['pax'] || 0,
           deposit: roomData['deposit'],
           fee: roomData['fee'] || 0,
-          total_initial: roomData['total'],
-          balance: roomData['total'] - roomData['fee'],
+          initial: roomData['initial'],
+          total: roomData['total'],
+          balance: roomData['total'] - (roomData['fee'] || 0),
           title: roomData['title'] || "",
           description: roomData['description'] || "",
           locationId: roomData.locationId,
           locationName: roomData.locationName,
-          date: roomData.date,
           datetime: roomData.datetime,
-          time_start: roomData['time_start'],
-          time_end: roomData['time_end'],
-          duration: roomData['duration'],
+          date: roomData.date,
           gender: roomData['gender'] || ['female'],
-          preferences: roomData['preferences'],
-          users: roomData['users'] || [uid],
+          age: roomData['age'] || { upper: 25, lower: 18 },
+          users: [],
         });
 
         // Add transaction data to 'transactions' collection
         transaction.set(transactionRef, {
           byName: roomData.byName,
-          byUid: roomData.uid,
+          byUid: uid,
           event_id: roomRef.id,
-          event_date: roomData.date,
+          eventDatetime: roomData.datetime,
+          eventDate: roomData.date,
           status: "pending",
           timestamp: firebase.firestore.FieldValue.serverTimestamp(),
           total: roomData.total || 0,
@@ -462,23 +471,25 @@ export class WriteService {
           timestamp: firebase.firestore.FieldValue.serverTimestamp(),
           byName: roomData['byName'] || '',
           byUid: uid || '',
+          byPicture: roomData['byPicture'] || '',
           status: "pending",
+          language: roomData['language'],
           deposit: roomData['deposit'],
+          pax: roomData['pax'] || 0,
+          budgetPax: roomData['pax'] || 0,
           fee: roomData['fee'] || 0,
-          total_initial: roomData['total'],
-          balance: roomData['total'] - roomData['fee'],
+          initial: roomData['initial'],
+          total: roomData['total'],
+          balance: roomData['total'] - (roomData['fee'] || 0),
           title: roomData['title'] || "",
           description: roomData['description'] || "",
           locationId: roomData.locationId,
           locationName: roomData.locationName,
-          date: roomData.date,
           datetime: roomData.datetime,
-          time_start: roomData['time_start'],
-          time_end: roomData['time_end'],
-          duration: roomData['duration'],
+          date: roomData.date,
           gender: roomData['gender'] || ['female'],
-          preferences: roomData['preferences'],
-          users: roomData['users'] || [uid],
+          age: roomData['age'] || { upper: 25, lower: 18 },
+          users: [],
         });
 
         // type = party gift transfer topup
@@ -488,7 +499,8 @@ export class WriteService {
         transaction.set(userTransRef, {
           transactionId: transactionRef.id,
           event_id: roomRef.id,
-          event_date: roomData.date,
+          eventDatetime: roomData.datetime,
+          eventDate: roomData.date,
           total: roomData.total || 0,
           fee: roomData.fee || 0,
           type: 'party',
@@ -508,24 +520,25 @@ export class WriteService {
     }
   }
 
-  requestJoinParty(roomId: string, hostId: string, uid: string, profile: { name: string; picture: string; rate: number, uid: string }): Promise<any> {
+  async requestJoinParty(roomId: string, hostId: string, uid: string, profile: { name: string; picture: string; rate: number, uid: string }): Promise<any> {
     const roomRef = firebase.firestore().collection('rooms').doc(roomId);
     const userRef = firebase.firestore().collection('users').doc(hostId); // Reference to user's document
 
     const batch = firebase.firestore().batch(); // Initialize batch
-
+    console.log(uid)
+    console.log(profile)
     // Step 1: Update the room (add user to the room and profile to applicants)
-    batch.update(roomRef, {
+    batch.set(roomRef, {
       users: firebase.firestore.FieldValue.arrayUnion(uid),
       applicants: firebase.firestore.FieldValue.arrayUnion(profile)
-    });
+    }, { merge: true });
 
     // Step 2: Update the user's document (add room to the user's rooms collection)
     const userRoomsRef = userRef.collection('rooms').doc(roomId);
     batch.set(userRoomsRef, {
       users: firebase.firestore.FieldValue.arrayUnion(uid),
       applicants: firebase.firestore.FieldValue.arrayUnion(profile)
-    });
+    }, { merge: true });
 
     // Commit the batch
     return batch.commit()
@@ -549,30 +562,30 @@ export class WriteService {
         const roomDoc = await transaction.get(roomRef);
 
         // Check if the user exists and has sufficient credits
-
+        console.log(profile)
         const roomBalance = roomDoc.data().balance;
         const userRate = profile['rate']
-        if (userRate < roomBalance) {
+        if (userRate > roomBalance) {
           throw new Error('Insufficient credits');
         }
 
         // Deduct the credits from the user
         const newCredits = roomBalance - userRate;
-        transaction.update(roomRef, {
+        transaction.set(roomRef, {
           balance: newCredits,
-          participants: firebase.firestore.FieldValue.arrayUnion(profile.uid),
+          participants: firebase.firestore.FieldValue.arrayUnion(profile),
           applicants: firebase.firestore.FieldValue.arrayRemove(profile),
           subtotal: firebase.firestore.FieldValue.increment(userRate),
-        });
+        }, { merge: true });
 
 
         const hostRoomRef = hostRef.collection('rooms').doc(roomId);
-        transaction.update(hostRoomRef, {
+        transaction.set(hostRoomRef, {
           balance: newCredits,
           subtotal: firebase.firestore.FieldValue.increment(userRate),
-          participants: firebase.firestore.FieldValue.arrayUnion(profile.uid),
+          participants: firebase.firestore.FieldValue.arrayUnion(profile),
           applicants: firebase.firestore.FieldValue.arrayRemove(profile)
-        });
+        }, { merge: true });
 
         // *** need to update girls side for jobs and send notification to the girl ***
 
@@ -617,7 +630,6 @@ export class WriteService {
     }
   }
 
-
   async guestCheckin(uid: string, outlet: { name: string; id: string }, profile: { name: string; picture: string; uid: string }, old_outlet): Promise<any> {
     console.log(uid, outlet, old_outlet)
     const firestore = firebase.firestore();
@@ -649,13 +661,95 @@ export class WriteService {
       });
   }
 
+  async scanAmbassadorQR(roomId: string, hostId: string, hostName: string, ambassadorId: string, profile: { name: string; picture: string; rate: number; uid: string }, eventInfo: { type: string, eventId: string, eventDate: number }): Promise<any> {
+    const roomRef = firebase.firestore().collection('rooms').doc(roomId);
+    const hostRef = firebase.firestore().collection('users').doc(hostId);
+    const ambassadorRef = firebase.firestore().collection('users').doc(ambassadorId);
+    const disbursementsRef = firebase.firestore().collection('disbursements').doc()
 
-  scarAmbassadorQR(partyId: string, uid: string) {
-    // set job
-    // set transaction
-    // set room
-    // set girl
-    // set user
+    try {
+      const result = await firebase.firestore().runTransaction(async (transaction) => {
+        transaction.update(ambassadorRef, {
+          points: firebase.firestore.FieldValue.increment(profile.rate)
+        });
+
+        transaction.set(disbursementsRef, {
+          points: firebase.firestore.FieldValue.increment(profile.rate),
+          total: profile.rate,
+          byUid: hostId,
+          byName: hostName,
+          toUid: ambassadorId,
+          toName: profile['name'],
+          type: eventInfo['type'],
+          eventId: eventInfo['id'],
+          eventDate: eventInfo['eventDate'],
+          timestamp: firebase.firestore.FieldValue.serverTimestamp,
+        });
+
+        const ambassDisburseRef = ambassadorRef.collection('disbursements').doc(disbursementsRef.id)
+        transaction.set(ambassDisburseRef, {
+          points: firebase.firestore.FieldValue.increment(profile.rate),
+          total: profile.rate,
+          byUid: hostId,
+          byName: hostName,
+          toUid: ambassadorId,
+          toName: profile['name'],
+          type: eventInfo['type'],
+          eventId: eventInfo['id'],
+          eventDate: eventInfo['eventDate'],
+          timestamp: firebase.firestore.FieldValue.serverTimestamp,
+        });
+
+        // Set the room's payment information
+        transaction.set(roomRef, {
+          paid: firebase.firestore.FieldValue.increment(profile.rate),
+          payments: firebase.firestore.FieldValue.arrayUnion(profile),
+        }, { merge: true });
+
+        // Set the host's room payment information
+        const hostRoomRef = hostRef.collection('rooms').doc(roomId);
+        transaction.set(hostRoomRef, {
+          paid: firebase.firestore.FieldValue.increment(profile.rate),
+          payments: firebase.firestore.FieldValue.arrayUnion(profile),
+        }, { merge: true });
+
+        // Additional logic for updating the ambassador's job and sending a notification can be added here
+
+        return { success: true, roomId, ambassadorId }; // Returning relevant data
+      });
+
+      console.log('Transaction successful:', result);
+      return result; // Returning the result directly from the transaction
+    } catch (error) {
+      console.error('Transaction failed:', error);
+      return { success: false, message: error.message };
+    }
+  }
+
+  async favoriteThisUser(uid: string, fav_id: string, favorite: boolean): Promise<any> {
+    const favoriteRef = firebase.firestore().collection('users').doc(uid).collection('favorites').doc(fav_id);
+    const engagementRef = firebase.firestore().collection('users').doc(fav_id).collection('engagements').doc('data')
+
+    if (favorite === true) {
+      await favoriteRef.set({
+        uid: fav_id,
+        date: firebase.firestore.FieldValue.serverTimestamp(), // Correct Firestore timestamp
+      }, { merge: true });
+
+      await engagementRef.set({
+        favorites: firebase.firestore.FieldValue.increment(1)
+      }, { merge: true })
+
+      return ({ favorite: true });
+    } else {
+
+      await engagementRef.set({
+        favorites: firebase.firestore.FieldValue.increment(-1)
+      }, { merge: true })
+      
+      await favoriteRef.delete();
+      return ({ favorite: false });
+    }
   }
 
 }

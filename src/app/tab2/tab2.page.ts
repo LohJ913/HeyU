@@ -39,6 +39,7 @@ export class Tab2Page implements OnInit, OnDestroy {
   }
 
   async ngOnInit() {
+    console.log(this.uid)
     this.userSubscribe = this.dataService.userInfo.pipe(distinctUntilChanged()).subscribe(async (info) => {
       console.log(info);
       this.currentUser = info;

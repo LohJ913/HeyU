@@ -156,6 +156,7 @@ export class LobbyPage implements OnInit {
       this.writeService.guestCheckin(this.currentUser['id'], outletInfo, { name: this.currentUser.name, picture: this.currentUser.picture, uid: this.currentUser.id }, this.currentUser['visitId'] || '')
         .then((done) => {
           console.log('Check-in completed:', done);
+          this.toolService.swal('success','Success',`You've checked in at ${this.outlets[0]['name']}. Have a great time ahead!`,2000)
           this.getCheckins()
         })
         .catch((err) => {

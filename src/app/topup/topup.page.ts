@@ -148,6 +148,10 @@ export class TopupPage implements OnInit {
     this.router.canGoBack() ? this.navCtrl.pop() : this.navCtrl.navigateRoot('tabs/tab1', { animated: true, animationDirection: 'back' })
   }
 
+  goHistory() {
+    this.navCtrl.navigateForward('transaction-list')
+  }
+
 }
 
 

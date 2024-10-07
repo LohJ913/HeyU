@@ -101,7 +101,11 @@ const routes: Routes = [
   {
     path: 'earning-list',
     loadChildren: () => import('./earning-list/earning-list.module').then( m => m.EarningListPageModule)
+  },  {
+    path: 'transaction-list',
+    loadChildren: () => import('./transaction-list/transaction-list.module').then( m => m.TransactionListPageModule)
   }
+
 ];
 @NgModule({
   imports: [

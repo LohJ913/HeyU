@@ -1,0 +1,85 @@
+.wallet {
+    width: 100%;
+    height: 90px;
+    display: flex;
+    align-items: center;
+    border-radius: 20px;
+    background: rgb(255, 151, 29);
+    background: url(/assets/material/earning_bg.jpg) center center / cover no-repeat fixed;
+    padding: 10px 20px;
+    position: relative;
+
+    h6 {
+        font-size: 14px;
+        font-weight: normal;
+        color: #ffffff;
+        margin: 0 0 5px 0;
+    }
+
+    .balance_container {
+        display: flex;
+        align-items: center;
+
+        ion-icon {
+            font-size: 28px;
+            margin-right: 5px;
+        }
+
+        h3 {
+            font-size: 28px;
+            font-weight: bold;
+            color: #ffffff;
+            margin: 0;
+        }
+    }
+}
+
+ion-list {
+    background-color: transparent;
+}
+
+ion-item {
+    --background: transparent;
+    --border-color: #615E98;
+    margin-bottom: 20px;
+}
+
+.transac_detail {
+    width: calc(100% - 55px);
+    display: flex;
+    grid-template-columns: 1fr minmax(80px, auto);
+    margin-left: 10px;
+    justify-content: space-between;
+
+    h3 {
+        font-size: 14px;
+        font-weight: 700;
+        color: #ffffff;
+        margin: 0 0 5px 0;
+        text-overflow: ellipsis;
+    }
+
+    h6 {
+        font-size: 12px;
+        font-weight: normal;
+        color: #B4B2E5;
+        margin: 0;
+        text-align: end;
+    }
+
+    .positive {
+        font-size: 18px;
+        font-weight: bold;
+        color: #58D77C;
+        text-align: end;
+        margin: 0;
+    }
+
+    .negative {
+        font-size: 18px;
+        font-weight: bold;
+        color: #DC2B14;
+        text-align: end;
+        margin: 0;
+    }
+}

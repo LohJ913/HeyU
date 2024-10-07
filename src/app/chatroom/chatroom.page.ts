@@ -110,6 +110,7 @@ export class ChatroomPage implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    console.log(this.uid)
     this.userSubscribe = this.dataService.userInfo.pipe(distinctUntilChanged()).subscribe(async (info) => {
       this.currentUser = info;
     });
@@ -127,6 +128,9 @@ export class ChatroomPage implements OnInit, OnDestroy {
         this.messagesSub = this.readService.messages$.subscribe((messages) => {
           console.log(messages)
           this.messages = messages;
+          setTimeout(() => {
+            this.scrollToBottomOnInit()
+          }, 100);
           // Update your UI here
         });
       }
@@ -184,17 +188,23 @@ export class ChatroomPage implements OnInit, OnDestroy {
       this.uid,
       this.currentUser,
       this.friendProfile
-    );
+    ).then((res) => {
+      if (res.success) {
+        console.log(res)
+        console.log('Gift sent successfully.');
+        console.log(giftInfo);
+        this.tool.showToast('Gift sent!', 'success', 'top')
+        // this.scrollToBottomOnInit();
+      } else {
+        this.tool.showToast('Insufficient credits!', 'danger', 'top')
+        console.error('Error sending message:', res.message);
+      }
+    }).catch((error) => {
+      this.tool.showToast('Insufficient credits!', 'danger', 'top')
+      console.error('Error sending message:', error.message);
+    });
 
-    if (res.success) {
-      console.log(res)
-      console.log('Message sent successfully.');
-      console.log(giftInfo);
-      this.tool.showToast('Gift sent!', 'success', 'bottom')
-      this.scrollToBottomOnInit();
-    } else {
-      console.error('Error sending message:', res.message);
-    }
+
   }
 
   async sendMessage(ev) {

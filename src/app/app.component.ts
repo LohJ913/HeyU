@@ -32,6 +32,7 @@ export class AppComponent {
         firebase.firestore().collection('profiles').doc(user.uid).onSnapshot((doc: any) => {
           if (doc.exists) {
             console.log(user.uid)
+            localStorage.setItem('heyu_uid',user.uid)
             console.log(doc.data());
 
             // Save user ID in localStorage

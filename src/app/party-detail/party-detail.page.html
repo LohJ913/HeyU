@@ -14,7 +14,7 @@
             style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 100%; background-color: #100E1F; border: 1.5px solid #60448F; position: relative;">
             <ion-avatar style="width: 100%; height: 100%;">
               <img
-                src="https://img.freepik.com/premium-photo/asian-girls-education-happy-beautiful-asian-girl-is-smilling_911620-8519.jpg" />
+                src="{{roomInfo['byPicture'] || ''}}" />
             </ion-avatar>
 
             <div
@@ -26,21 +26,20 @@
           <div style="width: calc(100% - 50px); margin-left: 10px;">
             <h3
               style="width: 100%; font-size: 12px; font-weight: 700; color: #ffffff; margin: 0 0 3px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-              Jonathan
+              {{roomInfo['byName'] || ''}}
             </h3>
 
             <h6
               style="width: 100%; font-size: 10px; font-weight: normal; color: #B4B2E5; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-              Room ID: 2013
+              Room ID: {{roomInfo['roomId']}}
             </h6>
           </div>
         </div>
       </div>
 
-      <div class="header_btn_container">
-        <!-- <ion-button>
-          <ion-icon slot="icon-only" style="color: #d9d9d9;" name="arrow-redo"></ion-icon>
-        </ion-button> -->
+      <div *ngIf="currentUser['id'] == roomInfo['byUid'] || joined == true" class="header_btn_container">
+        <div *ngIf="tool.lengthof(roomInfo?.['applicants'])" style="width: 10px; height: 10px; background-color: #ff3333; border-radius: 100%; position: absolute; top: 4px; right: 2px; z-index: 1000;">
+      </div>
 
         <ion-button id="option-trigger">
           <ion-icon slot="icon-only" style="color: #d9d9d9;" name="ellipsis-vertical"></ion-icon>
@@ -53,10 +52,10 @@
                   <ion-label style="font-size: 13px; color: #ffffff;">Edit Party Info</ion-label>
                 </ion-item>
 
-                <ion-item (click)="joinRequest = true" [button]="true" style="--background: #25252599;">
+                <ion-item *ngIf="tool.lengthof(roomInfo?.['applicants'])" (click)="joinRequest = true" [button]="true" style="--background: #25252599;">
                   <ion-icon color="tertiary" slot="start" name="list-circle" size="large"></ion-icon>
                   <ion-label style="font-size: 13px; color: #ffffff;">Join request</ion-label>
-                  <ion-note slot="end">6</ion-note>
+                  <ion-note slot="end">{{tool.lengthof(roomInfo?.['applicants']) ? roomInfo['applicants'].length : ''}}</ion-note>
                 </ion-item>
 
                 <ion-item [button]="true" style="--background: #25252599;">
@@ -64,7 +63,7 @@
                   <ion-label style="font-size: 13px; color: #ffffff;">Delete Party</ion-label>
                 </ion-item>
 
-                <ion-item [button]="true" style="--background: #25252599;">
+                <ion-item *ngIf="currentUser['id'] != roomInfo['byUid']" [button]="true" style="--background: #25252599;">
                   <ion-icon color="danger" slot="start" name="remove-circle" size="large"></ion-icon>
                   <ion-label style="font-size: 13px; color: #ffffff;">Leave Party</ion-label>
                 </ion-item>
@@ -86,7 +85,7 @@
         style="width: calc(100% / 3); height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0 5px;">
         <h6 style="font-size: 12px; font-weight: normal; color: #ffffff; margin: 0 0 10px 0;">Time</h6>
 
-        <h6 style="font-size: 12px; font-weight: bold; color: #ffffff; text-align: center; margin: 0;">{{1726660800000 |
+        <h6 style="font-size: 12px; font-weight: bold; color: #ffffff; text-align: center; margin: 0;">{{roomInfo['date'] |
           date:
           'hh:mm a'}}</h6>
       </div>
@@ -95,7 +94,7 @@
         style="width: calc(100% / 3); height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0 5px; border-left: 1px solid #916FFF; border-right: 1px solid #916FFF;">
         <h6 style="font-size: 12px; font-weight: normal; color: #ffffff; margin: 0 0 10px 0;">Date</h6>
 
-        <h6 style="font-size: 12px; font-weight: bold; color: #ffffff; text-align: center; margin: 0;">{{1726660800000 |
+        <h6 style="font-size: 12px; font-weight: bold; color: #ffffff; text-align: center; margin: 0;">{{roomInfo['date']  |
           date:
           'hh:mm a'}}</h6>
       </div>
@@ -104,7 +103,7 @@
         style="width: calc(100% / 3); height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0 5px;">
         <h6 style="font-size: 12px; font-weight: normal; color: #ffffff; margin: 0 0 10px 0;">Location</h6>
 
-        <h6 style="font-size: 12px; font-weight: bold; color: #ffffff; text-align: center; margin: 0;">VSING Puchong
+        <h6 style="font-size: 12px; font-weight: bold; color: #ffffff; text-align: center; margin: 0;">{{roomInfo['locationName']}}
         </h6>
       </div>
     </div>
@@ -117,28 +116,24 @@
 
       <p
         style="width: 100%; font-size: 12px; font-weight: normal; color: #ffffff; text-align: center; margin: 5px 0 20px 0;">
-        Lorem ipsum dolor sit amet,
-        consectetur adipiscing elit. Sed at magna
-        tristique, tempor nisi pretium, porta arcu. Nam nunc enim, mattis eget velit nec, vestibulum laoreet
-        leo.
-        Aenean quis elementum mi. </p>
+        {{roomInfo['description']}}</p>
 
       <div style="width: 100%; display: flex; align-items: center; justify-content: space-around;">
 
-        <div style="display: flex; flex-direction: column; align-items: center;">
+        <div style="display: flex; flex-direction: column; align-items: center;width: 50%; padding: 0 10px;">
           <h1 style="font-size: 14px; font-weight: bold; color: #ffffff; margin: 0 0 5px 0;">Occasion</h1>
 
           <div
             style="font-size: 12px; font-weight: 400; color: #ffffff; border-radius: 30px; padding: 4px 10px; background: linear-gradient(100deg, #B821F8 0%, #FF2D95 48%, #FF971D 100%);">
-            Birthday</div>
+            {{roomInfo['title'] || 'Fun Night'}}</div>
         </div>
 
-        <div style="display: flex; flex-direction: column; align-items: center;">
-          <h1 style="font-size: 14px; font-weight: bold; color: #ffffff; margin: 0 0 5px 0;">Who can join?</h1>
+        <div style="display: flex; flex-direction: column; align-items: center;width: 50%; padding: 0 10px;">
+          <h1 style="font-size: 14px; font-weight: bold; color: #ffffff; margin: 0 0 5px 0;">Who can apply?</h1>
 
-          <div
-            style="font-size: 12px; font-weight: 400; color: #ffffff; border-radius: 30px; padding: 4px 10px; background: linear-gradient(100deg, #B821F8 0%, #FF2D95 48%, #FF971D 100%);">
-            Female Only</div>
+          <div style="font-size: 12px; font-weight: 400; color: #ffffff; border-radius: 30px; padding: 4px 10px; background: linear-gradient(100deg, #B821F8 0%, #FF2D95 48%, #FF971D 100%);">
+            {{roomInfo['who_can_join']}}
+          </div>
         </div>
 
       </div>
@@ -149,19 +144,19 @@
 
       <div
         style="min-width: 180px; height: 30px; display: flex; align-items: center; justify-content: center; background: url(/assets/material/participant_box.png) center center / cover no-repeat fixed; position: absolute; top: -30px;">
-        <h1 style="font-size: 14px; font-weight: bold; color: #ffffff; margin: 0;">Participants</h1>
+        <h1 style="font-size: 14px; font-weight: bold; color: #ffffff; margin: 0;">Participants <span style="font-size: 12px; font-weight: 400;">({{ tool.lengthof(roomInfo['participants']) +'/'+ (roomInfo['pax'] || 0)}})</span></h1>
       </div>
 
       <div
-        style="width: 100%; display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); background: linear-gradient(0, #36136A 0%, #51287C 100%); padding: 15px 0; border-radius: 2px; gap: 15px;">
-        <div *ngFor="let pa of participant_list; let i = index;"
-          style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0 5px;">
+        style="width: 100%; display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); background: linear-gradient(0, #36136A 0%, #51287C 100%); padding: 15px 0 0 0; border-radius: 2px; gap: 15px; min-height: 90px;">
+        <div *ngFor="let pa of roomInfo['participants']; let i = index;"
+          style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0 5px; margin-bottom: 15px;">
 
           <div *ngIf="tool.lengthof(pa)"
             style="width: 100%; display: flex; flex-direction: column; align-items: center;">
             <div style="width: 51px; height: 51px; border-radius: 100%; background-color: #280F55;">
               <ion-avatar style="width: 100%; height: 100%;">
-                <img [src]="pa.thumbnail" />
+                <img [src]="pa.picture" />
               </ion-avatar>
             </div>
 
@@ -169,45 +164,115 @@
               style="width: 100%; font-size: 12px; font-weight: 700; color: #9972C4; text-align: center; margin: 3px 0 0 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
               {{pa.name}}</h6>
           </div>
+        </div>
 
-          <div *ngIf="!tool.lengthof(pa)" style="display: flex; flex-direction: column; align-items: center;">
-            <div
-              style="width: 49px; height: 49px; display: flex; align-items: center; justify-content: center; border-radius: 100%; background-color: #280F55; border: 2px solid #533780;">
-              <ion-icon style="font-size: 20px; color: #533780;" name="add"></ion-icon>
-            </div>
-
-            <h6
-              style="width: 100%; font-size: 12px; font-weight: 700; color: #9972C400; text-align: center; margin: 3px 0 0 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-              Nothing</h6>
+        <div *ngFor="let i of [].constructor((roomInfo?.['pax'] - tool.lengthof(roomInfo?.['participants']) > 0) 
+          ? (roomInfo?.['pax'] - tool.lengthof(roomInfo?.['participants'])) : 0)" style="display: flex; flex-direction: column; align-items: center; padding: 0 5px;">
+          <div
+            style="width: 49px; height: 49px; display: flex; align-items: center; justify-content: center; border-radius: 100%; background-color: #280F55; border: 2px solid #533780;">
+            <ion-icon style="font-size: 20px; color: #533780;" name="add"></ion-icon>
           </div>
 
+          <h6
+            style="width: 100%; font-size: 12px; font-weight: 700; color: #9972C400; text-align: center; margin: 3px 0 0 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+            Nothing</h6>
         </div>
       </div>
 
     </div>
+
+    <div class="party_desc_container">
+      <div
+        style="min-width: 180px; height: 30px; display: flex; align-items: center; justify-content: center; background: url(/assets/material/party_info_box.png) center center / cover no-repeat fixed; position: absolute; top: -16px;">
+        <h1 style="font-size: 14px; font-weight: bold; color: #ffffff; margin: 0;">Join Requirements</h1>
+      </div>
+
+      <div style="width: 100%; margin-top: 15px; ">
+
+        <div style="display: flex;  align-items: center;width: 100%; padding: 0 10px;margin-bottom: 10px;">
+          <h1 style="font-size: 14px; font-weight: bold; color: #ffffff; margin: 0 0 5px 0; width: 120px;">Age:</h1>
+    
+          <div
+            style="font-size: 12px; font-weight: 400; color: #ffffff; border-radius: 30px; padding: 4px 10px;">
+            <span *ngIf="tool.lengthof(roomInfo['age'])">{{roomInfo?.['age']?.['lower'] + ' - ' + roomInfo?.['age']?.['upper']}}</span>
+            <span *ngIf="!roomInfo['age']">≥18</span>
+          </div>
+        </div>
+    
+        <div style="display: flex; align-items: center;width: 100%; padding: 0 10px; overflow: hidden;white-space: nowrap;text-overflow: ellipsis;margin-bottom: 10px;">
+          <h1 style="font-size: 14px; font-weight: bold; color: #ffffff; margin: 0 0 5px 0;width: 120px">Language:</h1>
+    
+          <div style="font-size: 12px; font-weight: 400; color: #ffffff; border-radius: 30px; padding: 4px 10px; ">
+            {{tool.lengthof(roomInfo['language']) ? roomInfo['language'] : 'Any'}}
+          </div>
+        </div>
+
+        <div style="display: flex; align-items: center;width: 100%; padding: 0 10px; overflow: hidden;white-space: nowrap;text-overflow: ellipsis;margin-bottom: 10px;">
+          <h1 style="font-size: 14px; font-weight: bold; color: #ffffff; margin: 0 0 5px 0;width: 120px">Rate:</h1>
+    
+          <div style="font-size: 12px; font-weight: 400; color: #ffffff; border-radius: 30px; padding: 4px 10px; ">
+            {{(roomInfo?.['budgetPax'] | number : '1.0-0') + ' / pax'}}
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
   </div>
 </ion-content>
 
 <ion-content *ngIf="joined" [scrollY]="false" [fullscreen]="true" style="--background: #382D62;">
   <div style="width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
     <div style="width: 100%; padding: 30px 20px 20px 20px;">
+
+      <div
+      style="width: 100%; min-height: 80px; display: flex; align-items: center; justify-content: space-between; padding: 15px 0; border-radius: 10px; background: linear-gradient(90deg, #6A79FF 0%, #8032FF 100%); margin-bottom: 50px;">
+
+      <div
+        style="width: calc(100% / 3); height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0 5px;">
+        <h6 style="font-size: 12px; font-weight: normal; color: #ffffff; margin: 0 0 10px 0;">Time</h6>
+
+        <h6 style="font-size: 12px; font-weight: bold; color: #ffffff; text-align: center; margin: 0;">{{roomInfo['date'] |
+          date:
+          'hh:mm a'}}</h6>
+      </div>
+
+      <div
+        style="width: calc(100% / 3); height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0 5px; border-left: 1px solid #916FFF; border-right: 1px solid #916FFF;">
+        <h6 style="font-size: 12px; font-weight: normal; color: #ffffff; margin: 0 0 10px 0;">Date</h6>
+
+        <h6 style="font-size: 12px; font-weight: bold; color: #ffffff; text-align: center; margin: 0;">{{roomInfo['date']  |
+          date:
+          'hh:mm a'}}</h6>
+      </div>
+
+      <div
+        style="width: calc(100% / 3); height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0 5px;">
+        <h6 style="font-size: 12px; font-weight: normal; color: #ffffff; margin: 0 0 10px 0;">Location</h6>
+
+        <h6 style="font-size: 12px; font-weight: bold; color: #ffffff; text-align: center; margin: 0;">{{roomInfo['locationName']}}
+        </h6>
+      </div>
+    </div>
+
       <div class="participant_container">
 
         <div
           style="min-width: 180px; height: 30px; display: flex; align-items: center; justify-content: center; background: url(/assets/material/participant_box.png) center center / cover no-repeat fixed; position: absolute; top: -30px;">
-          <h1 style="font-size: 14px; font-weight: bold; color: #ffffff; margin: 0;">Participants</h1>
+          <h1 style="font-size: 14px; font-weight: bold; color: #ffffff; margin: 0;">Participants <span style="font-size: 12px; font-weight: 400;">({{ tool.lengthof(roomInfo['participants']) + '/'  + (roomInfo['pax'] || 0) }})</span></h1>
         </div>
 
         <div
-          style="width: 100%; display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); background: linear-gradient(0, #36136A 0%, #51287C 100%); padding: 15px 0; border-radius: 2px; gap: 15px;">
-          <div *ngFor="let pa of participant_list; let i = index;"
+          style="width: 100%; display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); background: linear-gradient(0, #36136A 0%, #51287C 100%); padding: 15px 0 0 0; border-radius: 2px; gap: 15px; min-height: 90px;">
+          <div (click)="goUser(pa)" *ngFor="let pa of roomInfo['participants']; let i = index;"
             style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0 5px;">
 
             <div *ngIf="tool.lengthof(pa)"
-              style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+              style="width: 100%; display: flex; flex-direction: column; align-items: center; margin-bottom: 15px;">
               <div style="width: 51px; height: 51px; border-radius: 100%; background-color: #280F55;">
                 <ion-avatar style="width: 100%; height: 100%;">
-                  <img [src]="pa.thumbnail" />
+                  <img [src]="pa.picture" />
                 </ion-avatar>
               </div>
 
@@ -216,17 +281,18 @@
                 {{pa.name}}</h6>
             </div>
 
-            <div *ngIf="!tool.lengthof(pa)" style="display: flex; flex-direction: column; align-items: center;">
-              <div
-                style="width: 49px; height: 49px; display: flex; align-items: center; justify-content: center; border-radius: 100%; background-color: #280F55; border: 2px solid #533780;">
-                <ion-icon style="font-size: 20px; color: #533780;" name="add"></ion-icon>
-              </div>
+          </div>
 
-              <h6
-                style="width: 100%; font-size: 12px; font-weight: 700; color: #9972C400; text-align: center; margin: 3px 0 0 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                Nothing</h6>
+          <div *ngFor="let i of [].constructor((roomInfo?.['pax'] - tool.lengthof(roomInfo?.['participants']) > 0) 
+            ? (roomInfo?.['pax'] - tool.lengthof(roomInfo?.['participants'])) : 0)" style="display: flex; flex-direction: column; align-items: center;">
+            <div
+              style="width: 49px; height: 49px; display: flex; align-items: center; justify-content: center; border-radius: 100%; background-color: #280F55; border: 2px solid #533780;">
+              <ion-icon style="font-size: 20px; color: #533780;" name="add"></ion-icon>
             </div>
 
+            <h6
+              style="width: 100%; font-size: 12px; font-weight: 700; color: #9972C400; text-align: center; margin: 3px 0 0 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+              Nothing</h6>
           </div>
         </div>
 
@@ -278,8 +344,9 @@
   </div>
 </ion-content>
 
-<ion-footer class="ion-no-border">
+<ion-footer *ngIf="currentUser['id'] != roomInfo['byUid'] && applied == false " class="ion-no-border">
   <ion-toolbar *ngIf="!joined" class="ion-no-padding" style="--background: #382D62;">
+
     <div style="width: 100%; padding: 20px;">
       <ion-button (click)="joined == false ? requestJoin() : joined = false" class="ion-no-padding primary_btn">
         Request to join
@@ -332,19 +399,20 @@
 
 
       <div style="width: 100%; background-color: #382D62;">
-        <div *ngFor="let item of requestList; let i = index;"
+        <div *ngFor="let item of roomInfo['applicants']; let i = index;"
           style="width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 15px;">
           <div style="display: flex; align-items: center; justify-content: flex-start;">
             <div style="font-size: 14px; font-weight: bold; color: #ffffff; margin-right: 15px;">{{i+1}}.</div>
-            <img style="width: 40px; height: 40px; border-radius: 100%; background-color: #ffffff;" src="" alt="">
+            <img style="width: 40px; height: 40px; border-radius: 100%; background-color: #ffffff;object-fit: cover;" src="{{item.picture}}" alt="">
             <div style="margin-left: 10px;">
               <div style="font-size: 15px; font-weight: bold; color: #ffffff;">{{item['name']}}</div>
-              <div style="font-size: 12px; font-weight: 500; color: #ffffff;">I worth RM {{item['price']}} <span
-                  style="font-size: 10px;">/ hr</span></div>
+              <div style="font-size: 12px; font-weight: 500; color: #ffffff;">I'm worth {{item['rate'] | number : '1.0-0'}} 
+                <!-- <span style="font-size: 10px;">/ hr</span> -->
+              </div>
             </div>
           </div>
 
-          <div (click)="accept(item)"
+          <div (click)="acceptJoin(item)"
             style="width: 95px; height: 30px; background-color: #6860FF; border-radius: 30px; display: flex; align-items: center; justify-content: center;">
             <div style="font-size: 14px; font-weight: bold; color: #ffffff;">Accept</div>
           </div>
@@ -354,5 +422,15 @@
       </div>
 
     </ion-content>
+    <ion-footer class="ion-no-border">
+    
+      <ion-toolbar class="ion-no-padding" style="--background: linear-gradient(0, #36136A 0%, #51287C 100%);">
+        <div
+          style="width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 10px 15px 20px 15px; color:#fff; font-weight: 600;">
+          <div>Current Balance:</div>
+          <div>{{roomInfo['balance'] | number : '1.0-0'}}</div>
+        </div>
+      </ion-toolbar>
+    </ion-footer>
   </ng-template>
 </ion-modal>

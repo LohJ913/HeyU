@@ -29,7 +29,7 @@
 
       <div style="width: 100%; background-color: #bb7420; border-radius: 20px;">
         <div class="wallet">
-          <div>
+          <div (click)="goTopUp()">
             <h6>Balance</h6>
 
             <div class="balance_container">
@@ -38,9 +38,9 @@
             </div>
           </div>
         </div>
-        <div *ngIf="tool.lengthof(currentUser) && currentUser['verified'] == true"
+        <div *ngIf="tool.lengthof(currentUser) && currentUser['verified'] == true" (click)="goEarning()"
           style="width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 10px 15px;">
-          <div style="font-size: 13px; font-weight: 500; color: #ffffff;">Earning - <b>8,600</b></div>
+          <div style="font-size: 13px; font-weight: 500; color: #ffffff;">Earning - <b>{{(currentUser['points'] || 0) | number :'1.0-0'}}</b></div>
           <ion-icon style="font-size: 14px; color: #ffffff;" name="chevron-forward-outline"></ion-icon>
         </div>
       </div>
@@ -60,13 +60,13 @@
         <ion-icon style="color: #ffffff" name="chevron-forward-outline"></ion-icon>
       </div>
 
-      <!-- <div (click)="toFavourite()" class="setting_container">
+      <div (click)="toFavourite()" class="setting_container">
         <div class="setting_left">
           <ion-icon slot="start" src="assets/icon/favourite.svg"></ion-icon>
           <div class="setting_text">Favourite</div>
         </div>
         <ion-icon style="color: #ffffff" name="chevron-forward-outline"></ion-icon>
-      </div> -->
+      </div>
 
       <div class="setting_container">
         <div class="setting_left">

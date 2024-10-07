@@ -1,21 +1,25 @@
 <ion-header class="ion-no-border">
   <ion-toolbar class="ion-no-padding"
     style="--background: url(/assets/background/main_bg.jpg) 0 0 / cover no-repeat fixed;">
-    <ion-button style="font-size: 30px;" (click)="back()" fill="clear">
-      <ion-icon slot="icon-only" color="white" name="chevron-back"></ion-icon>
-    </ion-button>
+    <div style="display: flex; align-items: center; justify-content: space-between;">
+      <ion-button style="font-size: 30px;" (click)="back()" fill="clear">
+        <ion-icon slot="icon-only" color="white" name="chevron-back"></ion-icon>
+      </ion-button>
+      <ion-button style="font-size: 24px;" (click)="goHistory()" fill="clear">
+        <ion-icon slot="icon-only" color="white" name="reader-outline"></ion-icon>
+      </ion-button>
+    </div>
 
     <div style="width: 100%; padding: 20px">
       <div style="font-size: 14px; font-weight: 500; color: #ffffff; margin-bottom: 3px;">Balance</div>
       <div style="display: flex; align-items: center; justify-content: flex-start;">
         <ion-icon style="font-size: 28px;" src="assets/svg/hey_coin.svg"></ion-icon>
-        <div style="font-size: 28px; font-weight: bold; color: #ffffff; margin-left: 5px;">{{(currentUser['credits'] || 0) | number: '1.0-0'}}</div>
+        <div style="font-size: 28px; font-weight: bold; color: #ffffff; margin-left: 5px;">{{(currentUser['credits'] ||
+          0) | number: '1.0-0'}}</div>
       </div>
     </div>
 
-    <div style="width: 100%; background-color: #392E64; border-radius: 20px 20px 0 0; padding: 10px;">
 
-    </div>
   </ion-toolbar>
 </ion-header>
 
@@ -125,7 +129,7 @@
             Cards</div>
 
           <ion-list style="--ion-item-background: none; padding: 0 20px;">
-            <ion-radio-group [compareWith]="compareWith" (ionChange)="handleChange($event)" mode="md" >
+            <ion-radio-group [compareWith]="compareWith" (ionChange)="handleChange($event)" mode="md">
               <ion-item class="ion-no-padding" *ngFor="let item of savedCards; trackBy: trackItems" lines="none"
                 style="--ion-item-background: transparent !important; --inner-padding-end: 0 !important;">
 
@@ -178,11 +182,8 @@
 
             <div
               style="width: 100%; height: calc(63px - 13px); margin-bottom: 13px; background-color: #090913; border-radius: 30px; padding: 0 15px; display: flex; align-items: center;">
-              <ion-input 
-                style="font-size: 14px; font-weight: 600; color: #ffffff; --placeholder-color: #ffffff80;"
-                placeholder="0000 0000 0000 0000"
-                [maskito]="cardMask"
-                [maskitoElement]="maskPredicate">
+              <ion-input style="font-size: 14px; font-weight: 600; color: #ffffff; --placeholder-color: #ffffff80;"
+                placeholder="0000 0000 0000 0000" [maskito]="cardMask" [maskitoElement]="maskPredicate">
               </ion-input>
             </div>
 
@@ -226,8 +227,9 @@
     </ion-content>
 
     <ion-footer class="ion-no-border">
-      <ion-toolbar class="ion-no-padding" style="--background: inherit; padding-left: 0 !important; padding-right: 0 !important;">
-       
+      <ion-toolbar class="ion-no-padding"
+        style="--background: inherit; padding-left: 0 !important; padding-right: 0 !important;">
+
         <div *ngIf="tab !== 'Cash'"
           style="width: 100%; display: flex; align-items: center; justify-content: center; padding: 15px;">
           <ion-button (click)="makePayment()" class="ion-no-padding primary_btn">
@@ -237,7 +239,8 @@
 
         <div *ngIf="tab == 'Cash'"
           style="width: 100%; height: 100px; background-color: #FFD24F; display: flex; align-items: center; justify-content: center; padding: 0 30px;">
-          <div style="font-size: 16px; font-weight: bold; color: #B1650D; text-align: center;">Please contact our staff to make payment via cash</div>
+          <div style="font-size: 16px; font-weight: bold; color: #B1650D; text-align: center;">Please contact our staff
+            to make payment via cash</div>
         </div>
       </ion-toolbar>
     </ion-footer>

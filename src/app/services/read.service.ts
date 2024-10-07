@@ -158,6 +158,7 @@ export class ReadService {
         this.messagesSubject.next(this.messages);  // Emit old messages to subscribers
         this.listenForNewMessages(uid, friend_id, oldMessages[oldMessages.length - 1]['timestamp']);
         this.writeService.markMessagesAsRead(this.conversationId, uid, friend_id)
+
       }
     }).catch((error) => {
       console.error('Error fetching old messages:', error);
@@ -235,6 +236,21 @@ export class ReadService {
       this.messages = [];  // Clear messages related to that conversation
       this.messagesSubject.next(this.messages);  // Clear the observable data
     }
+  }
+
+
+  async getAmbassadorInfo(uid: string, ambassador_id: string) {
+    const profileRef = firebase.firestore().collection('profiles').doc(ambassador_id).get();
+    const engagementRef = firebase.firestore().collection('users').doc(ambassador_id).collection('engagements').doc('data').get();
+    const favoritesRef = firebase.firestore().collection('users').doc(uid).collection('favorites').where('uid', '==', ambassador_id).get();
+
+    const [profileSnapshot, engagementSnapshot, favoritesSnapshot] = await Promise.all([profileRef, engagementRef, favoritesRef]);
+
+    const profile = profileSnapshot.data();
+    const engagement = engagementSnapshot.data();
+    const userfavorite = favoritesSnapshot.docs.map((doc: any) => ({ id: doc.id, ...doc.data() }));
+
+    return { profile, engagement, userfavorite }; // Fixed typo in return object
   }
 
 
@@ -371,11 +387,12 @@ export class ReadService {
   }
 
   getMyRooms(uid: string) {
+    console.log(uid)
     const roomsRef = firebase.firestore()
       .collection('rooms')
+      .orderBy('datetime', 'asc')
+      .where('datetime', ">=", this.toolService.dateTransform(new Date(), 'yyyyMMdd_hhmm'))
       .where('users', 'array-contains', uid)
-      .where('date', ">=", new Date());
-
 
     return roomsRef
       .get()
@@ -393,7 +410,8 @@ export class ReadService {
     return new Observable(observer => {
       // Firestore real-time listener using onSnapshot()
       const unsubscribe = firebase.firestore().collection('users').doc(uid).collection('rooms')
-        .where('date', ">=", new Date())
+        .orderBy('datetime', 'asc')
+        .where('datetime', ">=", this.toolService.dateTransform(new Date(), 'yyyyMMdd_hhmm'))
         .onSnapshot(snapshot => {
           const rooms: any[] = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
           observer.next(rooms);
@@ -410,11 +428,23 @@ export class ReadService {
     });
   }
 
-  getPartyList() {
-    // for ambasador
+  async getPartiesAsAmbassador(uid: string, gender) {
+    const roomsRef = firebase.firestore().collection('rooms').where('gender', 'array-contains', gender).where('datetime', ">=", this.toolService.dateTransform(new Date(), 'yyyyMMdd_hhmm')).get();
+    const invitesRef = firebase.firestore().collection('bookings').where('toUid', '==', uid).where('datetime', ">=", this.toolService.dateTransform(new Date(), 'yyyyMMdd_hhmm')).get();
+
+    const [roomsSnapshot, guestsSnapshot] = await Promise.all([roomsRef, invitesRef]);
+
+    const rooms = roomsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    const invites = guestsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+    return { rooms, invites };
+  }
+
+  getPartyList(gender) {
     const roomsRef = firebase.firestore()
       .collection('rooms')
-      .where('datetime', ">=", this.toolService.dateTransform(new Date(),'yyyyMMdd_hhmm'))
+      .where('gender', 'array-contains', gender)
+      .where('datetime', ">=", this.toolService.dateTransform(new Date(), 'yyyyMMdd_hhmm'))
 
     return roomsRef
       .get()
@@ -513,6 +543,72 @@ export class ReadService {
 
     const updatedNotifications = [...currentNotifications, ...uniqueNotifications];  // Append new unique notifications
     this.notificationsSubject.next(updatedNotifications);  // Update the BehaviorSubject
+  }
+
+
+  getLastXTransactions(uid: string, lastVisible?: firebase.firestore.QueryDocumentSnapshot): Promise<any> {
+    let transRef = firebase.firestore()
+      .collection('users')
+      .doc(uid)
+      .collection('transactions')
+      .orderBy('timestamp', 'desc') // Order by date descending
+      .limit(20); // Limit to the last 20 transactions
+
+    if (lastVisible) {
+      // If there's a last visible document, start after it (for pagination)
+      transRef = transRef.startAfter(lastVisible);
+    }
+
+    return transRef.get().then(snapshot => {
+      const transactions = snapshot.docs.map(doc => ({
+        id: doc.id,
+        date: doc.data().timestamp.toMillis(),
+        eightdate: this.toolService.eightdater(doc.data().timestamp.toMillis()),
+        polarity: doc.data().type == 'gifting' || doc.data().type == 'deposit' || doc.data().type == 'party' ? -1 : 1,
+        ...doc.data()
+      }));
+
+      // gifting, depost, refund, reimbursement
+
+      // Return the transactions and the last visible document (for pagination)
+      return {
+        transactions,
+        lastVisible: snapshot.docs[snapshot.docs.length - 1] // Get the last document for next pagination
+      };
+    });
+  }
+
+  async getFavoriteUsers(uid: string): Promise<any[]> {
+    const favoritesRef = firebase.firestore().collection('users').doc(uid).collection('favorites');
+
+    try {
+      // Fetch the favorite users
+      const favoritesSnapshot = await favoritesRef.get();
+      const favoriteUids = favoritesSnapshot.docs.map(doc => doc.id); // Get all favorite user UIDs
+
+      if (favoriteUids.length === 0) {
+        return []; // Return an empty array if no favorites found
+      }
+
+      // Fetch all profile documents in parallel
+      const profilePromises = favoriteUids.map(favUid =>
+        firebase.firestore().collection('profiles').doc(favUid).get()
+      );
+
+      // Wait for all profile fetches to complete
+      const profileSnapshots = await Promise.all(profilePromises);
+
+      // Map profiles to an array
+      const profiles = profileSnapshots.map(snapshot => ({
+        uid: snapshot.id,
+        ...snapshot.data()
+      }));
+
+      return profiles;
+    } catch (error) {
+      console.error('Error fetching favorite users:', error);
+      throw error;
+    }
   }
 
 

@@ -1,16 +1,20 @@
 import { Component, OnInit } from '@angular/core';
 import { IonRouterOutlet, NavController } from '@ionic/angular';
-import { ToolService } from '../services/tool.service';
+import { distinctUntilChanged } from 'rxjs';
 import { DataService } from '../services/data.service';
-import { Subscription, distinctUntilChanged } from 'rxjs';
+import { ToolService } from '../services/tool.service';
 import { ReadService } from '../services/read.service';
-
+import firebase from 'firebase'
 @Component({
-  selector: 'app-earning-list',
-  templateUrl: './earning-list.page.html',
-  styleUrls: ['./earning-list.page.scss'],
+  selector: 'app-transaction-list',
+  templateUrl: './transaction-list.page.html',
+  styleUrls: ['./transaction-list.page.scss'],
 })
-export class EarningListPage implements OnInit {
+export class TransactionListPage implements OnInit {
+
+  transactions: any[] = [];
+  lastVisible: firebase.firestore.QueryDocumentSnapshot | null = null;
+  loading = false;
 
   transactionList = [
     {
@@ -29,7 +33,7 @@ export class EarningListPage implements OnInit {
       amount: 1000
     }
   ]
-
+  uid = localStorage.getItem('heyu_uid') || ''
   constructor(
     private router: IonRouterOutlet,
     private navCtrl: NavController,
@@ -45,6 +49,7 @@ export class EarningListPage implements OnInit {
       this.currentUser = info
       // console.log(info)
     })
+    this.fetchTransactions()
   }
 
 
@@ -52,6 +57,27 @@ export class EarningListPage implements OnInit {
     if (this.userSubscribe) this.userSubscribe.unsubscribe();
   }
 
+  fetchTransactions() {
+    this.loading = true;
+    this.readService.getLastXTransactions(this.uid, this.lastVisible)
+      .then(result => {
+        this.transactions.push(...result.transactions); // Append new transactions
+        this.lastVisible = result.lastVisible; // Update the last visible document
+        this.loading = false;
+        console.log(this.transactions)
+      })
+      .catch(error => {
+        console.error('Error fetching transactions:', error);
+        this.loading = false;
+      });
+  }
+
+  // Trigger more fetching when scrolling down
+  onScroll() {
+    if (!this.loading) {
+      this.fetchTransactions(); // Fetch next 20 transactions
+    }
+  }
   back() {
     this.router.canGoBack() ? this.navCtrl.pop() : this.navCtrl.navigateRoot('tabs/tab1', { animated: true, animationDirection: 'back' })
   }

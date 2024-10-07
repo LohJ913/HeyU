@@ -41,6 +41,7 @@ export class Tab1Page implements OnInit {
   ) {
 
   }
+  uid = localStorage.getItem('heyu_uid')
 
   async ngOnInit() {
 
@@ -140,6 +141,9 @@ export class Tab1Page implements OnInit {
     if (this.currentUser && this.tool.lengthof(this.outlets)) {
       this.writeService.guestCheckin(this.currentUser['id'], this.outlets[0], { name: this.currentUser.name, picture: this.currentUser.picture, uid: this.currentUser.id }, this.currentUser['visitId'] || '')
         .then((done) => {
+
+          this.tool.swal('success', 'Success', `You've checked in at ${this.outlets[0]['name']}. Have a great time ahead!`, 2000)
+
           console.log('Check-in completed:', done);
         })
         .catch((err) => {
@@ -155,7 +159,7 @@ export class Tab1Page implements OnInit {
 
     this.readService.getHotPeople('').subscribe({
       next: (data) => {
-        let everyone = (data || []).filter((a: any) => this.tool.lengthof(this.currentUser) ? a['id'] !== this.currentUser['id'] : a) // Filter to remove me from the list
+        let everyone = (data || []).filter((a: any) => a['id'] !== (this.currentUser['id'] || this.uid)) // Filter to remove me from the list
         console.log(everyone);
 
         // this.people = JSON.parse(JSON.stringify(everyone)).sort((a, b) => {
@@ -187,9 +191,14 @@ export class Tab1Page implements OnInit {
   goTopUp() {
     this.navCtrl.navigateForward('topup');
   }
-
+  
   goEarning() {
     this.navCtrl.navigateForward('earning-list');
   }
+
+  goParty() {
+    this.navCtrl.navigateForward(`party-list?id=${this.currentUser['id']}`);
+  }
+
 
 }

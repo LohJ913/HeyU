@@ -1,7 +1,7 @@
 {
     "chat_notification": {
         "type": "cha/gift",
-        "byId": "girl002",
+        "byUid": "girl002",
         "byName": "Arisa",
         "byPicture": "https://www.shutterstock.com/image-photo/fashion-concept-young-asian-woman-600nw-2070956018.jpg",
         "navId": "girl002",
@@ -12,7 +12,7 @@
     },
     "invite_notification": {
         "type": "party",
-        "byId": "user01",
+        "byUid": "user01",
         "byName": "Batman",
         "navId": "party00001",
         "navType": "party-detail",

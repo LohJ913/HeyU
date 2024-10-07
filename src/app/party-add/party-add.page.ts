@@ -90,13 +90,12 @@ export class PartyAddPage implements OnInit {
   selectedPreference = '';
 
   myProfile: any;
-  uid = localStorage.getItem('heyu_uid') || ''
-
   userSubscribe: any;
   currentUser: any;
   roomInfo: any = {
     title: "",
     description: "",
+    fee: 100,
     age: {
       lower: 20,
       upper: 30
@@ -119,6 +118,7 @@ export class PartyAddPage implements OnInit {
     deposit: 9900
   }
   outlets: any = []
+  selectedLanguage;
 
   ngOnInit() {
     this.userSubscribe = this.dataService.userInfo.pipe(distinctUntilChanged()).subscribe(async (info) => {
@@ -146,9 +146,6 @@ export class PartyAddPage implements OnInit {
     });
   }
 
-  setLocationName() {
-    this.roomInfo['locationName'] = this.outlets.filter((a: any) => (a['id'] == this.roomInfo['locationId']))[0]?.name
-  }
 
   pinFormatter(value: number) {
     let budgetRange = {
@@ -170,48 +167,70 @@ export class PartyAddPage implements OnInit {
   }
 
   createRoom() {
-
+    console.log(this.roomInfo)
     // run checker
-    if (['date', 'time', 'locationId', 'pax'].some((a) => (this.roomInfo[a] == '' || this.roomInfo[a] == null || this.roomInfo[a] == undefined))) {
+    if (['date', 'time', 'locationId'].some((a) => (this.roomInfo[a] == '' || this.roomInfo[a] == null || this.roomInfo[a] == undefined))) {
       // reject
+      return this.tool.swal('error', 'Error', `Please set the date & time, and a location`, 3000);
     }
     if (!this.roomInfo['pax'] && !this.selectedPax) {
       // reject
-    }
-    this.tool.swalConfirm('Party Room Confirmation', `${this.countTotal()} credits will be deducted from your account. Would you like to proceed?`, 'warning').then(async (a) => {
-      if (a == true) {
-        // uid: string, roomData: any, transactionData: any): Promise<{ success: boolean; roomId?: string; transactionId?: string; newCredits?: number; message?: string 
-        console.log(this.selectedLanguage)
-        let body = {
-          total: this.costing['total'], // budget
-          deposit: this.costing['deposit'],
-          fee: this.costing['fee'],
-          type: 'party',  //fixed
-          byId: this.uid,
-          age: this.roomInfo['age'],
-          byName: this.currentUser['name'] || '',
-          // preferences: [],
-          pax: this.roomInfo['pax'] || this.selectedPax,
-          title: this.roomInfo['title'] || "",
-          description: this.roomInfo['description'] || "",
-          locationId: this.roomInfo['locationId'],
-          locationName: this.roomInfo['locationName'],
-          gender: this.gender.reduce((acc: any[], a: any) => a.selected ? [...acc, a.value] : acc, []),
-          datetime: `${this.tool.dateTransform(this.roomInfo['date'], 'YYYYMMdd')}_${this.tool.dateTransform(this.roomInfo['time'], 'hhmm')}`,  // format is 20240910_1200
-          duration: 5, //hours,
-          status: 'pending',
-          users: [this.uid],
-          language: [],
-        }
+      return this.tool.swal('error', 'Error', `Select the number of pax for ambassador `, 3000);
 
-        console.log(body)
-        // await this.writeService.createRoom(this.uid, body).then((res) => {
-        //   console.log(res)
-        // }).catch((err) => {
-        //   console.log(err)
-        // })
-      }
-    })
+    }
+
+    if (this.currentUser['credits'] > this.countTotal()) {
+      this.tool.swalConfirm('Party Room Confirmation', `${this.countTotal()} credits will be deducted from your account. Would you like to proceed?`, 'warning').then(async (a) => {
+        if (a == true) {
+          // uid: string, roomData: any, transactionData: any): Promise<{ success: boolean; roomId?: string; transactionId?: string; newCredits?: number; message?: string 
+          let body = {
+            total: this.countTotal(), // budget
+            initial: this.countTotal(), // budget
+            deposit: this.countTotal() - (this.costing['fee'] || 0),
+            fee: this.costing['fee'],
+            type: 'party',  //fixedc
+            byUid: this.currentUser['id'],
+            age: this.roomInfo['age'],
+            byName: this.currentUser['name'] || '',
+            byPicture: this.currentUser['picture'] || '',
+            // preferences: [],
+            pax: this.roomInfo['pax'] || this.selectedPax,
+            title: this.roomInfo['title'] || "",
+            description: this.roomInfo['description'] || "",
+            locationId: this.roomInfo['locationId'],
+            locationName: this.outlets[this.outlets.findIndex((a: any) => (a['id'] == this.roomInfo['locationId']))]?.name,
+            gender: this.gender.reduce((acc: any[], a: any) => a.selected ? [...acc, a.value] : acc, []),
+            datetime: `${this.tool.dateTransform(this.roomInfo['date'], 'YYYYMMdd')}_${this.tool.dateTransform(this.roomInfo['time'], 'hhmm')}`,  // format is 20240910_1200
+            date: new Date(new Date(this.roomInfo['date']).getFullYear(), new Date(this.roomInfo['date']).getMonth(), new Date(this.roomInfo['date']).getDate(), new Date(this.roomInfo['time']).getHours(), new Date(this.roomInfo['time']).getMinutes(), 0).getTime(),
+            duration: 3, //hours,
+            status: 'pending',
+            users: [],
+            language: this.selectedLanguage || [],
+            budgetPax: this.budgetRange[this.selectedBudget]['value'] || 500,
+          }
+
+          console.log(body)
+          await this.writeService.createRoom(this.currentUser['id'], body).then((res) => {
+            console.log(res)
+
+            if (res.success == true) {
+              this.tool.swal('success', 'Success', `Room has been created successfully`, 3000); this.back()
+            }
+            else {
+              this.tool.swal('error', 'Error', `Failed to create: ${res?.message}`, 3000);
+            }
+
+          }).catch((err) => {
+            console.log(err)
+            this.tool.swal('error', 'Error', 'Failed to create party: ' + err.message);
+          })
+        }
+      })
+    }
+    else {
+      this.tool.swal('error', 'Error', `Insufficient balance: You have only ${this.currentUser['credits']} gems remaining`, 3000);
+    }
+
   }
 
   ngOnDestroy() {
@@ -251,5 +270,4 @@ export class PartyAddPage implements OnInit {
     return total
   }
 
-  selectedLanguage;
 }

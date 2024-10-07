@@ -31,15 +31,14 @@
         </div>
       </div>
 
-      <div style="width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 0px 20px; margin-bottom: 10px;">
+      <div *ngIf="activeTabs.length > 0" style="width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 0px 20px; margin-bottom: 10px;">
         <div style="display: flex; align-items: center; gap: 10px;">
-
-          <div *ngFor="let item of activeTabs" (click)="tab = item['value']"
+          <div *ngFor="let item of activeTabs" (click)="tab = item['value'];filterList()"
             [ngClass]="tab == item['value'] ? 'selected_tab' : 'unselected_tab'">
             {{item['label']}}
-
-            <ion-badge *ngIf="tool.lengthof(item['qty']) > 0"
-              style="font-size: 10px; font-weight: 700; --background: #E25E6C; --color: #ffffff; border: 1px solid #ffffff; position: absolute; top: -8px; right: -10px; z-index: 1000;">{{item['qty']}}</ion-badge>
+      
+            <ion-badge *ngIf="tab != item.value && reducer(partyrooms,item['value'])"
+              style="font-size: 10px; font-weight: 700; --background: #E25E6C; --color: #ffffff; border: 1px solid #ffffff; position: absolute; top: -8px; right: -10px; z-index: 1000;">{{reducer(partyrooms,item['value']) || 0}}</ion-badge>
           </div>
         </div>
       </div>
@@ -48,9 +47,9 @@
 
   <div style="width: 100%; padding: 10px 20px;">
     <ion-list class="ion-no-padding" style="background-color: #080812;">
-      <ion-item (click)="viewParty(item)" *ngFor="let item of partyrooms" class="ion-no-padding" lines="none"
-        style="--background: #382D62; --padding-start: 15px; --padding-top: 15px; --padding-bottom: 15px; border-radius: 15px; margin-bottom: 20px;">
-        <div style="width: 100%; display: flex;">
+      <ion-item (click)="viewParty(item)" *ngFor="let item of filteredrooms" class="ion-no-padding" lines="none"
+        style="--background: #382D62; border-radius: 15px; margin-bottom: 20px; position: relative;">
+        <div style="width: 100%; display: flex; padding: 15px; padding-right: 0;">
 
           <div
             style="width: 100px; height: 100px; display: flex; align-items: center; justify-content: center; padding: 3px; border-radius: 100%; background-color: #100E1F; border: 2px solid #E297FF; position: relative;">
@@ -61,7 +60,7 @@
 
             <div
               style="font-size: 12px; font-weight: 700; color: #000; background-color: #E297FF; padding: 5px 10px; border-radius: 20px; position: absolute; bottom: -2px; z-index: 1000;">
-              Room ID
+              Room&nbsp;<span style="font-size: 10px;">{{item?.['roomId']}}</span>
             </div>
           </div>
 
@@ -70,38 +69,105 @@
             style="width: calc(100% - 117px); height: 100px; display: flex; flex-direction: column; justify-content: space-between; margin-left: 15px; padding: 5px 0;">
 
             <div style="width: 100%;">
+              <div style="height: 18px;"></div>
               <h3
-                style="width: 100%; font-size: 14px; font-weight: normal; color: #ffffff; margin: 0 0 3px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                style="width: 100%; font-size: 15px; font-weight: normal; color: #ffffff; margin: 0 0 3px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                 {{item['byName']}}
               </h3>
-              <p
-                style="font-size: 12px; font-weight: normal; color: #B4B2E5; margin: 0; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical;">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed at magna
-                tristique, tempor nisi pretium, porta arcu. Nam nunc enim, mattis eget velit nec, vestibulum laoreet
-                leo.
-                Aenean quis elementum mi. </p>
+              <div
+                style="font-size: 12px; font-weight: normal; color: #B4B2E5; margin-bottom:6px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 1; -webkit-box-orient: vertical;">
+                {{item['title'] || item['description'] || "Let's make friends"}}</div>
             </div>
 
             <div style="width: 100%; display: flex; align-items: center; justify-content: space-between;">
               <div>
-                <h6 style="font-size: 12px; font-weight: normal; color: #ffffff; margin: 0 0 3px 0;">{{1726660800000 |
-                  date:
-                  'dd/MM/yyyy'}}</h6>
-                <h6 style="font-size: 12px; font-weight: normal; color: #ffffff; margin: 0;">{{1726660800000 | date:
+                <h6 style="font-size: 12px; font-weight: normal; color: #ffffff; margin: 0 0 3px 0;">{{item['date'] | date: 'dd/MM/yyyy'}}</h6>
+                <h6 style="font-size: 12px; font-weight: normal; color: #ffffff; margin: 0;">{{item['date'] | date:
                   'hh:mm a'}}</h6>
               </div>
 
-              <div class="request_btn">
-                <ion-icon style="font-size: 12px;" src="assets/svg/party_room.svg"></ion-icon>
-                <h6>Request</h6>
-              </div>
+                <div *ngIf="item?.localtype == 'all_party'" >
+                  <div *ngIf="tool.lengthof(item.users) && item.users.includes(uid) && checkUidinArray(item.applicants)" class="request_btn">
+                    <ion-icon style="font-size: 12px;" src="assets/svg/party_room.svg"></ion-icon>
+                    <h6>Pending</h6>
+                  </div>
+                  <div *ngIf="tool.lengthof(item.users) && item.users.includes(uid) && checkUidinArray(item.rejections)" class="request_btn">
+                    <ion-icon style="font-size: 12px;" src="assets/svg/party_room.svg"></ion-icon>
+                    <h6>Rejected</h6>
+                  </div>
+                  <div *ngIf="tool.lengthof(item.users) && item.users.includes(uid) && checkUidinArray(item.participants)" class="request_btn">
+                    <ion-icon style="font-size: 12px;" src="assets/svg/party_room.svg"></ion-icon>
+                    <h6>Joined</h6>
+                  </div>
+                  <div *ngIf="currentUser['id']  && item['byUid'] != currentUser['id'] && !(item.users || []).includes(uid)" class="request_btn">
+                    <ion-icon style="font-size: 12px;" src="assets/svg/party_room.svg"></ion-icon>
+                    <h6>Request</h6>
+                  </div>
+                </div>
+                <div *ngIf="item?.localtype== 'my_party'">
+
+                  <div class="request_btn">
+                    <ion-icon style="font-size: 12px;" src="assets/svg/party_room.svg"></ion-icon>
+                    <h6>View</h6>
+                  </div>
+                </div>
+                <div *ngIf="item?.localtype== 'invitation'">
+                  <div *ngIf="item.status=='pending'" class="request_btn">
+                    <ion-icon style="font-size: 12px;" src="assets/svg/party_room.svg"></ion-icon>
+                    <h6>RSVP</h6>
+                  </div>
+                  <div *ngIf="item.status=='accepted'" class="request_btn">
+                    <ion-icon style="font-size: 12px;" src="assets/svg/party_room.svg"></ion-icon>
+                    <h6>View</h6>
+                  </div>
+                </div>
             </div>
           </div>
+
         </div>
+
+        <div *ngIf="item?.localtype == 'invitation'"
+        style="width: 190px; display: flex; justify-content: space-between; align-items: center; padding: 4px 14px; background: linear-gradient(90deg, #6961FFaa 0%, #7570ccaa 100%); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); border-radius: 0 15px 0 15px; position: absolute;right:0;top:0;">
+        <div style="display: flex;align-items: center;">
+          <ion-icon style="color: #FFF" name="time-outline"></ion-icon>
+          <div style="font-size: 11px; font-weight: 400; color: #ffffff; ">&nbsp;Expires in</div>
+        </div>
+        <div style="display: flex; align-items: center; justify-content: center;">
+          <div
+            style="width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #ffffff; text-align: center; background-color: rgba(104, 96, 255, 0.5); border-radius: 5px;">
+            01
+          </div>
+
+          <div style="font-size: 11px; font-weight: 400; color: #ffffff; margin: 0 3px;">:</div>
+
+          <div
+            style="width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 400; color: #ffffff; text-align: center; background-color: rgba(104, 96, 255, 0.5); border-radius: 5px;">
+            45
+          </div>
+
+          <div style="font-size: 11px; font-weight: 400; color: #ffffff; margin: 0 3px;">:</div>
+
+          <div
+            style="width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #ffffff; text-align: center; background-color: rgba(104, 96, 255, 0.5); border-radius: 5px;">
+            12
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="item?.localtype == 'all_party'"
+      style=" display: flex; justify-content: space-between; align-items: center; padding: 6px 20px; height: 30px; background: linear-gradient(90deg, #6961FFaa 0%, #7570ccaa 100%); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); border-radius: 0 15px 0 15px; position: absolute;right:0;top:0;">
+        <div style="font-size: 12px; font-weight: 400; color: #ffffff; ">&nbsp;Participants&nbsp;<span style="font-weight: 400;letter-spacing: 0.5px;">({{tool.lengthof(item?.participants) + ' / ' + item?.pax}})</span></div>
+    </div>
+
+      <div *ngIf="item?.localtype == 'my_party'"
+      style=" display: flex; justify-content: space-between; align-items: center; padding: 6px 20px; height: 30px; background: linear-gradient(90deg, #6961FFaa 0%, #7570ccaa 100%); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); border-radius: 0 15px 0 15px; position: absolute;right:0;top:0;">
+        <div style="font-size: 12px; font-weight: 400; color: #ffffff; ">&nbsp;Participants&nbsp;<span style="font-weight: 400;letter-spacing: 0.5px;">({{tool.lengthof(item?.participants) + ' / ' + item?.pax}})</span></div>
+    </div>
+
       </ion-item>
     </ion-list>
 
-    <ion-list class="ion-no-padding" style="background-color: #080812;">
+    <!-- <ion-list class="ion-no-padding" style="background-color: #080812;">
       <ion-item (click)="viewParty(item)" *ngFor="let item of partyrooms" class="ion-no-padding" lines="none"
         style="--background: #382D62; --padding-start: 15px; --padding-top: 15px; --padding-bottom: 15px; border-radius: 15px; margin-bottom: 20px;">
         <div style="width: 100%; display: flex;">
@@ -110,12 +176,12 @@
             style="width: 100px; height: 100px; display: flex; align-items: center; justify-content: center; padding: 3px; border-radius: 100%; background-color: #100E1F; border: 2px solid #E297FF; position: relative;">
             <ion-avatar style="width: 100%; height: 100%;">
               <img
-                src="https://img.freepik.com/premium-photo/asian-girls-education-happy-beautiful-asian-girl-is-smilling_911620-8519.jpg" />
+                src="{{https://img.freepik.com/premium-photo/asian-girls-education-happy-beautiful-asian-girl-is-smilling_911620-8519.jpg}}" />
             </ion-avatar>
 
             <div
               style="font-size: 12px; font-weight: 700; color: #000; background-color: #E297FF; padding: 5px 10px; border-radius: 20px; position: absolute; bottom: -2px; z-index: 1000;">
-              Room ID
+              Room {{item['roomId']}}
             </div>
           </div>
 
@@ -153,7 +219,7 @@
           </div>
         </div>
       </ion-item>
-    </ion-list>
+    </ion-list> -->
   </div>
 </ion-content>
 

@@ -1,0 +1,52 @@
+<ion-content [scrollEvents]="true" (ionScroll)="logScrolling($event)" [fullscreen]="true"
+  style="--background: url(/assets/background/home_bg.jpg) 0 0 / cover no-repeat fixed;">
+  <ion-header class="ion-no-border" style="position: sticky; top: 0;">
+    <ion-toolbar id="header" class="ion-no-padding" style="--background: transparent;">
+      <div style="width: 100%;">
+        <ion-button style="font-size: 30px;" (click)="back()" fill="clear">
+          <ion-icon slot="icon-only" color="white" name="chevron-back"></ion-icon>
+        </ion-button>
+
+        <div style="width: 100%; padding: 0 20px 20px 20px">
+          <div class="wallet">
+            <div>
+              <h6>Balance</h6>
+
+              <div class="balance_container">
+                <ion-icon src="assets/svg/hey_coin.svg"></ion-icon>
+                <h3>{{ currentUser['credits'] | number: '1.0-0'}}</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ion-toolbar>
+  </ion-header>
+
+  <div style="margin-bottom: 20px;">
+    <div *ngFor="let item of transactions; let i = index" style="padding: 0 15px;">
+      <div *ngIf="i == 0 || transactions[i]['eightdate'] != transactions[i-1]['eightdate']" style="color:#B4B2E5; font-size: 12px; margin: 10px 0 5px 0; width: 100%;">{{item.date | date : 'dd MMM yyyy'}}</div>
+      
+      <div style="width: 100%; display: flex; align-items: center;padding: 10px 0;">
+        <div
+          style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; background-color: #28255E; border-radius: 10px;">
+          <ion-icon style="font-size: 20px;" [name]="item.polarity > 0 ? 'arrow-up' : 'arrow-down'"></ion-icon>
+        </div>
+
+        <div class="transac_detail">
+          <div style="width: calc(100% - 100px);">
+            <h3 style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; width: 100%; text-overflow: ellipsis; overflow: hidden;" *ngIf="item.type == 'topup'">Topup&nbsp;{{( item.total | currency:item.currency || '') + ( item.method ? ' via ' + (item.method || '') : '')}}</h3>
+            <h3 style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; width: 100%; text-overflow: ellipsis; overflow: hidden;" *ngIf="item.type == 'party'">Sepnt&nbsp;{{( item.total | number : '1.0-0')}}&nbsp;gems for party creation</h3>
+
+          </div>
+
+          <div style="width: 100px;">
+            <h1 [ngClass]="item.polarity > 0 ? 'positive' : 'negative'">{{item.total | number: '1.0-0'}}</h1>
+            <h6>{{(item.date | date : 'hh:mm a')}}</h6>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</ion-content>

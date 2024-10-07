@@ -25,9 +25,9 @@
       style="width: 100%; padding: 15px; display: flex; align-items: center; justify-content: center; margin-bottom: 15px">
       <div
         style="width: 100%; height: 46px; display: flex; align-items: center; justify-content: space-between; background-color: #6860FF; border-radius: 30px; padding:0 15px">
-        <ion-select mode="ios" (ionSelect)="setLocationName() " [(ngModel)]="roomInfo['locationId']" interface="popover" placeholder="Select Location"
+        <ion-select mode="ios" [(ngModel)]="roomInfo['locationId']" interface="popover" placeholder="Select Location"
           style="font-size: 16px; font-weight: bold; color: #ffffff; --placeholder-color: #ffffff;">
-          <ion-select-option  *ngFor="let item of outlets">{{item['name']}}</ion-select-option>
+          <ion-select-option  *ngFor="let item of outlets" [value]="item.id">{{item['name']}}</ion-select-option>
         </ion-select>
         <ion-icon style="font-size: 24px; color: #ffffff;" name="caret-down"></ion-icon>
       </div>
